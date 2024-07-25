@@ -3,21 +3,19 @@ import Layout from "./layout";
 import Signup from "./pages/signup";
 
 const App = () => {
-
   const router = createBrowserRouter([
     {
-      path:'/',
-      element:<Layout/>,
-      children:[
+      path: "/",
+      element: <Layout />,
+      children: [
         {
-          path:'signup',
-          element:<Signup/>
-        }
-      ]
-      
+          path: "signup",
+          element: <Signup />,
+        },
+      ],
     },
   ]);
-  return <RouterProvider router={router}/>
-}
+  return <RouterProvider router={router} />;
+};
 
-export default App
+export default App;

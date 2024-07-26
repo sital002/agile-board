@@ -15,50 +15,48 @@ const Sidebar = () => {
           <p>Software project</p>
         </div>
       </div>
-      <h1 className="text-xl opacity-65 font-semibold">Planning</h1>
+      <h1 className="text-md opacity-65 font-semibold">Planning</h1>
       <div>
         {sidebarlist.map((ele, index) => {
           return (
             <Link
-            to={ele.url}
+              to={ele.url}
               key={index}
-              className="flex items-center gap-x-4 p-3 cursor-pointer hover:bg-gray-700 rounded-md"
+              className="flex items-center gap-x-4 py-3 px-2 cursor-pointer hover:bg-gray-700 rounded-md"
             >
               <span>{ele.icon}</span>
-              <span className="text-xl opacity-60">{ele.name}</span>
+              <span className="text-sm opacity-60">{ele.name}</span>
             </Link>
           );
         })}
       </div>
-      <h1 className="text-xl opacity-65 font-semibold">Development</h1>
+      <h1 className="text-md opacity-65 font-semibold">Development</h1>
       <div>
         {development.map((ele, index) => {
           return (
             <div
               key={index}
-              className="flex items-center gap-x-4 p-3 cursor-pointer hover:bg-gray-700 rounded-md"
+              className="flex my-2 text-sm items-center gap-x-4 py-3 px-2 cursor-pointer hover:bg-gray-700 rounded-md"
             >
               <span>{ele.icon}</span>
-              <span className="text-xl opacity-60">{ele.name}</span>
+              <span className="text-sm opacity-60">{ele.name}</span>
             </div>
           );
         })}
       </div>
       <hr />
       <div className="mt-2">
-        {
-          setting.map((ele, index) => {
-            return (
-              <div
-                key={index}
-                className="flex items-center gap-x-4 p-3 cursor-pointer hover:bg-gray-700 rounded-md"
-              >
-                <span>{ele.icon}</span>
-                <span className="text-xl opacity-60">{ele.name}</span>
-              </div>
-            );
-          })  
-        }
+        {setting.map((ele, index) => {
+          return (
+            <div
+              key={index}
+              className="flex items-center gap-x-4 p-3 cursor-pointer px-2 hover:bg-gray-700 rounded-md"
+            >
+              <span>{ele.icon}</span>
+              <span className="text-md opacity-60">{ele.name}</span>
+            </div>
+          );
+        })}
       </div>
     </aside>
   );

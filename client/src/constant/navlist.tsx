@@ -14,6 +14,7 @@ import {
   Star,
   Zap,
 } from "lucide-react";
+import Dropdown from "../components/dropdown";
 
 export const sidebarlist = [
   {
@@ -67,7 +68,7 @@ export const navlist = [
     icon: <ChevronDown size={20} strokeWidth={0.6} />,
   },
   {
-    name: "Projects",
+    name: <Dropdown/>,
     icon: <ChevronDown size={20} strokeWidth={0.6} />,
   },
   {

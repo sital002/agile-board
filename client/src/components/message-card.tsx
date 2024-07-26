@@ -1,13 +1,14 @@
 import { Ellipsis, Pencil } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import React from "react";
 
-const Messagecard = () => {
+const Messagecard = React.forwardRef<HTMLDivElement, React.HTMLProps<HTMLDivElement>>((props, ref) => {
   return (
-    <div className="p-3 border-2 border-gray-700 rounded-md shadow-md cursor-pointer select-none">
-      <div className="flex justify-between ">
+    <div ref={ref} {...props} className={`p-3 border-2 border-gray-700 rounded-md shadow-md cursor-pointer select-none ${props.className}`}>
+      <div className="flex justify-between">
         <div className="flex">
           <p className="w-full max-w-[90%] text-left">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptatem,
+            ipsum dolor sit amet consectetur adipisicing elit. Voluptatem,
             Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptatem,
           </p>
           <Pencil size={17} className="self-end" />
@@ -23,6 +24,6 @@ const Messagecard = () => {
       </div>
     </div>
   );
-};
+});
 
 export default Messagecard;

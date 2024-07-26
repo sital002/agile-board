@@ -12,7 +12,7 @@ const Signup = () => {
       <SignedOut>
         {/* <p>User isn't signed in</p> */}
         <SignInButton>
-          <Button variant={'secondary'}>Signin</Button>
+          <Button>Signin</Button>
         </SignInButton>
       </SignedOut>
       <SignedIn>

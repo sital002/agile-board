@@ -10,9 +10,9 @@ const Signup = () => {
   return (
     <div>
       <SignedOut>
-        <p>User isn't signed in</p>
+        {/* <p>User isn't signed in</p> */}
         <SignInButton>
-          <Button>Sign in with Clerk</Button>
+          <Button variant={'secondary'}>Signin</Button>
         </SignInButton>
       </SignedOut>
       <SignedIn>

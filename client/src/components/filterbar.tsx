@@ -37,11 +37,11 @@ const Filterbar = () => {
       <div className="flex items-center gap-x-4">
         <SelectOption />
         <ChartSpline
-          size={40}
+          size={25}
           className="cursor-pointer hover:bg-gray-700 rounded-md p-1"
         />
         <Settings2
-          size={40}
+          size={25}
           className="cursor-pointer hover:bg-gray-700 rounded-md p-1"
         />
       </div>

@@ -91,23 +91,23 @@ export const navlist = [
 export const headerIcon = [
   {
     name: "",
-    icon: <Zap />,
+    icon: <Zap size={20} />,
   },
   {
     name: "",
-    icon: <Star />,
+    icon: <Star size={20} />,
   },
   {
     name: "",
-    icon: <Share />,
+    icon: <Share size={20} />,
   },
   {
     name: "",
-    icon: <Fullscreen />,
+    icon: <Fullscreen size={20} />,
   },
   {
     name: "",
-    icon: <Ellipsis />,
+    icon: <Ellipsis size={20} />,
   },
 ];
 

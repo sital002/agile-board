@@ -11,8 +11,8 @@ const Sidebar = () => {
           alt=""
         />
         <div>
-          <h1 className="font-semibold">Agile Board</h1>
-          <p>Software project</p>
+          <h1 className="font-medium ">Agile Board</h1>
+          <p className="text-sm opacity-90">Software project</p>
         </div>
       </div>
       <h1 className="text-md opacity-65 font-semibold">Planning</h1>

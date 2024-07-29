@@ -30,7 +30,7 @@ export const sidebarlist = [
   {
     name: "List",
     icon: <List size={20} />,
-    url: "list",
+    url: "lists",
   },
   {
     name: "Goals",
@@ -68,7 +68,7 @@ export const navlist = [
     icon: <ChevronDown size={20} strokeWidth={0.6} />,
   },
   {
-    name: <Dropdown/>,
+    name: <Dropdown />,
     icon: <ChevronDown size={20} strokeWidth={0.6} />,
   },
   {

@@ -3,17 +3,19 @@ import { Button } from "./ui/button";
 import { Bell, Settings } from "lucide-react";
 import Signup from "../pages/signup";
 import { Input } from "./ui/input";
+import { ModeToggle } from "./mode-toggle";
 
 const Navbar = () => {
+
   return (
-    <header className="flex justify-between p-4 border-b-2 border-gray-600 bg-black text-white">
+    <header className="flex justify-between p-4 border-b-2 border-gray-600">
       <div></div>
       <div className="flex items-center gap-x-4">
         {navlist.map((ele, index) => {
           return (
             <div
               key={index}
-              className="flex gap-x-1 cursor-pointer select-none hover:bg-gray-700 rounded-md p-2"
+              className="flex cursor-pointer select-none dark:hover:bg-gray-700 hover:bg-gray-200 rounded-md p-2"
             >
               <span className="text-md">{ele.name}</span>
               <span className="self-end">{ele.icon}</span>
@@ -21,10 +23,11 @@ const Navbar = () => {
           );
         })}
       </div>
-      <Button variant={"secondary"}>Create</Button>
+      <Button>Create</Button>
       <Input className="w-full max-w-[20%]" placeholder="Search" />
       <div className="flex items-center gap-x-4">
         <Bell size={20} />
+        <ModeToggle/>
         <Settings size={20} />
         <Signup />
       </div>

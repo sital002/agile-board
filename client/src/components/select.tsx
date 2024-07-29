@@ -13,7 +13,7 @@ import { selectList } from "../constant/navlist"
   return (
     <Select>
       <SelectTrigger className="w-[180px]">
-        <SelectValue placeholder="Select a fruit" />
+        <SelectValue placeholder="Select option" />
       </SelectTrigger>
       <SelectContent>
         <SelectGroup>

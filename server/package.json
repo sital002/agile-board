@@ -4,7 +4,8 @@
   "license": "MIT",
   "scripts": {
     "dev": "nodemon",
-    "prod": "nodemon"
+    "prod": "nodemon",
+    "db:push":"npx prisma db push"
   },
   "dependencies": {
     "@prisma/client": "5.16.1",

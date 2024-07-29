@@ -1,6 +1,7 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Layout from "./layout";
 import Board from "./pages/board";
+import Login from "./pages/login";
 // import Signup from "./pages/signup";
 
 const App = () => {
@@ -8,12 +9,16 @@ const App = () => {
     {
       path: "/",
       element: <Layout />,
-      children:[
+      children: [
         {
-          path:'board',
-          element:<Board/>
-        }
-      ]
+          path: "board",
+          element: <Board />,
+        },
+        {
+          path: "/login",
+          element: <Login />,
+        },
+      ],
     },
   ]);
   return <RouterProvider router={router} />;

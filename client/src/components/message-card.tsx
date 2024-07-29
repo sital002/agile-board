@@ -2,22 +2,31 @@ import { Ellipsis, Pencil } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import React from "react";
 
-const Messagecard = React.forwardRef<HTMLDivElement, React.HTMLProps<HTMLDivElement>>((props, ref) => {
+const Messagecard = React.forwardRef<
+  HTMLDivElement,
+  React.HTMLProps<HTMLDivElement>
+>((props, ref) => {
   return (
-    <div ref={ref} {...props} className={`p-3 border-2 border-gray-700 rounded-md shadow-md cursor-pointer select-none ${props.className}`}>
-      <div className="flex justify-between">
-        <div className="flex">
-          <p className="w-full max-w-[90%] text-left">
-            ipsum dolor sit amet consectetur adipisicing elit. Voluptatem,
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptatem,
+    <div
+      ref={ref}
+      {...props}
+      className={`p-3 border-2 group border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-900  rounded-md shadow-md cursor-pointer select-none ${props.className}`}
+    >
+      <div className="flex justify-between gap-3 ">
+        <div className="flex relative">
+          <p className="w-full  text-left text-sm mr-6 group-hover:underline">
+            Create navbar component
           </p>
-          <Pencil size={17} className="self-end" />
+          <Pencil
+            size={15}
+            className="self-end hidden group-hover:block ml-1 absolute right-0"
+          />
         </div>
-        <Ellipsis size={60} className="cursor-pointer self-start" />
+        <Ellipsis size={20} className="cursor-pointer self-start" />
       </div>
       <div className="flex justify-between py-3 items-center">
-        <p>Sora</p>
-        <Avatar>
+        <p className="text-sm">Sora</p>
+        <Avatar className="w-5 h-5">
           <AvatarImage src="https://github.com/shadcn.png" />
           <AvatarFallback>CN</AvatarFallback>
         </Avatar>

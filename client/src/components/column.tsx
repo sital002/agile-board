@@ -10,12 +10,12 @@ const Column = ({ id, title }: { id: number; title: string }) => {
       {(provided, snapshot) => (
         <div
           {...provided.droppableProps}
-          style={{ backgroundColor: snapshot.isDraggingOver ? 'grey' : '' }}
+          style={{ backgroundColor: snapshot.isDraggingOver ? "grey" : "" }}
           ref={provided.innerRef}
-          className="border-2 border-gray-500 h-fit min-w-[450px] max-w-[450px] rounded-sm p-1 relative"
+          className="border-2 border-gray-500 h-fit min-w-[200px] max-w-[300px] rounded-sm p-1 relative"
         >
           <div className="flex justify-between items-center">
-            <h1 className="p-4 text-xl font-semibold">{title}</h1>
+            <h1 className="p-4 text-md font-semibold">{title}</h1>
             <Ellipsis
               onClick={() => setOpen(!open)}
               className="cursor-pointer mr-2"
@@ -27,7 +27,7 @@ const Column = ({ id, title }: { id: number; title: string }) => {
             </div>
           )}
           <div className="flex flex-col gap-y-2">
-            {Array(5)
+            {Array(2)
               .fill(null)
               .map((_, index) => {
                 return (

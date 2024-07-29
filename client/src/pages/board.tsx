@@ -6,10 +6,11 @@ import { Input } from "../components/ui/input";
 import React, { useEffect, useRef, useState } from "react";
 import { DragDropContext, DropResult } from "react-beautiful-dnd";
 
+const defaultColums = ["To Do", "In Progress", "Done"];
 const Board = () => {
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState("");
-  const [column, setColumn] = useState<string[]>([]);
+  const [column, setColumn] = useState<string[]>(defaultColums);
   const divRef = useRef<HTMLDivElement>(null);
 
   const clickHandler = () => {
@@ -80,9 +81,9 @@ const Board = () => {
             )}
             <Plus
               onClick={clickHandler}
-              size={40}
+              size={30}
               strokeWidth={0.9}
-              className="min-w-[40px] cursor-pointer dark:bg-gray-700 bg-gray-200 rounded-md"
+              className="min-w-[10px] cursor-pointer dark:bg-gray-700 bg-gray-200 rounded-md"
             />
           </div>
         </div>

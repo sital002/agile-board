@@ -11,7 +11,14 @@ export async function createUser(req: Request, res: Response) {
     if (!result.success) {
       return res.status(400).json({ error: result.error });
     }
-
+    const userExists = await prisma.user.findUnique({
+      where: {
+        email: result.data.email,
+      },
+    });
+    if (userExists) {
+      return res.status(400).json({ error: "User already exists" });
+    }
     const user = await prisma.user.create({
       data: {
         name: result.data.name,

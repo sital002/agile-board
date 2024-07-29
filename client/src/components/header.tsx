@@ -9,7 +9,7 @@ const Header = () => {
           return (
             <div
               key={index}
-              className="cursor-pointer hover:bg-gray-700 p-2 rounded-md"
+              className="cursor-pointer hover:bg-gray-900 p-2 rounded-md"
             >
               <span>{ele?.name}</span>
               <span>{ele?.icon}</span>

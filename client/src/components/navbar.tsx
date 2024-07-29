@@ -6,7 +6,6 @@ import { Input } from "./ui/input";
 import { ModeToggle } from "./mode-toggle";
 
 const Navbar = () => {
-
   return (
     <header className="flex justify-between p-4 border-b-2 border-gray-600">
       <div></div>
@@ -15,7 +14,7 @@ const Navbar = () => {
           return (
             <div
               key={index}
-              className="flex cursor-pointer select-none dark:hover:bg-gray-700 hover:bg-gray-200 rounded-md p-2"
+              className="flex cursor-pointer select-none dark:hover:bg-gray-900 hover:bg-gray-200 rounded-md p-2"
             >
               <span className="text-md">{ele.name}</span>
               <span className="self-end">{ele.icon}</span>
@@ -27,7 +26,7 @@ const Navbar = () => {
       <Input className="w-full max-w-[20%]" placeholder="Search" />
       <div className="flex items-center gap-x-4">
         <Bell size={20} />
-        <ModeToggle/>
+        <ModeToggle />
         <Settings size={20} />
         <Signup />
       </div>

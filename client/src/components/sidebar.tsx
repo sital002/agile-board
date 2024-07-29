@@ -22,7 +22,7 @@ const Sidebar = () => {
             <Link
               to={ele.url}
               key={index}
-              className="flex items-center gap-x-4 py-3 px-2 cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md"
+              className="flex items-center gap-x-4 py-3 px-2 cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-900 rounded-md"
             >
               <span>{ele.icon}</span>
               <span className="text-sm opacity-60">{ele.name}</span>
@@ -36,7 +36,7 @@ const Sidebar = () => {
           return (
             <div
               key={index}
-              className="flex my-2 text-sm items-center gap-x-4 py-3 px-2 cursor-pointer dark:hover:bg-gray-700 hover:bg-gray-200 rounded-md"
+              className="flex my-2 text-sm items-center gap-x-4 py-3 px-2 cursor-pointer dark:hover:bg-gray-900 hover:bg-gray-200 rounded-md"
             >
               <span>{ele.icon}</span>
               <span className="text-sm opacity-60">{ele.name}</span>
@@ -50,7 +50,7 @@ const Sidebar = () => {
           return (
             <div
               key={index}
-              className="flex items-center gap-x-4 p-3 cursor-pointer px-2 dark:hover:bg-gray-700 hover:bg-gray-200 rounded-md"
+              className="flex items-center gap-x-4 p-3 cursor-pointer px-2 dark:hover:bg-gray-900 hover:bg-gray-200 rounded-md"
             >
               <span>{ele.icon}</span>
               <span className="text-md opacity-60">{ele.name}</span>

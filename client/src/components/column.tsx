@@ -5,6 +5,24 @@ import { Draggable, Droppable } from "react-beautiful-dnd";
 
 const Column = ({ id, title }: { id: number; title: string }) => {
   const [open, setOpen] = useState<boolean>(false);
+
+  const issues = [
+    {
+      id: 1,
+      title: "Create navbar component",
+      user: "Sora",
+    },
+    {
+      id: 2,
+      title: "Create Sidebar component",
+      user: "Nora",
+    },
+    {
+      id: 3,
+      title: "Create dashboard component",
+      user: "Dora",
+    },
+  ];
   return (
     <Droppable droppableId={`droppable-${id}`}>
       {(provided, snapshot) => (
@@ -27,27 +45,29 @@ const Column = ({ id, title }: { id: number; title: string }) => {
             </div>
           )}
           <div className="flex flex-col gap-y-2">
-            {Array(2)
-              .fill(null)
-              .map((_, index) => {
-                return (
-                  <Draggable
-                    key={index}
-                    draggableId={`draggable-${id}-${index}`}
-                    index={index}
-                  >
-                    {(provided) => (
-                      <div
-                        ref={provided.innerRef}
-                        {...provided.draggableProps}
-                        {...provided.dragHandleProps}
-                      >
-                        <Messagecard />
-                      </div>
-                    )}
-                  </Draggable>
-                );
-              })}
+            {issues.map((issue, index) => {
+              return (
+                <Draggable
+                  key={index}
+                  draggableId={`draggable-${id}-${index}`}
+                  index={index}
+                >
+                  {(provided) => (
+                    <div
+                      ref={provided.innerRef}
+                      {...provided.draggableProps}
+                      {...provided.dragHandleProps}
+                    >
+                      <Messagecard
+                        key={issue.id}
+                        issueTitle={issue.title}
+                        user={issue.user}
+                      />
+                    </div>
+                  )}
+                </Draggable>
+              );
+            })}
             {provided.placeholder}
           </div>
         </div>

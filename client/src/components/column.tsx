@@ -31,7 +31,7 @@ const Column = ({ id, title }: { id: number; title:Title[] }) => {
   // ];
 
   return (
-    <Droppable key={id} droppableId={`${id}`}>
+    <Droppable  droppableId={`${id}`}>
       {(provided, snapshot) => (
         <div
           {...provided.droppableProps}

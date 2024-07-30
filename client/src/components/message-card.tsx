@@ -9,6 +9,7 @@ interface MessagecardProps {
   user: string;
   issueTitle: string;
 }
+
 const Messagecard = React.forwardRef<
   HTMLDivElement,
   React.HTMLProps<HTMLDivElement> & MessagecardProps
@@ -17,13 +18,13 @@ const Messagecard = React.forwardRef<
     <Card
       ref={ref}
       {...props}
-      className={`p-3 border-2 group  hover:bg-gray-200 dark:hover:bg-gray-900  rounded-md shadow-md cursor-pointer select-none ${props.className}`}
+      className={`p-3 border-2 group hover:bg-gray-200 dark:hover:bg-gray-900 rounded-md shadow-md cursor-pointer select-none ${props.className}`}
     >
-      <div className="flex justify-between gap-3 ">
+      <div className="flex justify-between gap-3">
         <div className="flex relative">
           <Tooltip>
             <TooltipTrigger>
-              <p className="w-full  text-left text-sm mr-6 group-hover:underline">
+              <p className="w-full text-left text-sm mr-6 group-hover:underline">
                 {props.issueTitle}
               </p>
             </TooltipTrigger>

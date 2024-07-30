@@ -3,28 +3,35 @@ import Messagecard from "./message-card";
 import { useState } from "react";
 import { Draggable, Droppable } from "react-beautiful-dnd";
 
-const Column = ({ id, title }: { id: number; title: string }) => {
+type Title={
+  id:string
+  title:string
+  user:string
+}
+
+const Column = ({ id, title }: { id: number; title:Title[] }) => {
   const [open, setOpen] = useState<boolean>(false);
 
-  const issues = [
-    {
-      id: 1,
-      title: "Create navbar component",
-      user: "Sora",
-    },
-    {
-      id: 2,
-      title: "Create Sidebar component",
-      user: "Nora",
-    },
-    {
-      id: 3,
-      title: "Create dashboard component",
-      user: "Dora",
-    },
-  ];
+  // const issues = [
+  //   {
+  //     id:' 1',
+  //     title: "Create navbar component",
+  //     user: "Sora",
+  //   },
+  //   {
+  //     id: '2',
+  //     title: "Create Sidebar component",
+  //     user: "Nora",
+  //   },
+  //   {
+  //     id:'3',
+  //     title: "Create dashboard component",
+  //     user: "Dora",
+  //   },
+  // ];
+
   return (
-    <Droppable droppableId={`droppable-${id}`}>
+    <Droppable key={id} droppableId={`${id}`}>
       {(provided, snapshot) => (
         <div
           {...provided.droppableProps}
@@ -33,7 +40,7 @@ const Column = ({ id, title }: { id: number; title: string }) => {
           className="border-2 border-gray-500 h-fit min-w-[200px] max-w-[300px] rounded-sm p-1 relative"
         >
           <div className="flex justify-between items-center">
-            <h1 className="p-4 text-md font-semibold">{title}</h1>
+            <h1 className="p-4 text-md font-semibold">{'title'}</h1>
             <Ellipsis
               onClick={() => setOpen(!open)}
               className="cursor-pointer mr-2"
@@ -45,29 +52,26 @@ const Column = ({ id, title }: { id: number; title: string }) => {
             </div>
           )}
           <div className="flex flex-col gap-y-2">
-            {issues.map((issue, index) => {
-              return (
-                <Draggable
-                  key={index}
-                  draggableId={`draggable-${id}-${index}`}
-                  index={index}
-                >
-                  {(provided) => (
-                    <div
-                      ref={provided.innerRef}
-                      {...provided.draggableProps}
-                      {...provided.dragHandleProps}
-                    >
-                      <Messagecard
-                        key={issue.id}
-                        issueTitle={issue.title}
-                        user={issue.user}
-                      />
-                    </div>
-                  )}
-                </Draggable>
-              );
-            })}
+            {title.map((issue, index) => (
+              <Draggable
+                key={issue.id} 
+                draggableId={issue.id} 
+                index={index}
+              >
+                {(provided) => (
+                  <div
+                    ref={provided.innerRef}
+                    {...provided.draggableProps}
+                    {...provided.dragHandleProps}
+                  >
+                    <Messagecard
+                      issueTitle={issue.title}
+                      user={issue.user}
+                    />
+                  </div>
+                )}
+              </Draggable>
+            ))}
             {provided.placeholder}
           </div>
         </div>

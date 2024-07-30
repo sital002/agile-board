@@ -4,7 +4,7 @@ import { ChevronRight } from "lucide-react";
 import { useState } from "react";
 
 const Sidebar = () => {
-  const [width, setWidth] = useState(true);
+  const [width, setWidth] = useState(false);
 
   const clickHandler = () => {
     setWidth(!width);

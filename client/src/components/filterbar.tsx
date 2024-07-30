@@ -7,9 +7,9 @@ const Filterbar = () => {
   return (
     <div className="flex items-center justify-between py-2 select-none sticky left-0 top-0">
       <div className="w-full max-w-[40%] flex justify-between">
-        <div className="flex items-center justify-between w-full max-w-[60%]">
-          <Input className="w-full max-w-[90%]" placeholder="Search" />
-          <div className="flex relative items-center">
+        <div className="flex items-center justify-between w-full md:max-w-[60%]">
+          <Input className="w-full md:max-w-[90%]" placeholder="Search" />
+          <div className="flex relative items-center border-2 border-red-500">
             {Array(4)
               .fill(null)
               .map((_, index) => {
@@ -28,7 +28,7 @@ const Filterbar = () => {
         </div>
       </div>
 
-      <div className="flex items-center gap-x-4">
+      <div className="md:flex items-center gap-x-4 hidden">
         <SelectOption />
         <ChartSpline
           size={25}

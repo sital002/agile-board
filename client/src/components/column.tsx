@@ -1,7 +1,7 @@
 import { Ellipsis } from "lucide-react";
 import Messagecard from "./message-card";
 import { useState } from "react";
-import { Draggable, Droppable } from "react-beautiful-dnd";
+import { Draggable, Droppable } from "@hello-pangea/dnd";
 
 type Title = {
   id: string;
@@ -31,13 +31,13 @@ const Column = ({ id, title }: { id: number; title: Title[] }) => {
   // ];
 
   return (
-    <Droppable droppableId={`${id}`}>
+    <Droppable key={id} droppableId={`${id}`}>
       {(provided, snapshot) => (
         <div
           {...provided.droppableProps}
           style={{ backgroundColor: snapshot.isDraggingOver ? "grey" : "" }}
           ref={provided.innerRef}
-          className="border-2 border-gray-500 h-fit min-w-[200px] max-w-[300px] rounded-sm p-1 relative"
+          className="border-2 border-gray-500 h-fit min-w-[300px] md:min-w-[200px] max-w-[300px] rounded-sm p-1 relative"
         >
           <div className="flex justify-between items-center">
             <h1 className="p-4 text-md font-semibold">{"title"}</h1>

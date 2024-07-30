@@ -1,7 +1,7 @@
 import Header from "../components/header";
 import Filterbar from "../components/filterbar";
 import Column from "../components/column";
-import { DragDropContext, DropResult } from "react-beautiful-dnd";
+import { DragDropContext, DropResult } from "@hello-pangea/dnd";
 
 const defaultColumns = [
   [
@@ -75,10 +75,10 @@ const Board = () => {
   };
 
   return (
-    <div className="w-full px-8 overflow-hidden">
+    <div className="w-full px-8 overflow-hidden ">
       <Header />
       <Filterbar />
-      <div className="flex gap-2 w-full overflow-x-auto">
+      <div className="flex gap-2 w-full overflow-x-auto scrollbar ">
         <DragDropContext onDragEnd={dragHandler}>
           {defaultColumns.map((column, index) => (
             <Column id={index} key={index} title={column} />

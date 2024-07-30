@@ -1,4 +1,4 @@
-import { ChartSpline, Settings2, UserPlus } from "lucide-react";
+import { ChartSpline, Settings2 } from "lucide-react";
 import SelectOption from "./select";
 import { Input } from "./ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
@@ -26,12 +26,6 @@ const Filterbar = () => {
               })}
           </div>
         </div>
-        <UserPlus
-          size={50}
-          fill="white"
-          strokeWidth={0.8}
-          className="cursor-pointer self-start p-3 hover:bg-gray-900 rounded-full "
-        />
       </div>
 
       <div className="flex items-center gap-x-4">

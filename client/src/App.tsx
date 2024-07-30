@@ -3,6 +3,8 @@ import Layout from "./layout";
 import Board from "./pages/board";
 import CreateProject from "./pages/create";
 import Lists from "./pages/lists";
+import Signup from "./pages/signup";
+import Login from "./pages/login";
 // import Signup from "./pages/signup";
 
 const App = () => {
@@ -24,6 +26,15 @@ const App = () => {
     {
       path: "/create",
       element: <CreateProject />,
+    },
+    {
+      path: "/signup",
+      element: <Signup />,
+    },
+    {
+      path: "/signin",
+      errorElement: <div>Hello Error</div>,
+      element: <Login />,
     },
   ]);
   return <RouterProvider router={router} />;

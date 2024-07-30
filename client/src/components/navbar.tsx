@@ -1,9 +1,9 @@
 import { navlist } from "../constant/navlist";
 import { Button } from "./ui/button";
 import { Bell, Settings } from "lucide-react";
-import Signup from "../pages/signup";
 import { Input } from "./ui/input";
 import { ModeToggle } from "./mode-toggle";
+import { Link } from "react-router-dom";
 
 const Navbar = () => {
   return (
@@ -28,7 +28,18 @@ const Navbar = () => {
         <Bell size={20} />
         <ModeToggle />
         <Settings size={20} />
-        <Signup />
+        <Link
+          to={"/signin"}
+          className="bg-primary text-primary-foreground px-3 py-2 rounded-md font-bold text-sm"
+        >
+          Signin
+        </Link>
+        <Link
+          to={"/signup"}
+          className="bg-primary text-primary-foreground px-3 py-2 rounded-md font-bold text-sm"
+        >
+          Signup
+        </Link>
       </div>
     </header>
   );

@@ -1,5 +1,3 @@
-"use client";
-
 import * as React from "react";
 import {
   ColumnDef,
@@ -13,18 +11,11 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { ArrowUpDown, MoreHorizontal } from "lucide-react";
+import { ArrowUpDown } from "lucide-react";
 
 import { Button } from "../components/ui/button";
 import { Checkbox } from "~/components/ui/checkbox";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "~/components/ui/dropdown-menu";
+
 import {
   Table,
   TableBody,
@@ -174,41 +165,12 @@ const columns: ColumnDef<Issue>[] = [
         <div
           className={`w-fit px-2 py-1 rounded-sm text-left font-medium ${
             row.original?.dueDate && row.original.dueDate < new Date()
-              ? "bg-red-300 text-red-700"
+              ? "bg-red-200 text-red-600"
               : ""
           }`}
         >
           {row.original.dueDate?.toLocaleDateString() ?? "NONE"}
         </div>
-      );
-    },
-  },
-  {
-    id: "actions",
-    enableHiding: false,
-    cell: ({ row }) => {
-      const payment = row.original;
-
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(payment.id)}
-            >
-              Copy payment ID
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>View customer</DropdownMenuItem>
-            <DropdownMenuItem>View payment details</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
       );
     },
   },

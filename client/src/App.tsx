@@ -5,6 +5,7 @@ import CreateProject from "./pages/create";
 import Lists from "./pages/lists";
 import Signup from "./pages/signup";
 import Login from "./pages/login";
+import PageNotFound from "./pages/404-page";
 // import Signup from "./pages/signup";
 
 const App = () => {
@@ -12,6 +13,7 @@ const App = () => {
     {
       path: "/",
       element: <Layout />,
+      errorElement:<PageNotFound/>,
       children: [
         {
           path: "board",

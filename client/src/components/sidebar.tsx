@@ -11,14 +11,16 @@ const Sidebar = () => {
   };
   return (
     <aside
-      className={`w-full ${!width ? 'max-w-[50%] md:max-w-[30%] lg:max-w-[20%]' : 'max-w-0 p-0'} absolute z-10 bg-white dark:bg-slate-900 border-gray-200 dark:border-gray-700 border-2 p-6 h-screen max-h-fit select-none md:relative transition-all`}
+      className={`w-full ${
+        !width ? "max-w-[50%] md:max-w-[30%] lg:max-w-[20%]" : "max-w-0 p-0"
+      } absolute  bg-white dark:bg-slate-900 border-gray-200 dark:border-gray-700 border-2 p-6 h-screen max-h-fit select-none md:relative transition-all`}
     >
       <ChevronRight
         onClick={clickHandler}
         color="white"
         className="absolute left-[95%] bg-blue-500 rounded-full top-[10%] cursor-pointer"
       />
-      <div className={width ? 'hidden' : 'block'}>
+      <div className={width ? "hidden" : "block"}>
         <div className="flex items-center gap-x-4 py-6">
           <img
             className="w-[15%]"

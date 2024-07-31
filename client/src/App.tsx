@@ -13,7 +13,7 @@ const App = () => {
     {
       path: "/",
       element: <Layout />,
-      errorElement:<PageNotFound/>,
+      errorElement: <PageNotFound />,
       children: [
         {
           path: "board",
@@ -35,7 +35,6 @@ const App = () => {
     },
     {
       path: "/signin",
-      errorElement: <div>Hello Error</div>,
       element: <Login />,
     },
   ]);

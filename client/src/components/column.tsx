@@ -6,7 +6,6 @@ import { TaskType } from "../pages/board";
 import { Button } from "./ui/button";
 import React, { useEffect, useState } from "react";
 
-
 interface ColumnProps {
   id: number;
   issue: TaskType[];
@@ -23,16 +22,20 @@ const Column = ({ id, issue, tasks, setTasks }: ColumnProps) => {
     setOpen(true);
   };
 
-  const addTaskHandler = (e:React.MouseEvent<HTMLButtonElement>,index: number) => {
+  const addTaskHandler = (
+    e: React.MouseEvent<HTMLButtonElement>,
+    index: number
+  ) => {
     e.stopPropagation();
+    if (newIssue.length === 0) return setOpen(false);
     const newTask: TaskType = {
       id: Math.random().toString(),
       title: newIssue,
       user: "",
     };
-    console.log(tasks)
+    console.log(tasks);
     tasks[index].push(newTask);
-    console.log(tasks)
+    console.log(tasks);
     setTasks([...tasks]);
     setNewIssue("");
     setOpen(false);
@@ -48,7 +51,7 @@ const Column = ({ id, issue, tasks, setTasks }: ColumnProps) => {
     return () => window.removeEventListener("click", closeHandler);
   }, [open]);
 
-  console.log('issdu',issue)
+  console.log("issdu", issue);
 
   return (
     <Droppable key={id} droppableId={`${id}`}>
@@ -59,7 +62,12 @@ const Column = ({ id, issue, tasks, setTasks }: ColumnProps) => {
           ref={provided.innerRef}
           className="border-2 border-gray-500 h-fit min-w-[300px]  rounded-sm p-1 relative"
         >
-          <TitleDropdown setTasks={setTasks} tasks={tasks} issue={issue} index={id}  />
+          <TitleDropdown
+            setTasks={setTasks}
+            tasks={tasks}
+            issue={issue}
+            index={id}
+          />
 
           <div className="flex flex-col gap-y-2">
             {issue.map((issue, index) => (
@@ -70,7 +78,9 @@ const Column = ({ id, issue, tasks, setTasks }: ColumnProps) => {
                     {...provided.draggableProps}
                     {...provided.dragHandleProps}
                   >
-                     {issue.title && <Messagecard issueTitle={issue.title} user={issue.user} />}
+                    {issue.title && (
+                      <Messagecard issueTitle={issue.title} user={issue.user} />
+                    )}
                   </div>
                 )}
               </Draggable>
@@ -90,13 +100,14 @@ const Column = ({ id, issue, tasks, setTasks }: ColumnProps) => {
                 className="border-2 border-gray-500 flex flex-col gap-y-4 p-1"
               >
                 <Input
-                  onChange={(e)=>setNewIssue(e.target.value)}
+                  onChange={(e) => setNewIssue(e.target.value)}
                   value={newIssue}
                   className="rounded-none border-none focus:outline-none "
                   placeholder="enter your issue.."
                 />
                 <Button
-                  onClick={(e) => addTaskHandler(e,id)}
+                  disabled={newIssue.trim().length === 0}
+                  onClick={(e) => addTaskHandler(e, id)}
                   className="w-fit self-end"
                   variant={"secondary"}
                   size={"sm"}

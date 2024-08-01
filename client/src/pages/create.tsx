@@ -6,7 +6,7 @@ import { Label } from "../components/ui/label";
 const CreateProject = () => {
   const navigate = useNavigate();
   return (
-    <div className="flex w-full max-w-[80%] mx-auto mt-[5%] dark:bg-slate-900">
+    <div className="flex w-full max-w-[80%] mx-auto mt-[5%] dark:bg-black">
       <div className=" rounded-md  cursor-pointer p-4 border-2">
         <div className="flex flex-col gap-y-4">
           <h1 className="text-3xl font-semibold">Create Project</h1>

@@ -32,11 +32,12 @@ const Board = () => {
     const sourceColumn = tasks[Number(source.droppableId)];
     const destinationColumn = tasks[Number(destination.droppableId)];
     const [removed] = sourceColumn.splice(source.index, 1);
-    removed.heading = destinationColumn[destination.index].heading;
+    removed.heading = destinationColumn[destination.index]?.heading;
     destinationColumn.splice(destination.index, 0, removed);
     setTasks([...tasks]);
     
   };
+  console.log(tasks)
 
   const closeHandler = () => {
     setOpen(false);

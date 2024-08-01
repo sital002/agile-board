@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { development, setting, sidebarlist } from "../constant/navlist";
+import {  setting, sidebarlist } from "../constant/navlist";
 import { ChevronRight } from "lucide-react";
 import { useState } from "react";
 
@@ -13,7 +13,7 @@ const Sidebar = () => {
     <aside
       className={`w-full ${
         !width ? "max-w-[50%] md:max-w-[30%] lg:max-w-[20%]" : "max-w-0 p-0"
-      } absolute  bg-white dark:bg-slate-900 border-gray-200 dark:border-gray-700 border-2 p-6 h-screen max-h-fit select-none md:relative transition-all`}
+      } absolute  bg-white dark:bg-black border-gray-200 dark:border-gray-700 border-2 p-6 h-screen max-h-fit select-none md:relative transition-all`}
     >
       <ChevronRight
         onClick={clickHandler}
@@ -48,7 +48,7 @@ const Sidebar = () => {
           })}
         </div>
         <h1 className="text-md opacity-65 font-semibold">Development</h1>
-        <div>
+        {/* <div>
           {development.map((ele, index) => {
             return (
               <div
@@ -60,7 +60,7 @@ const Sidebar = () => {
               </div>
             );
           })}
-        </div>
+        </div> */}
         <hr />
         <div className="mt-2">
           {setting.map((ele, index) => {

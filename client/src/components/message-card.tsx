@@ -5,6 +5,7 @@ import { Card } from "./ui/card";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 import { Dialog, DialogContent } from "./ui/dialog";
 import { DialogTitle } from "@radix-ui/react-dialog";
+import IssueCard from "./issue-details-card";
 
 interface MessagecardProps {
   className?: string;
@@ -27,7 +28,7 @@ const Messagecard = React.forwardRef<
         onClick={handleOpenIssue}
         ref={ref}
         {...props}
-        className={`p-3 border-2 group hover:bg-gray-200 dark:hover:bg-gray-900 rounded-md shadow-md cursor-pointer select-none ${props.className}`}
+        className={`p-3 border-2 dark:bg-black group hover:bg-gray-200 dark:hover:bg-gray-900 rounded-md shadow-md cursor-pointer select-none ${props.className}`}
       >
         <div className="flex justify-between gap-3">
           <div className="flex relative">
@@ -79,7 +80,7 @@ const Messagecard = React.forwardRef<
         >
           <DialogTitle className="sr-only">{props.issueTitle}</DialogTitle>
           <DialogContent>
-            <>{props.issueTitle}</>
+            <IssueCard/>
           </DialogContent>
         </Dialog>
       )}

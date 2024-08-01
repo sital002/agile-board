@@ -5,10 +5,10 @@ import {
   Dice6,
   Ellipsis,
   Fullscreen,
-  Goal,
+  // Goal,
   List,
-  NotebookText,
-  Plus,
+  // NotebookText,
+  // Plus,
   Settings,
   Share,
   Star,
@@ -18,7 +18,7 @@ import Dropdown from "../components/dropdown";
 
 export const sidebarlist = [
   {
-    name: "Timeline",
+    name: "Team",
     icon: <ChartNoAxesGantt size={20} />,
     url: "timeline",
   },
@@ -32,16 +32,16 @@ export const sidebarlist = [
     icon: <List size={20} />,
     url: "lists",
   },
-  {
-    name: "Goals",
-    icon: <Goal size={20} />,
-    url: "goals",
-  },
-  {
-    name: "Add View",
-    icon: <Plus size={20} />,
-    url: "view",
-  },
+  // {
+  //   name: "Goals",
+  //   icon: <Goal size={20} />,
+  //   url: "goals",
+  // },
+  // {
+  //   name: "Add View",
+  //   icon: <Plus size={20} />,
+  //   url: "view",
+  // },
 ];
 
 export const development = [
@@ -52,10 +52,10 @@ export const development = [
 ];
 
 export const setting = [
-  {
-    name: "Project pages",
-    icon: <NotebookText size={20} />,
-  },
+  // {
+  //   name: "Project pages",
+  //   icon: <NotebookText size={20} />,
+  // },
   {
     name: "Project settings",
     icon: <Settings size={20} />,
@@ -126,3 +126,31 @@ export const selectList = [
     value: "subtask",
   },
 ];
+
+
+export const detailsList=[
+  {
+    name:'Labels',
+    value:'None'
+  },
+  {
+    name:"Due Date",
+    value:'None'
+  },
+  {
+    name:"Time Tracking",
+    value:'No Time Log'
+  },
+  {
+    name:"Start Date",
+    value:"None"
+  },
+  {
+    name:"Category",
+    value:"None"
+  },
+  {
+    name:"Team",
+    value:"None"
+  }
+]

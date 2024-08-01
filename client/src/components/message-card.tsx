@@ -14,6 +14,7 @@ const Messagecard = React.forwardRef<
   HTMLDivElement,
   React.HTMLProps<HTMLDivElement> & MessagecardProps
 >((props, ref) => {
+  console.log('r',props);
   return (
     <Card
       ref={ref}

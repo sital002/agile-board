@@ -11,5 +11,9 @@ const envSchema = z.object({
   STACK_AUTH_PUBLISHABLE_KEY: z.string(),
   STACK_AUTH_SERVER_KEY: z.string(),
   JWT_SECRET: z.string().default("secret"),
+  RESEND_API_KEY: z.string(),
+  ACCESS_TOKEN_EXPIRY: z.string(),
+  ACCESS_TOKEN_SECRET: z.string(),
+  REFRESH_TOKEN_SECRET: z.string(),
 });
 export const env = envSchema.parse(process.env);

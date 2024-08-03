@@ -5,6 +5,7 @@ import projectRouter from "./routes/project-route";
 import userRouter from "./routes/user-route";
 import authRouter from "./routes/auth-route";
 import { Resend } from "resend";
+import { env } from "./utils/env";
 
 const app = express();
 
@@ -15,7 +16,7 @@ app.use(express.json());
 app.use("/auth", authRouter);
 app.use("/users", userRouter);
 app.use("/projects", projectRouter);
-const resend = new Resend("re_KoYy7W5L_FzmrS9yyrnjfy8iEQJVYCXE3");
+const resend = new Resend(env.RESEND_API_KEY);
 
 app.get("/", async (req, res) => {
   const { data, error } = await resend.emails.send({

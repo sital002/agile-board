@@ -20,12 +20,16 @@ enum Priority {
 }
 
 model User {
-  id        Int       @id @default(autoincrement())
-  email     String    @unique
-  name      String
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  projects  Project[]
+  id                     Int       @id @default(autoincrement())
+  email                  String    @unique
+  display_name           String
+  password               String
+  verification_code      String
+  primary_email_verified Boolean   @default(false)
+  profile_image_url      String?
+  createdAt              DateTime  @default(now())
+  updatedAt              DateTime  @updatedAt
+  projects               Project[]
 }
 
 model Issue {

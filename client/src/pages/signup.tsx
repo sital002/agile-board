@@ -22,8 +22,7 @@ const Signup = () => {
     try {
       const data = EmailSchema.parse({ email });
       setEmailError("");
-      console.log(data.email);
-      const res = await axios.post("http://localhost:3001/auth/signup", data);
+      const res = await axios.post("http://localhost:3000/auth/signup", data);
       console.log(res.data);
     } catch (error) {
       if (error instanceof z.ZodError) {

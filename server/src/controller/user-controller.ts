@@ -1,13 +1,13 @@
 import { PrismaClient } from "@prisma/client";
 import type { Request, Response } from "express";
 import { logger } from "../utils/logger";
-import { userSchema } from "../schema/user-schema";
+import { SignUpSchema } from "../schema/user-schema";
 
 const prisma = new PrismaClient();
 
 export async function createUser(req: Request, res: Response) {
   try {
-    const result = userSchema.safeParse(req.body);
+    const result = SignUpSchema.safeParse(req.body);
     if (!result.success) {
       return res.status(400).json({ error: result.error });
     }
@@ -19,9 +19,12 @@ export async function createUser(req: Request, res: Response) {
     if (userExists) {
       return res.status(400).json({ error: "User already exists" });
     }
+    const verificationCode = crypto.randomUUID();
     const user = await prisma.user.create({
       data: {
-        name: result.data.name,
+        verification_code: verificationCode,
+        password: result.data.password,
+        display_name: result.data.display_name,
         email: result.data.email,
       },
     });

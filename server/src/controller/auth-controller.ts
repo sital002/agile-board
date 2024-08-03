@@ -1,42 +1,42 @@
 import z from "zod";
 import { env } from "../utils/env";
 import type { Request, Response } from "express";
-import axios, { isAxiosError } from "axios";
-import { AxiosError } from "axios";
+import { Resend } from "resend";
+import { PrismaClient, User } from "@prisma/client";
+import bcrypt from "bcrypt";
+import crypto from "crypto";
+import jwt from "jsonwebtoken";
 
-const headers = {
-  "x-stack-access-type": "server",
-  "x-stack-project-id": env.PROJECT_ID,
-  "X-Stack-Secret-Server-Key": env.STACK_AUTH_SERVER_KEY,
-};
+import { SignUpSchema } from "../schema/user-schema";
 
-const SignUpSchema = z
-  .object({
-    full_name: z
-      .string()
-      .trim()
-      .min(3, { message: "Name must be atleast 3 characters" })
-      .max(50, { message: "Name must be atmost 50 characters" }),
-    email: z.string().email({
-      message: "Invaild Email",
-    }),
+function generateAccessToken(user: User) {
+  return jwt.sign(
+    {
+      id: user.id,
+      email: user.email,
+    },
+    env.ACCESS_TOKEN_SECRET,
+    {
+      expiresIn: env.ACCESS_TOKEN_EXPIRY,
+    }
+  );
+}
 
-    password: z
-      .string()
-      .min(8, { message: "Password must be atleast 8 characters" })
-      .max(64, {
-        message: "Password must be atmost 64 characters",
-      }),
-    confirm_password: z
-      .string()
-      .min(8, { message: "Password must be atleast 8 characters" })
-      .max(64, {
-        message: "Password must be atmost 64 characters",
-      }),
-  })
-  .refine((data) => data.password === data.confirm_password, {
-    message: "Password and confirm password must be same",
-  });
+function generateRefreshToken(id: number) {
+  return jwt.sign(
+    {
+      id,
+    },
+    env.REFRESH_TOKEN_SECRET,
+    {
+      expiresIn: env.REFRESH_TOKEN_SECRET,
+    }
+  );
+}
+
+const prisma = new PrismaClient();
+
+const resend = new Resend(env.RESEND_API_KEY);
 
 const SignInSchema = z.object({
   email: z.string().email({
@@ -46,67 +46,110 @@ const SignInSchema = z.object({
 });
 
 export async function userSignup(req: Request, res: Response) {
-  console.log("request hit");
   const result = SignUpSchema.safeParse(req.body);
   if (!result.success) {
     return res.status(400).send(result.error.errors);
   }
-  const url = "https://api.stack-auth.com/api/v1/auth/password/sign-up";
+
+  const userExists = await prisma.user.findUnique({
+    where: {
+      email: result.data.email,
+    },
+  });
+  if (userExists)
+    return res.status(400).json({ message: "User already exists" });
+
   try {
-    const response = await axios.post(
-      url,
-      {
+    const hashedPassword = await bcrypt.hash(result.data.password, 10);
+    const verificationCode = crypto.randomUUID();
+
+    const newUser = await prisma.user.create({
+      data: {
+        verification_code: verificationCode,
+        display_name: result.data.display_name,
         email: result.data.email,
-        password: "1234568888",
-        verification_callback_url: "http://localhost:3000/auth/verify-email",
+        password: hashedPassword,
       },
-      {
-        headers: headers,
-      }
-    );
-    console.log(response.data);
-  } catch (error) {
-    if (error instanceof AxiosError) console.log(error.response?.data);
-    if (error instanceof Error) res.status(500).json(error.message);
+    });
+    const { data, error } = await resend.emails.send({
+      from: "Agile Board <onboarding@resend.dev>",
+      to: ["sitaladhikari002@gmail.com"],
+      subject: "Verify your Email",
+      html: `
+      <h1>Verify your email</h1>
+      <p>Click the link below to verify your email</p>
+      <button><a href="http://localhost:3000/auth/verify-email?code=${verificationCode}">Verify Email</a></button>
+      `,
+    });
+    if (error) {
+      return res.status(400).json({ error });
+    }
+    if (newUser)
+      return res
+        .status(200)
+        .json({ message: "User created successfully", newUser });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ message: "An error occurred" });
   }
 }
 
 export async function userSignin(req: Request, res: Response) {
   const result = SignInSchema.safeParse(req.body);
+  console.log(result.data);
   if (!result.success) {
     return res.status(400).json(result.error.errors);
   }
   try {
-    const response = await fetch("https://api.stack-auth.com/api/v1/users", {
-      headers,
+    const user = await prisma.user.findUnique({
+      where: {
+        email: result.data.email,
+      },
     });
-    console.log(response);
+    if (!user) return res.status(400).json({ message: "User not found" });
+    const isPasswordValid = await bcrypt.compare(
+      result.data.password,
+      user.password
+    );
+    if (!isPasswordValid)
+      return res.status(400).json({ message: "Invalid password" });
+
+    const accessToken = generateAccessToken(user);
+    const refreshToken = generateRefreshToken(user.id);
+
+    const options = {
+      httpOnly: true,
+      secure: true,
+    };
+
+    return res
+      .status(201)
+      .cookie("access_token", accessToken, options)
+      .cookie("refresh_token", refreshToken, options)
+      .send("User logged In Successfully");
   } catch (error) {
-    if (error instanceof Error) res.status(500).json(error.message);
+    if (error instanceof Error) return res.status(500).json(error.message);
+    return res.status(500).json("An error occurred");
   }
 }
 
 export async function verifyEmail(req: Request, res: Response) {
   const code = req.query.code;
   if (!code) return res.status(400).json({ message: "code is required" });
-  const url = "https://api.stack-auth.com/api/v1/contact-channels/verify";
-
-  try {
-    const response = await axios.post(
-      url,
-      {
-        code: "code",
-      },
-      {
-        headers: headers,
-      }
-    );
-    console.log(response.data);
-    res.status(200).json(response.data ?? "Verification successful");
-  } catch (error) {
-    if (isAxiosError(error)) {
-      console.log(error.response?.data);
-      return res.status(500).json(error.response?.data);
-    }
-  }
+  const user = await prisma.user.findFirst({
+    where: {
+      verification_code: code as string,
+    },
+  });
+  console.log(user);
+  if (!user) return res.status(400).json({ message: "Invalid code" });
+  await prisma.user.update({
+    where: {
+      id: user.id,
+    },
+    data: {
+      primary_email_verified: true,
+    },
+  });
+  return res.send("Email verified successfully");
 }

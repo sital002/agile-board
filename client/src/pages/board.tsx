@@ -13,7 +13,6 @@ export type TaskType = {
   heading?: string;
 };
 
-
 const Board = () => {
   const [tasks, setTasks] = useState<TaskType[][]>([]);
   const [open, setOpen] = useState(false);
@@ -21,8 +20,8 @@ const Board = () => {
 
   const dragHandler = (result: DropResult) => {
     const { source, destination } = result;
-    console.log(source)
-    console.log(destination)
+    console.log(source);
+    console.log(destination);
     if (!destination) return;
     if (
       destination.droppableId === source.droppableId &&
@@ -35,9 +34,8 @@ const Board = () => {
     removed.heading = destinationColumn[destination.index]?.heading;
     destinationColumn.splice(destination.index, 0, removed);
     setTasks([...tasks]);
-    
   };
-  console.log(tasks)
+  console.log(tasks);
 
   const closeHandler = () => {
     setOpen(false);
@@ -45,7 +43,9 @@ const Board = () => {
 
   const headingHandler = (e: React.MouseEvent) => {
     e.stopPropagation();
-    tasks.push([{ heading: heading, id: Math.random().toString(), title: "", user: "" }]);
+    tasks.push([
+      { heading: heading, id: Math.random().toString(), title: "", user: "" },
+    ]);
     console.log(tasks);
     setTasks([...tasks]);
     setOpen(false);

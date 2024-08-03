@@ -3,8 +3,8 @@ import { Button } from "../components/ui/button";
 import { Card } from "../components/ui/card";
 import { Input } from "../components/ui/input";
 import { z } from "zod";
-import axios from "axios";
-import { Link } from "react-router-dom";
+import axios, { isAxiosError } from "axios";
+import { Link, useNavigate } from "react-router-dom";
 import { FacebookIcon, GithubIcon } from "lucide-react";
 
 const loginSchema = z.object({
@@ -21,6 +21,7 @@ const loginSchema = z.object({
 });
 
 export default function Login() {
+  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [emailError, setEmailError] = useState("");
@@ -28,14 +29,15 @@ export default function Login() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    // console.log(email, password);
     try {
       const data = loginSchema.parse({ email, password });
       console.log(data);
       setEmailError("");
       setPasswordError("");
-      const res = await axios.post("http://localhost:3001/auth/login", data);
+      const res = await axios.post("http://localhost:3000/auth/signin", data);
       console.log(res.data);
+
+      navigate("/board");
     } catch (error) {
       if (error instanceof z.ZodError) {
         error.errors.map((err) => {
@@ -47,9 +49,13 @@ export default function Login() {
             setPasswordError(err.message);
           }
         });
+
         // console.log(error.errors);
         // setEmailError(error.errors[0].message);
         // setPasswordError(error.errors[1].message);
+      }
+      if (isAxiosError(error)) {
+        console.log(error.response?.data);
       }
       if (error instanceof Error) {
         console.error(error.message);

@@ -8,6 +8,7 @@ import crypto from "crypto";
 import jwt from "jsonwebtoken";
 
 import { SignUpSchema } from "../schema/user-schema";
+import { createTransport } from "../utils/nodemailer.config";
 
 function generateAccessToken(user: User) {
   return jwt.sign(
@@ -71,19 +72,31 @@ export async function userSignup(req: Request, res: Response) {
         password: hashedPassword,
       },
     });
-    const { data, error } = await resend.emails.send({
-      from: "Agile Board <onboarding@resend.dev>",
-      to: ["sitaladhikari002@gmail.com"],
-      subject: "Verify your Email",
+    // const { data, error } = await resend.emails.send({
+    //   from: "Agile Board <onboarding@resend.dev>",
+    //   to: ["sitaladhikari002@gmail.com"],
+    //   subject: "Verify your Email",
+    //   html: `
+    //   <h1>Verify your email</h1>
+    //   <p>Click the link below to verify your email</p>
+    //   <button><a href="http://localhost:3000/auth/verify-email?code=${verificationCode}">Verify Email</a></button>
+    //   `,
+    // });
+    // if (error) {
+    //   return res.status(400).json({ error });
+    // }
+
+    let data=await createTransport.sendMail({
+      from: "agileboard.test.com.np",
+      to: newUser.email,
+      subject: "Account Vefification",
       html: `
       <h1>Verify your email</h1>
       <p>Click the link below to verify your email</p>
-      <button><a href="http://localhost:3000/auth/verify-email?code=${verificationCode}">Verify Email</a></button>
+      <button><a href=" https://google.com?code=${verificationCode}">Verify Email</a></button>
       `,
     });
-    if (error) {
-      return res.status(400).json({ error });
-    }
+    console.log(data)
     if (newUser)
       return res
         .status(200)

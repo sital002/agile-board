@@ -6,49 +6,32 @@ import { useState } from "react";
 import { z } from "zod";
 import axios from "axios";
 
-const loginSchema = z.object({
+const EmailSchema = z.object({
   email: z.string().email({
     message: "Invaild Email",
   }),
-  password: z
-    .string({
-      required_error: "Password is required",
-    })
-    .trim()
-    .min(8, "Password must be at least 8 characters")
-    .max(64, "Password must be less than 64 characters"),
 });
 
 const Signup = () => {
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [emailError, setEmailError] = useState("");
-  const [passwordError, setPasswordError] = useState("");
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     // console.log(email, password);
     try {
-      const data = loginSchema.parse({ email, password });
-      console.log(data);
+      const data = EmailSchema.parse({ email });
       setEmailError("");
-      setPasswordError("");
-      const res = await axios.post("http://localhost:3001/auth/login", data);
+      console.log(data.email);
+      const res = await axios.post("http://localhost:3001/auth/signup", data);
       console.log(res.data);
     } catch (error) {
       if (error instanceof z.ZodError) {
         error.errors.map((err) => {
-          console.log(err.path[0]);
           if (err.path[0] === "email") {
             setEmailError(err.message);
           }
-          if (err.path[0] === "password") {
-            setPasswordError(err.message);
-          }
         });
-        // console.log(error.errors);
-        // setEmailError(error.errors[0].message);
-        // setPasswordError(error.errors[1].message);
       }
       if (error instanceof Error) {
         console.error(error.message);
@@ -67,15 +50,6 @@ const Signup = () => {
             onChange={(e) => setEmail(e.currentTarget.value)}
           />
           <p className="text-destructive my-2">{emailError}</p>
-          <Input
-            placeholder="Password"
-            className="my-3"
-            type="password"
-            onChange={(e) => setPassword(e.currentTarget.value)}
-          />
-          {passwordError && (
-            <p className="text-destructive my-2">{passwordError}</p>
-          )}
           <Button className="w-full">Sign up</Button>
         </form>
         <p className="text-center py-3">

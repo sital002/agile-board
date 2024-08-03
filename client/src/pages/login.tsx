@@ -5,6 +5,7 @@ import { Input } from "../components/ui/input";
 import { z } from "zod";
 import axios from "axios";
 import { Link } from "react-router-dom";
+import { FacebookIcon, GithubIcon } from "lucide-react";
 
 const loginSchema = z.object({
   email: z.string().email({
@@ -75,6 +76,20 @@ export default function Login() {
           {passwordError && (
             <p className="text-destructive my-2">{passwordError}</p>
           )}
+          <div className="flex justify-center my-3 gap-2">
+            <GithubIcon
+              size={33}
+              className="border rounded-lg p-1 cursor-pointer"
+            />
+            <FacebookIcon
+              size={33}
+              className="border rounded-lg p-1 cursor-pointer"
+            />
+            <GithubIcon
+              size={33}
+              className="border rounded-lg p-1 cursor-pointer"
+            />
+          </div>
           <Button className="w-full">Sign In</Button>
         </form>
         <p className="text-center py-3">

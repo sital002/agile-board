@@ -4,6 +4,7 @@ import userRouter from "./routes/user-route";
 
 import dotenv from "dotenv";
 import { env } from "./utils/env";
+import authRouter from "./routes/auth-route";
 const app = express();
 
 app.use(express.json());
@@ -38,6 +39,8 @@ app.use("/me", async (req, res) => {
 
   // res.json({ message: "Hello World" });
 });
+
+app.use("/auth", authRouter);
 app.use("/users", userRouter);
 app.use("/projects", projectRouter);
 

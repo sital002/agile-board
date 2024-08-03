@@ -1,65 +1,109 @@
-import { Link } from "react-router-dom";
-import { Button } from "../components/ui/button";
-import { Card } from "../components/ui/card";
-import { Input } from "../components/ui/input";
-import { useState } from "react";
-import { z } from "zod";
-import axios from "axios";
+"use client"
 
-const EmailSchema = z.object({
-  email: z.string().email({
-    message: "Invaild Email",
+import { SubmitHandler, useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { z } from "zod"
+
+import { Button } from "../../src/components/ui/button"
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "../../src/components/ui/form"
+import { Input } from "../../src/components/ui/input"
+
+const formSchema = z.object({
+  name: z.string().min(2, {
+    message: "Username must be at least 2 characters.",
   }),
-});
+  email: z.string().email({message:"invalid email"}).min(2, {
+    message: "Username must be at least 2 characters.",
+  }),
+  password: z.string().min(6, {
+    message: "Password must be at least 6 characters.",
+  }),
+  cpassword: z.string().min(6, {
+    message: "Password must be at least 6 characters.",
+  })
+}).refine((value)=>value.password===value.cpassword,{message:"password not match",path:['cpassword']})
 
-const Signup = () => {
-  const [email, setEmail] = useState("");
-  const [emailError, setEmailError] = useState("");
+type FormInputType =z.infer<typeof formSchema>
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    // console.log(email, password);
-    try {
-      const data = EmailSchema.parse({ email });
-      setEmailError("");
-      const res = await axios.post("http://localhost:3000/auth/signup", data);
-      console.log(res.data);
-    } catch (error) {
-      if (error instanceof z.ZodError) {
-        error.errors.map((err) => {
-          if (err.path[0] === "email") {
-            setEmailError(err.message);
-          }
-        });
-      }
-      if (error instanceof Error) {
-        console.error(error.message);
-      }
-    }
-  }
+const onSubmit:SubmitHandler<FormInputType>=async(data)=>{
+  console.log(data)
+}
+
+export function Signup() {
+  const form=useForm<FormInputType>({
+    resolver:zodResolver(formSchema)
+  })
 
   return (
-    <div className="flex justify-center h-screen items-center ">
-      <Card className="p-3 w-full max-w-[600px]">
-        <form onSubmit={handleSubmit}>
-          <h2 className="text-xl text-center">Create a new account</h2>
-          <Input
-            placeholder="Email"
-            className="my-3"
-            onChange={(e) => setEmail(e.currentTarget.value)}
-          />
-          <p className="text-destructive my-2">{emailError}</p>
-          <Button className="w-full">Sign up</Button>
-        </form>
-        <p className="text-center py-3">
-          Already have an account{" "}
-          <Link to={"/signin"} className="underline">
-            Sign in
-          </Link>
-        </p>
-      </Card>
-    </div>
-  );
-};
+   <div className="w-full mt-[7%] max-w-[30%] mx-auto border-2 p-3 rounded-md">
+    <h1 className="text-4xl font-semibold text-center my-2">SignUp Form</h1>
+     <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
+        <FormField
+          control={form.control}
+          name="name"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Name</FormLabel>
+              <FormControl>
+                <Input placeholder="enter your name" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="email"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Email</FormLabel>
+              <FormControl>
+                <Input placeholder="enter your email" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="password"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Password</FormLabel>
+              <FormControl>
+                <Input placeholder="enter your password" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="cpassword"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Confirm Password</FormLabel>
+              <FormControl>
+                <Input placeholder="enter your confirm password" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <Button className="w-full" type="submit">Signup</Button>
+      </form>
+    </Form>
+   </div>
+  )
+}
 
-export default Signup;
+
+export default Signup

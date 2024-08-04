@@ -1,13 +1,13 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Layout from "./layout";
-import Board from "@/pages/board";
-import CreateProject from "@/pages/create";
-import Lists from "@/pages/lists";
-import Signup from "@/pages/signup";
-import Login from "@/pages/login";
-import PageNotFound from "@/pages/404-page";
-import ProctedRoute from "@/components/protected-route";
-import PublicRoute from "@/components/public-route";
+import Board from "./pages/board";
+import ProctedRoute from "./components/protected-route";
+import Lists from "./pages/lists";
+import CreateProject from "./pages/create";
+import PublicRoute from "./components/public-route";
+import PageNotFound from "./pages/404-page";
+import Signup from "./pages/signup";
+import Login from "./pages/login";
 
 const App = () => {
   const router = createBrowserRouter([

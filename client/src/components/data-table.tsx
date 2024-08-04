@@ -14,7 +14,7 @@ import {
 import { ArrowUpDown } from "lucide-react";
 
 import { Button } from "../components/ui/button";
-import { Checkbox } from "~/components/ui/checkbox";
+import { Checkbox } from "@/components/ui/checkbox";
 
 import {
   Table,
@@ -23,7 +23,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "~/components/ui/table";
+} from "@/components/ui/table";
 
 const data: Issue[] = [
   {

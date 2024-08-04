@@ -7,7 +7,7 @@ import { env } from "../utils/env";
 const prisma = new PrismaClient();
 
 interface CustomRequest extends Request {
-  user: User;
+  user?: User;
 }
 
 export async function authenticate(

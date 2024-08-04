@@ -86,7 +86,7 @@ export async function userSignup(req: Request, res: Response) {
     //   return res.status(400).json({ error });
     // }
 
-    let data=await createTransport.sendMail({
+    let data = await createTransport.sendMail({
       from: "agileboard.test.com.np",
       to: newUser.email,
       subject: "Account Vefification",
@@ -96,7 +96,7 @@ export async function userSignup(req: Request, res: Response) {
       <button><a href=" https://google.com?code=${verificationCode}">Verify Email</a></button>
       `,
     });
-    console.log(data)
+    console.log(data);
     if (newUser)
       return res
         .status(200)
@@ -165,4 +165,11 @@ export async function verifyEmail(req: Request, res: Response) {
     },
   });
   return res.send("Email verified successfully");
+}
+
+type CustomRequest = Request & { user?: User };
+export async function getMyProfile(req: CustomRequest, res: Response) {
+  const user = req.user;
+  if (!user) return res.status(401).json({ message: "Unauthorized" });
+  return res.status(200).json(user);
 }

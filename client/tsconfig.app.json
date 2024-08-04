@@ -8,9 +8,10 @@
     "module": "ESNext",
     "skipLibCheck": true,
     "paths": {
-      "~/*": ["./src*"],
-      "~/components/*": ["./src/components/*"],
-      "~/lib/*": ["./src/lib/*"]
+      "@*": ["./src*"],
+      "@components/*": ["./src/components/*"],
+      "@pages/*": ["./src/pages/*"],
+      "@lib/*": ["./src/lib/*"]
     },
     /* Bundler mode */
     "moduleResolution": "bundler",

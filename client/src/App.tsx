@@ -6,6 +6,8 @@ import Lists from "./pages/lists";
 import Signup from "./pages/signup";
 import Login from "./pages/login";
 import PageNotFound from "./pages/404-page";
+import ProctedRoute from "./components/protected-route";
+import PublicRoute from "./components/public-route";
 // import Signup from "./pages/signup";
 
 const App = () => {
@@ -21,21 +23,21 @@ const App = () => {
         },
         {
           path: "lists",
-          element: <Lists />,
+          element: <ProctedRoute><Lists /></ProctedRoute>,
         },
       ],
     },
     {
       path: "/create",
-      element: <CreateProject />,
+      element: <ProctedRoute><CreateProject />  </ProctedRoute>,
     },
     {
       path: "/signup",
-      element: <Signup />,
+      element: <PublicRoute><Signup /></PublicRoute>,
     },
     {
       path: "/signin",
-      element: <Login />,
+      element: <PublicRoute><Login /></PublicRoute>,
     },
   ]);
   return <RouterProvider router={router} />;

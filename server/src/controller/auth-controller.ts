@@ -1,6 +1,6 @@
 import z from "zod";
 import { env } from "../utils/env";
-import type { Request, Response } from "express";
+import type { CookieOptions, Request, Response } from "express";
 import { Resend } from "resend";
 import { PrismaClient, User } from "@prisma/client";
 import bcrypt from "bcrypt";
@@ -30,7 +30,7 @@ function generateRefreshToken(id: number) {
     },
     env.REFRESH_TOKEN_SECRET,
     {
-      expiresIn: env.REFRESH_TOKEN_SECRET,
+      expiresIn: env.REFRESH_TOKEN_EXPIRY,
     }
   );
 }
@@ -130,16 +130,18 @@ export async function userSignin(req: Request, res: Response) {
     const accessToken = generateAccessToken(user);
     const refreshToken = generateRefreshToken(user.id);
 
-    const options = {
+    const options: CookieOptions = {
       httpOnly: true,
-      secure: true,
+      secure: process.env.NODE_ENV === "production",
+      path: "/",
+      // sameSite: "none",
+      expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7),
     };
-
     return res
       .status(201)
-      .cookie("access_token", accessToken, options)
-      .cookie("refresh_token", refreshToken, options)
-      .send("User logged In Successfully");
+      .cookie("access_token", 'accessToken', options)
+      .cookie("refresh_token", 'refreshToken', options)
+      .send({status:true,message:"User logged In Successfully"});
   } catch (error) {
     if (error instanceof Error) return res.status(500).json(error.message);
     return res.status(500).json("An error occurred");
@@ -170,6 +172,6 @@ export async function verifyEmail(req: Request, res: Response) {
 type CustomRequest = Request & { user?: User };
 export async function getMyProfile(req: CustomRequest, res: Response) {
   const user = req.user;
-  if (!user) return res.status(401).json({ message: "Unauthorized" });
-  return res.status(200).json(user);
+  if (!user) return res.status(401).json({status:false, message: "Unauthorized" });
+  return res.status(200).json({user,status:true});
 }

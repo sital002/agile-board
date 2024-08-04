@@ -17,7 +17,7 @@ export async function authenticate(
 ) {
   const token = req.cookies?.["access_token"] || req.header("x-access-server");
   if (!token) {
-    return res.status(401).json({ error: "Unauthorized" });
+    return res.status(401).json({status:false, error: "Unauthorized" });
   }
   try {
     const payload = jwt.verify(token, env.ACCESS_TOKEN_SECRET) as JwtPayload;

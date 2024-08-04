@@ -14,6 +14,7 @@ import {
   FormMessage,
 } from "../../src/components/ui/form"
 import { Input } from "../../src/components/ui/input"
+import { useNavigate } from "react-router-dom"
 
 const formSchema = z.object({
   email: z.string().email({message:"invalid email"}).min(2, {
@@ -26,14 +27,32 @@ const formSchema = z.object({
 
 type FormInputType=z.infer<typeof formSchema>
 
-const onSubmit:SubmitHandler<FormInputType>=async(data)=>{
-  console.log(data)
-}
-
 export function Signup() {
+  const navigate=useNavigate()
   const form=useForm<FormInputType>({
     resolver:zodResolver(formSchema)
   })
+
+  const onSubmit:SubmitHandler<FormInputType>=async(data)=>{
+    console.log(data)
+    try {
+      const resp = await fetch(`${import.meta.env.VITE_SERVER_URL}/auth/signin`, {
+        method: "POST",
+        body: JSON.stringify(data),
+        headers:{
+          'Content-Type':"application/json"
+        }
+      });
+      const resData = await resp.json();
+      console.log(resData);
+      if(resData.status){
+        navigate('/board')
+      }
+    } catch (error:unknown) {
+      if(error instanceof Error)
+      console.log(error.message);
+    }
+  }
 
   return (
    <div className="w-full mt-[10%] max-w-[30%] mx-auto border-2 p-3 rounded-md">

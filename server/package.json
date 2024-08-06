@@ -6,6 +6,7 @@
     "dev": "nodemon",
     "prod": "nodemon",
     "db:push": "npx prisma db push",
+    "db:seed": "ts-node ./src/utils/seed.ts",
     "db:stdio": "npx prisma studio"
   },
   "dependencies": {

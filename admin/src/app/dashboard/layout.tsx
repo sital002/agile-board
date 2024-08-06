@@ -9,6 +9,7 @@ export default function DashboarLayout({
   return (
     <main className="p-2">
       <Navbar />
+      <hr />
       <div className="flex gap-2 h-full">
         <Sidebar />
         <div className="w-[1px] bg-secondary-foreground opacity-20"></div>

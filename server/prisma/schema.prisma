@@ -24,11 +24,12 @@ model User {
   email                  String    @unique
   display_name           String
   password               String
+  isSubscribed           Boolean   @default(false)
   verification_code      String
   primary_email_verified Boolean   @default(false)
   profile_image_url      String?
-  createdAt              DateTime  @default(now())
-  updatedAt              DateTime  @updatedAt
+  created_at             DateTime  @default(now())
+  updated_at             DateTime  @updatedAt
   projects               Project[]
 }
 

@@ -31,14 +31,17 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
+  isFetching?: boolean;
 }
-export function DataTableDemo<TData, TValue>({
+export function DataTable<TData, TValue>({
   data,
   columns,
+  isFetching,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -78,6 +81,7 @@ export function DataTableDemo<TData, TValue>({
           }
           className="max-w-sm"
         />
+        <Button className="mx-2">Create</Button>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="ml-auto">
@@ -134,9 +138,15 @@ export function DataTableDemo<TData, TValue>({
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
+                      {isFetching ? (
+                        <Skeleton className="h-6 w-full" />
+                      ) : (
+                        <>
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext()
+                          )}
+                        </>
                       )}
                     </TableCell>
                   ))}

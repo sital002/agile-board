@@ -9,7 +9,6 @@ This is a simple admin dashboard for Agile Board. It is built using Next.js (App
 * Manage Tasks
 * See the progress of the projects
 * Manage subscriptions
-* Send Emails to users
 * Manage notifications
 
 ## Installation

@@ -47,6 +47,7 @@ function Login() {
       const resData = await resp.json();
       console.log(resData);
       if (resData.status) {
+        localStorage.setItem("access_token", resData.access_token);
         navigate("/board");
       }
     } catch (error: unknown) {

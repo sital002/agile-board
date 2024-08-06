@@ -31,4 +31,4 @@ pnpm install
 pnpm run dev
 ```
 
-Visit [http://localhost:3000](http://localhost:3000) to view the dashboard.
+Visit [http://localhost:3001](http://localhost:3001) to view the dashboard.

@@ -22,7 +22,7 @@ export default function ListItem(props: ListItemProps) {
       <Link href={props.href} className="flex w-full gap-2">
         <>
           {props.icon && <props.icon />}
-          <span className="mr-2">{props.name}</span>
+          <span className="mr-auto">{props.name}</span>
         </>
       </Link>
     </Button>

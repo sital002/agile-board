@@ -12,6 +12,7 @@ import {
   FormMessage,
 } from "../../src/components/ui/form";
 import { Input } from "../../src/components/ui/input";
+import { Link } from "react-router-dom";
 
 const formSchema = z
   .object({
@@ -41,15 +42,14 @@ const onSubmit: SubmitHandler<FormInputType> = async (data) => {
     const resp = await fetch(`${import.meta.env.VITE_SERVER_URL}/auth/signup`, {
       method: "POST",
       body: JSON.stringify(data),
-      headers:{
-        'Content-Type':"application/json"
-      }
+      headers: {
+        "Content-Type": "application/json",
+      },
     });
     const resData = await resp.json();
     console.log(resData);
-  } catch (error:unknown) {
-    if(error instanceof Error)
-    console.log(error.message);
+  } catch (error: unknown) {
+    if (error instanceof Error) console.log(error.message);
   }
 };
 
@@ -120,6 +120,12 @@ export function Signup() {
           <Button className="w-full" type="submit">
             Signup
           </Button>
+          <p>
+            Already have an account{" "}
+            <Link to={"/signin"} className="underline">
+              Signin
+            </Link>
+          </p>
         </form>
       </Form>
     </div>

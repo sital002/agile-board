@@ -27,8 +27,20 @@ const initialData: ColumnType[] = [
     title: "To Do",
     position: 1,
     tasks: [
-      { id: "1", title: "Task 1", description: "Description 1", columnId: 1, position: 1 },
-      { id: "2", title: "Task 2", description: "Description 2", columnId: 1, position: 2 },
+      {
+        id: "1",
+        title: "Task 1",
+        description: "Description 1",
+        columnId: 1,
+        position: 1,
+      },
+      {
+        id: "2",
+        title: "Task 2",
+        description: "Description 2",
+        columnId: 1,
+        position: 2,
+      },
     ],
   },
   {
@@ -36,15 +48,42 @@ const initialData: ColumnType[] = [
     title: "In Progress",
     position: 2,
     tasks: [
-      { id: "3", title: "Task 3", description: "Description 3", columnId: 2, position: 1 },
-      { id: "4", title: "Task 4", description: "Description 4", columnId: 2, position: 2 },
+      {
+        id: "3",
+        title: "Task 3",
+        description: "Description 3",
+        columnId: 2,
+        position: 1,
+      },
+      {
+        id: "4",
+        title: "Task 4",
+        description: "Description 4",
+        columnId: 2,
+        position: 2,
+      },
     ],
   },
   {
     id: 3,
     title: "Done",
     position: 3,
-    tasks: [],
+    tasks: [
+      {
+        id: "5",
+        title: "Task 3",
+        description: "Description 3",
+        columnId: 3,
+        position: 1,
+      },
+      {
+        id: "6",
+        title: "Task 4",
+        description: "Description 4",
+        columnId: 3,
+        position: 2,
+      },
+    ],
   },
 ];
 
@@ -58,10 +97,18 @@ const Board: React.FC = () => {
   const dragHandler = (result: DropResult) => {
     const { source, destination } = result;
     if (!destination) return;
-    if (destination.droppableId === source.droppableId && destination.index === source.index) return;
+    if (
+      destination.droppableId === source.droppableId &&
+      destination.index === source.index
+    )
+      return;
 
-    const sourceColumnIndex = columns.findIndex((col) => col.id === parseInt(source.droppableId));
-    const destinationColumnIndex = columns.findIndex((col) => col.id === parseInt(destination.droppableId));
+    const sourceColumnIndex = columns.findIndex(
+      (col) => col.id === parseInt(source.droppableId)
+    );
+    const destinationColumnIndex = columns.findIndex(
+      (col) => col.id === parseInt(destination.droppableId)
+    );
     const sourceColumn = columns[sourceColumnIndex];
     const destinationColumn = columns[destinationColumnIndex];
 
@@ -118,14 +165,16 @@ const Board: React.FC = () => {
       <Filterbar />
       <div className="flex gap-2 w-full overflow-x-auto scrollbar ">
         <DragDropContext onDragEnd={dragHandler}>
-          {columns.sort((a, b) => a.position - b.position).map((column) => (
-            <Column
-              key={column.id}
-              column={column}
-              columns={columns}
-              setColumns={setColumns}
-            />
-          ))}
+          {columns
+            .sort((a, b) => a.position - b.position)
+            .map((column) => (
+              <Column
+                key={column.id}
+                column={column}
+                columns={columns}
+                setColumns={setColumns}
+              />
+            ))}
         </DragDropContext>
         <div className="flex flex-col gap-y-2 w-full max-w-[300px]">
           {open && (

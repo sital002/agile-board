@@ -12,7 +12,7 @@ import {
   FormMessage,
 } from "../../src/components/ui/form";
 import { Input } from "../../src/components/ui/input";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const formSchema = z.object({
   email: z.string().email({ message: "invalid email" }).min(2, {
@@ -57,7 +57,7 @@ function Login() {
 
   return (
     <div className="w-full mt-[10%] max-w-[30%] mx-auto border-2 p-3 rounded-md">
-      <h1 className="text-4xl font-semibold text-center my-2">Login Form</h1>
+      <h1 className="text-4xl font-semibold text-center my-2">Sign in</h1>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
           <FormField
@@ -90,6 +90,12 @@ function Login() {
           <Button className="w-full" type="submit">
             Login
           </Button>
+          <p>
+            Don't have an account{" "}
+            <Link to={"/signup"} className="underline">
+              Signup
+            </Link>
+          </p>
         </form>
       </Form>
     </div>

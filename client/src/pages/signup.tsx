@@ -42,15 +42,14 @@ const onSubmit: SubmitHandler<FormInputType> = async (data) => {
     const resp = await fetch(`api/auth/signup`, {
       method: "POST",
       body: JSON.stringify(data),
-      headers:{
-        'Content-Type':"application/json"
-      }
+      headers: {
+        "Content-Type": "application/json",
+      },
     });
     const resData = await resp.json();
     console.log(resData);
-  } catch (error:unknown) {
-    if(error instanceof Error)
-    console.log(error.message);
+  } catch (error: unknown) {
+    if (error instanceof Error) console.log(error.message);
   }
 };
 
@@ -123,6 +122,12 @@ export function Signup() {
           <Button className="w-full" type="submit">
             Signup
           </Button>
+          <p>
+            Already have an account{" "}
+            <Link to={"/signin"} className="underline">
+              Signin
+            </Link>
+          </p>
         </form>
       </Form>
     </div>

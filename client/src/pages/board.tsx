@@ -1,41 +1,94 @@
+import React, { useEffect, useState } from "react";
+import { DragDropContext, DropResult } from "@hello-pangea/dnd";
 import Header from "../components/header";
 import Filterbar from "../components/filterbar";
-import Column from "../components/column";
-import { DragDropContext, DropResult } from "@hello-pangea/dnd";
-import React, { useEffect, useState } from "react";
 import { Check, Plus, X } from "lucide-react";
 import { Input } from "../components/ui/input";
+import Column from "@/components/column";
 
 export type TaskType = {
   id: string;
   title: string;
-  user: string;
-  heading?: string;
+  description: string;
+  columnId: number;
+  position: number;
 };
 
-const Board = () => {
-  const [tasks, setTasks] = useState<TaskType[][]>([]);
+export type ColumnType = {
+  id: number;
+  title: string;
+  position: number;
+  tasks: TaskType[];
+};
+
+const initialData: ColumnType[] = [
+  {
+    id: 1,
+    title: "To Do",
+    position: 1,
+    tasks: [
+      { id: "1", title: "Task 1", description: "Description 1", columnId: 1, position: 1 },
+      { id: "2", title: "Task 2", description: "Description 2", columnId: 1, position: 2 },
+    ],
+  },
+  {
+    id: 2,
+    title: "In Progress",
+    position: 2,
+    tasks: [
+      { id: "3", title: "Task 3", description: "Description 3", columnId: 2, position: 1 },
+      { id: "4", title: "Task 4", description: "Description 4", columnId: 2, position: 2 },
+    ],
+  },
+  {
+    id: 3,
+    title: "Done",
+    position: 3,
+    tasks: [],
+  },
+];
+
+const Board: React.FC = () => {
+  const [columns, setColumns] = useState<ColumnType[]>(initialData);
   const [open, setOpen] = useState(false);
   const [heading, setHeading] = useState<string>("");
 
+  console.log(columns);
+
   const dragHandler = (result: DropResult) => {
     const { source, destination } = result;
-    console.log(source);
-    console.log(destination);
     if (!destination) return;
-    if (
-      destination.droppableId === source.droppableId &&
-      destination.index === source.index
-    )
-      return;
-    const sourceColumn = tasks[Number(source.droppableId)];
-    const destinationColumn = tasks[Number(destination.droppableId)];
-    const [removed] = sourceColumn.splice(source.index, 1);
-    removed.heading = destinationColumn[destination.index]?.heading;
-    destinationColumn.splice(destination.index, 0, removed);
-    setTasks([...tasks]);
+    if (destination.droppableId === source.droppableId && destination.index === source.index) return;
+
+    const sourceColumnIndex = columns.findIndex((col) => col.id === parseInt(source.droppableId));
+    const destinationColumnIndex = columns.findIndex((col) => col.id === parseInt(destination.droppableId));
+    const sourceColumn = columns[sourceColumnIndex];
+    const destinationColumn = columns[destinationColumnIndex];
+
+    const [removed] = sourceColumn.tasks.splice(source.index, 1);
+    removed.columnId = parseInt(destination.droppableId); // Update the columnId
+    destinationColumn.tasks.splice(destination.index, 0, removed);
+
+    // Update positions in the destination column
+    destinationColumn.tasks = destinationColumn.tasks.map((task, index) => ({
+      ...task,
+      position: index + 1,
+    }));
+
+    // Update positions in the source column if it's different from the destination
+    if (sourceColumn !== destinationColumn) {
+      sourceColumn.tasks = sourceColumn.tasks.map((task, index) => ({
+        ...task,
+        position: index + 1,
+      }));
+    }
+
+    const updatedColumns = [...columns];
+    updatedColumns[sourceColumnIndex] = sourceColumn;
+    updatedColumns[destinationColumnIndex] = destinationColumn;
+
+    setColumns(updatedColumns);
   };
-  console.log(tasks);
 
   const closeHandler = () => {
     setOpen(false);
@@ -43,11 +96,14 @@ const Board = () => {
 
   const headingHandler = (e: React.MouseEvent) => {
     e.stopPropagation();
-    tasks.push([
-      { heading: heading, id: Math.random().toString(), title: "", user: "" },
-    ]);
-    console.log(tasks);
-    setTasks([...tasks]);
+    const newColumn: ColumnType = {
+      id: Math.max(...columns.map((col) => col.id)) + 1,
+      title: heading,
+      position: columns.length + 1,
+      tasks: [],
+    };
+    setColumns([...columns, newColumn]);
+    setHeading("");
     setOpen(false);
   };
 
@@ -62,13 +118,12 @@ const Board = () => {
       <Filterbar />
       <div className="flex gap-2 w-full overflow-x-auto scrollbar ">
         <DragDropContext onDragEnd={dragHandler}>
-          {tasks?.map((column, index) => (
+          {columns.sort((a, b) => a.position - b.position).map((column) => (
             <Column
-              tasks={tasks}
-              setTasks={setTasks}
-              id={index}
-              key={index}
-              issue={column}
+              key={column.id}
+              column={column}
+              columns={columns}
+              setColumns={setColumns}
             />
           ))}
         </DragDropContext>
@@ -83,7 +138,8 @@ const Board = () => {
           {!open && (
             <Plus
               onClick={(e) => {
-                e.stopPropagation(), setOpen(true);
+                e.stopPropagation();
+                setOpen(true);
               }}
               size={30}
               className="dark:bg-slate-700 bg-gray-200 cursor-pointer ml-5"
@@ -95,7 +151,10 @@ const Board = () => {
                 onClick={headingHandler}
                 className="dark:bg-gray-700 bg-gray-200 rounded-md cursor-pointer"
               />
-              <X className="dark:bg-gray-700 bg-gray-200 rounded-md cursor-pointer" />
+              <X
+                onClick={() => setOpen(false)}
+                className="dark:bg-gray-700 bg-gray-200 rounded-md cursor-pointer"
+              />
             </div>
           )}
         </div>

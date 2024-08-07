@@ -1,116 +1,107 @@
-import Messagecard from "./message-card";
-import { Draggable, Droppable } from "@hello-pangea/dnd";
-import TitleDropdown from "./title-dropdown";
-import { Input } from "./ui/input";
-import { TaskType } from "../pages/board";
-import { Button } from "./ui/button";
 import React, { useEffect, useState } from "react";
+import { Draggable, Droppable } from "@hello-pangea/dnd";
+import { Input } from "./ui/input";
+import { Button } from "./ui/button";
+import Messagecard from "./message-card";
+import { TaskType, ColumnType } from "../pages/board";
 
 interface ColumnProps {
-  id: number;
-  issue: TaskType[];
-  tasks: TaskType[][];
-  setTasks: React.Dispatch<React.SetStateAction<TaskType[][]>>;
+  column: ColumnType;
+  columns: ColumnType[];
+  setColumns: React.Dispatch<React.SetStateAction<ColumnType[]>>;
 }
 
-const Column = ({ id, issue, tasks, setTasks }: ColumnProps) => {
+const Column: React.FC<ColumnProps> = ({ column, columns, setColumns }) => {
   const [open, setOpen] = useState(false);
-  const [newIssue, setNewIssue] = useState("");
+  const [newTask, setNewTask] = useState("");
 
-  const clickHandler = (e: React.MouseEvent<HTMLParagraphElement>) => {
+  const addTaskHandler = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
-    setOpen(true);
-  };
+    if (newTask.trim().length === 0) {
+      setOpen(false);
+      return;
+    }
 
-  const addTaskHandler = (
-    e: React.MouseEvent<HTMLButtonElement>,
-    index: number
-  ) => {
-    e.stopPropagation();
-    if (newIssue.length === 0) return setOpen(false);
-    const newTask: TaskType = {
-      id: Math.random().toString(),
-      title: newIssue,
-      user: "",
+    const newTaskObj: TaskType = {
+      id: (Math.max(...columns.flatMap((col) => col.tasks.map((task) => parseInt(task.id, 10)))) + 1).toString(),
+      title: newTask,
+      description: "",
+      columnId: column.id,
+      position: column.tasks.length + 1,
     };
-    console.log(tasks);
-    tasks[index].push(newTask);
-    console.log(tasks);
-    setTasks([...tasks]);
-    setNewIssue("");
+
+    const updatedColumns = columns.map((col) => {
+      if (col.id === column.id) {
+        return {
+          ...col,
+          tasks: [...col.tasks, newTaskObj],
+        };
+      }
+      return col;
+    });
+
+    console.log("Updated Columns after adding task:", updatedColumns);
+    setColumns(updatedColumns);
+    setNewTask("");
     setOpen(false);
   };
 
   const closeHandler = () => {
-    if (open) {
-      setOpen(false);
-    }
+    if (open) setOpen(false);
   };
+
   useEffect(() => {
     window.addEventListener("click", closeHandler);
     return () => window.removeEventListener("click", closeHandler);
   }, [open]);
-
-  console.log("issdu", issue);
+  console.log(open)
 
   return (
-    <Droppable key={id} droppableId={`${id}`}>
+    <Droppable droppableId={column.id.toString()}>
       {(provided, snapshot) => (
         <div
           {...provided.droppableProps}
-          style={{ backgroundColor: snapshot.isDraggingOver ? "grey" : "" }}
           ref={provided.innerRef}
-          className="border-2 border-gray-500 h-fit min-w-[300px]  rounded-sm p-1 relative"
+          style={{ backgroundColor: snapshot.isDraggingOver ? "grey" : "" }}
+          className="border-2 border-gray-500 h-fit min-w-[300px] rounded-sm p-1 relative"
         >
-          <TitleDropdown
-            setTasks={setTasks}
-            tasks={tasks}
-            issue={issue}
-            index={id}
-          />
-
+          <div className="font-bold text-lg mb-2">{column.title}</div>
           <div className="flex flex-col gap-y-2">
-            {issue.map((issue, index) => (
-              <Draggable key={issue.id} draggableId={issue.id} index={index}>
-                {(provided) => (
-                  <div
-                    ref={provided.innerRef}
-                    {...provided.draggableProps}
-                    {...provided.dragHandleProps}
-                  >
-                    {issue.title && (
-                      <Messagecard issueTitle={issue.title} user={issue.user} />
-                    )}
-                  </div>
-                )}
-              </Draggable>
-            ))}
+            {column.tasks
+              .sort((a, b) => a.position - b.position)
+              .map((task, index) => (
+                <Draggable key={task.id} draggableId={task.id.toString()} index={index}>
+                  {(provided) => (
+                    <div
+                      ref={provided.innerRef}
+                      {...provided.draggableProps}
+                      {...provided.dragHandleProps}
+                    >
+                      <Messagecard issueTitle={task.title} />
+                    </div>
+                  )}
+                </Draggable>
+              ))}
             {provided.placeholder}
             {!open && (
-              <p
-                onClick={clickHandler}
-                className="font-semibold cursor-pointer p-2"
-              >
+              <p onClick={(e) => {e.stopPropagation(),setOpen(true)}} className="font-semibold cursor-pointer p-2">
                 + Create Issue
               </p>
             )}
             {open && (
-              <div
-                onClick={(e) => e.stopPropagation()}
-                className="border-2 border-gray-500 flex flex-col gap-y-4 p-1"
-              >
+              <div onClick={(e) => e.stopPropagation()} className="border-2 border-gray-500 flex flex-col gap-y-4 p-1">
                 <Input
-                  onChange={(e) => setNewIssue(e.target.value)}
-                  value={newIssue}
+                  onChange={(e) => setNewTask(e.target.value)}
+                  value={newTask}
                   className="rounded-none border-none focus:outline-none "
-                  placeholder="enter your issue.."
+                  placeholder="Enter your issue..."
                 />
                 <Button
-                  disabled={newIssue.trim().length === 0}
-                  onClick={(e) => addTaskHandler(e, id)}
+                  disabled={newTask.trim().length === 0}
+                  onClick={addTaskHandler}
                   className="w-fit self-end"
-                  variant={"secondary"}
-                  size={"sm"}
+                  variant="secondary"
+                  size="sm"
                 >
                   Create
                 </Button>

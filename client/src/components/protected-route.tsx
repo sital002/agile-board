@@ -4,12 +4,14 @@ import React, { useLayoutEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
 import { Fragment } from "react/jsx-runtime";
 
-const ProctedRoute = ({ children }: { children: React.ReactNode }) => {
-  const [auth, setAuth] = useState<boolean>();
+const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
+  const [auth, setAuth] = useState<boolean | null>(null); 
 
   const checkAuth = async () => {
     try {
-      const response = await API.get("/auth/me");
+      const response = await API.get("/api/auth/me", {
+        withCredentials: true,
+      });
       setAuth(response.data.status);
     } catch (err) {
       if (isAxiosError(err)) {
@@ -22,7 +24,11 @@ const ProctedRoute = ({ children }: { children: React.ReactNode }) => {
 
   useLayoutEffect(() => {
     checkAuth();
-  }, [auth]);
+  }, []);
+
+  if (auth === null) {
+    return <div>Loading...</div>; 
+  }
 
   if (!auth) {
     return <Navigate to={"/signin"} />;
@@ -30,4 +36,4 @@ const ProctedRoute = ({ children }: { children: React.ReactNode }) => {
   return <Fragment>{children}</Fragment>;
 };
 
-export default ProctedRoute;
+export default ProtectedRoute;

@@ -13,7 +13,7 @@ const Sidebar = () => {
     <aside
       className={`w-full ${
         !width ? "max-w-[50%] md:max-w-[30%] lg:max-w-[20%]" : "max-w-0 p-0"
-      } absolute  bg-white dark:bg-black border-gray-200 dark:border-gray-700 border-2 p-6 h-screen max-h-fit select-none md:relative transition-all`}
+      } absolute  bg-white dark:bg-black border-gray-200 dark:border-gray-700 border-2 p-6 h-screen select-none md:relative transition-all`}
     >
       <ChevronRight
         onClick={clickHandler}

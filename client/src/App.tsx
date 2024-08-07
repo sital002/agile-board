@@ -18,7 +18,9 @@ const App = () => {
       children: [
         {
           path: "board",
-          element: <Board />,
+          element: <ProctedRoute>
+            <Board />
+          </ProctedRoute>,
         },
         {
           path: "lists",

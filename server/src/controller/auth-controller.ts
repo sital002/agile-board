@@ -139,8 +139,8 @@ export async function userSignin(req: Request, res: Response) {
     };
     return res
       .status(201)
-      .cookie("access_token", 'accessToken', options)
-      .cookie("refresh_token", 'refreshToken', options)
+      .cookie("access_token", accessToken, options)
+      .cookie("refresh_token", refreshToken, options)
       .send({status:true,message:"User logged In Successfully"});
   } catch (error) {
     if (error instanceof Error) return res.status(500).json(error.message);

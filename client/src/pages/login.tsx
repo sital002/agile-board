@@ -35,7 +35,7 @@ function Login() {
     console.log(data);
     try {
       const resp = await fetch(
-        `${import.meta.env.VITE_SERVER_URL}/auth/signin`,
+        `/api/auth/signin`,
         {
           method: "POST",
           body: JSON.stringify(data),
@@ -56,7 +56,7 @@ function Login() {
   };
 
   return (
-    <div className="w-full mt-[10%] max-w-[30%] mx-auto border-2 p-3 rounded-md">
+    <div className="w-full mt-[10%] md:max-w-md lg:max-w-lg mx-auto border-2 p-3 rounded-md">
       <h1 className="text-4xl font-semibold text-center my-2">Login Form</h1>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
@@ -86,7 +86,7 @@ function Login() {
               </FormItem>
             )}
           />
-
+<p onClick={()=>navigate('/signup')} className="cursor-pointer">Don't have an account</p>
           <Button className="w-full" type="submit">
             Login
           </Button>

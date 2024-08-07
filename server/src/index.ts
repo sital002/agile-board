@@ -18,9 +18,9 @@ app.use(cors({
 app.use(express.json());
 app.use(cookieParser())
 
-app.use("/auth", authRouter);
-app.use("/users", userRouter);
-app.use("/projects", projectRouter);
+app.use("/api/auth", authRouter);
+app.use("/api/users", userRouter);
+app.use("/api/projects", projectRouter);
 const resend = new Resend(env.RESEND_API_KEY);
 
 app.get("/", async (req, res) => {

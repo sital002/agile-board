@@ -22,10 +22,10 @@ export async function authenticate(
       .status(401)
       .json({ status: false, error: "Token isnot provied" });
   }
-  console.log(token);
+  console.log('tok',token);
   try {
     const payload = jwt.verify(token, env.ACCESS_TOKEN_SECRET) as JwtPayload;
-    if (!payload) return res.status(401).json({ error: "Unauthorized" });
+    if (!payload) return res.status(401).json({status:false, error: "Unauthorized" });
     const user = await prisma.user.findUnique({
       where: {
         id: payload.id,
@@ -36,6 +36,6 @@ export async function authenticate(
     next();
   } catch (err) {
     console.log(err);
-    return res.status(401).json({ error: "Unauthorized" });
+    return res.status(401).json({status:false, error: "Unauthorized" });
   }
 }

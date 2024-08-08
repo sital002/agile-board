@@ -7,7 +7,7 @@ import { UserColums } from "./column";
 
 async function getAllUsers() {
   try {
-    const res = await axios.get(`http://localhost:3000/users`);
+    const res = await axios.get(`http://localhost:3000/api/users`);
     return res.data as User[];
   } catch (err) {
     console.log(err);

@@ -25,7 +25,7 @@ const Messagecard = React.forwardRef<HTMLDivElement, React.HTMLProps<HTMLDivElem
           onClick={handleOpenIssue}
           ref={ref}
           {...props}
-          className={`p-3 border-2 dark:bg-black group hover:bg-gray-200 dark:hover:bg-gray-900 rounded-md shadow-md cursor-pointer select-none ${props.className}`}
+          className={`p-3 border-2 hover:bg-secondary group  rounded-md shadow-md cursor-pointer select-none ${props.className}`}
         >
           <div className="flex justify-between gap-3">
             <div className="flex relative">

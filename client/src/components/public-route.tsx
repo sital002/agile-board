@@ -12,6 +12,9 @@ const PublicRoute = ({ children }: { children: React.ReactNode }) => {
     try {
       const resp = await API.get(`${env.VITE_SERVER_URL}/api/auth/me`, {
         withCredentials: true,
+        headers:{
+          'x-access-server':localStorage.getItem('access_token')
+        }
       });
       setAuth(resp.data.status);
     } catch (error) {

@@ -12,8 +12,32 @@ import {
 } from "./ui/dropdown-menu";
 import { Link } from "react-router-dom";
 import { NavigationMenuDemo } from "./new-navbar";
+import { isAxiosError } from "axios";
+import { useLayoutEffect, useState } from "react";
+import { API } from "@/utils/api";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 
 const Navbar = () => {
+  const [auth, setAuth] = useState<boolean | null>(null); 
+
+  const getUserInfo = async () => {
+    try {
+      const resp = await API.get("/api/auth/me", {
+        withCredentials: true,
+      });
+      setAuth(resp.data.status);
+    } catch (error) {
+      if (isAxiosError(error)) {
+        console.log(error.response?.data);
+      }
+      setAuth(false);
+    }
+  };
+
+  useLayoutEffect(() => {
+    getUserInfo();
+  }, []);
+
   return (
     <header className="flex  justify-between p-4 border-b-2 border-gray-600">
       <div className="lg:hidden">
@@ -45,6 +69,12 @@ const Navbar = () => {
         <Bell size={20} />
         <ModeToggle />
         <Settings size={20} />
+       { auth ? 
+       <Avatar className="w-12 h-12 cursor-pointer">
+       <AvatarImage src="https://github.com/shadcn.png" />
+       <AvatarFallback>CN</AvatarFallback>
+     </Avatar>
+        :<>
         <Link
           to={"/signin"}
           className="bg-primary text-primary-foreground px-3 py-2 rounded-md font-bold text-sm"
@@ -57,6 +87,8 @@ const Navbar = () => {
         >
           Signup
         </Link>
+        </>
+       }
       </div>
     </header>
   );

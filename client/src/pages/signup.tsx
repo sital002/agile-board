@@ -12,8 +12,7 @@ import {
   FormMessage,
 } from "../../src/components/ui/form";
 import { Input } from "../../src/components/ui/input";
-import { Link } from "react-router-dom";
-import { env } from "@/lib/config";
+import { API } from "@/utils/api";
 
 const formSchema = z
   .object({
@@ -40,15 +39,11 @@ type FormInputType = z.infer<typeof formSchema>;
 const onSubmit: SubmitHandler<FormInputType> = async (data) => {
   // console.log(data);
   try {
-    const resp = await fetch(`${env.VITE_SERVER_URL}api/auth/signup`, {
-      method: "POST",
-      body: JSON.stringify(data),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    const resData = await resp.json();
-    console.log(resData);
+   
+    const resp=await API.post(`/api/auth/signup`,{
+      data,
+    })
+    console.log(resp);
   } catch (error: unknown) {
     if (error instanceof Error) console.log(error.message);
   }
@@ -127,12 +122,7 @@ export function Signup() {
           <Button className="w-full" type="submit">
             Signup
           </Button>
-          <p>
-            Already have an account{" "}
-            <Link to={"/signin"} className="underline">
-              Signin
-            </Link>
-          </p>
+         
         </form>
       </Form>
     </div>

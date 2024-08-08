@@ -189,20 +189,21 @@ const Board: React.FC = () => {
               onClick={(e) => {
                 e.stopPropagation();
                 setOpen(true);
+                if(!heading) return
               }}
-              size={30}
-              className="dark:bg-slate-700 bg-gray-200 cursor-pointer ml-5"
+              size={25}
+              className="rounded-md bg-secondary cursor-pointer ml-5"
             />
           )}
           {open && (
             <div className="flex gap-x-2 self-end">
               <Check
                 onClick={headingHandler}
-                className="dark:bg-gray-700 bg-gray-200 rounded-md cursor-pointer"
+                className="dark:bg-black bg-gray-200 rounded-md cursor-pointer"
               />
               <X
                 onClick={() => setOpen(false)}
-                className="dark:bg-gray-700 bg-gray-200 rounded-md cursor-pointer"
+                className="dark:bg-black bg-gray-200 rounded-md cursor-pointer"
               />
             </div>
           )}

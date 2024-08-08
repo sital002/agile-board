@@ -15,7 +15,6 @@ export async function authenticate(
   res: Response,
   next: NextFunction
 ) {
-  console.log(req.cookies, req.header("x-access-server"));
   const token = req.cookies?.["access_token"] || req.header("x-access-server");
   if (!token) {
     return res

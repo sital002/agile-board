@@ -13,7 +13,7 @@ import {
 } from "../../src/components/ui/form";
 import { Input } from "../../src/components/ui/input";
 import { Link, useNavigate } from "react-router-dom";
-import { env } from "@/lib/config";
+import { API } from "@/utils/api";
 
 const formSchema = z.object({
   email: z.string().email({ message: "invalid email" }).min(2, {
@@ -39,18 +39,12 @@ function Login() {
   const onSubmit: SubmitHandler<FormInputType> = async (data) => {
     console.log(data);
     try {
-      const resp = await fetch(`${env.VITE_SERVER_URL}/api/auth/signin`, {
-        method: "POST",
-        body: JSON.stringify(data),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      const resData = await resp.json();
-      console.log(resData);
-      if (resData.status) {
-        localStorage.setItem("access_token", resData.access_token);
-        localStorage.setItem("refresh_token", resData.refresh_token);
+      
+      const resp=await API.post(`/api/auth/signin`,{
+        data
+      })
+      console.log(resp);
+      if (resp.status) {
         navigate("/board");
       }
     } catch (error: unknown) {

@@ -32,11 +32,11 @@ const Filterbar = () => {
         <SelectOption />
         <ChartSpline
           size={25}
-          className="cursor-pointer hover:bg-gray-900 rounded-md p-1"
+          className="cursor-pointer rounded-md p-1"
         />
         <Settings2
           size={25}
-          className="cursor-pointer hover:bg-gray-900 rounded-md p-1"
+          className="cursor-pointer  rounded-md p-1"
         />
       </div>
     </div>

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Draggable, Droppable } from "@hello-pangea/dnd";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
@@ -14,6 +14,8 @@ interface ColumnProps {
 const Column: React.FC<ColumnProps> = ({ column, columns, setColumns }) => {
   const [open, setOpen] = useState(false);
   const [newTask, setNewTask] = useState("");
+  const submitBtnRef = useRef<HTMLButtonElement | null>(null);
+  const inputRef = useRef<HTMLInputElement | null>(null);
 
   const addTaskHandler = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
@@ -56,11 +58,17 @@ const Column: React.FC<ColumnProps> = ({ column, columns, setColumns }) => {
     if (open) setOpen(false);
   };
 
+  const issueHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setNewTask(e.target.value);
+  };
+
   useEffect(() => {
+    if(inputRef.current){
+      inputRef.current.focus()
+    }
     window.addEventListener("click", closeHandler);
     return () => window.removeEventListener("click", closeHandler);
   }, [open]);
-  console.log(open);
 
   return (
     <Droppable droppableId={column.id.toString()}>
@@ -109,12 +117,17 @@ const Column: React.FC<ColumnProps> = ({ column, columns, setColumns }) => {
                 className="border-2 border-gray-500 flex flex-col gap-y-4 p-1"
               >
                 <Input
-                  onChange={(e) => setNewTask(e.target.value)}
+                  ref={inputRef}
+                  onKeyUp={(e) => {
+                    if (e.key == "Enter") submitBtnRef.current?.click();
+                  }}
+                  onChange={issueHandler}
                   value={newTask}
                   className="rounded-none border-none focus:outline-none "
                   placeholder="Enter your issue..."
                 />
                 <Button
+                  ref={submitBtnRef}
                   disabled={newTask.trim().length === 0}
                   onClick={addTaskHandler}
                   className="w-fit self-end"

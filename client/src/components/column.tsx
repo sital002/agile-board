@@ -23,7 +23,13 @@ const Column: React.FC<ColumnProps> = ({ column, columns, setColumns }) => {
     }
 
     const newTaskObj: TaskType = {
-      id: (Math.max(...columns.flatMap((col) => col.tasks.map((task) => parseInt(task.id, 10)))) + 1).toString(),
+      id: (
+        Math.max(
+          ...columns.flatMap((col) =>
+            col.tasks.map((task) => parseInt(task.id, 10))
+          )
+        ) + 1
+      ).toString(),
       title: newTask,
       description: "",
       columnId: column.id,
@@ -54,7 +60,7 @@ const Column: React.FC<ColumnProps> = ({ column, columns, setColumns }) => {
     window.addEventListener("click", closeHandler);
     return () => window.removeEventListener("click", closeHandler);
   }, [open]);
-  console.log(open)
+  console.log(open);
 
   return (
     <Droppable droppableId={column.id.toString()}>
@@ -65,12 +71,16 @@ const Column: React.FC<ColumnProps> = ({ column, columns, setColumns }) => {
           style={{ backgroundColor: snapshot.isDraggingOver ? "grey" : "" }}
           className="border-2 border-gray-500 h-fit min-w-[300px] rounded-sm p-1 relative"
         >
-          <div className="font-bold text-lg mb-2">{column.title}</div>
+          <div className="font-medium text-md mb-2 px-2">{column.title}</div>
           <div className="flex flex-col gap-y-2">
             {column.tasks
               .sort((a, b) => a.position - b.position)
               .map((task, index) => (
-                <Draggable key={task.id} draggableId={task.id.toString()} index={index}>
+                <Draggable
+                  key={task.id}
+                  draggableId={task.id.toString()}
+                  index={index}
+                >
                   {(provided) => (
                     <div
                       ref={provided.innerRef}
@@ -84,12 +94,20 @@ const Column: React.FC<ColumnProps> = ({ column, columns, setColumns }) => {
               ))}
             {provided.placeholder}
             {!open && (
-              <p onClick={(e) => {e.stopPropagation(),setOpen(true)}} className="font-semibold cursor-pointer p-2">
+              <p
+                onClick={(e) => {
+                  e.stopPropagation(), setOpen(true);
+                }}
+                className="font-semibold cursor-pointer p-2"
+              >
                 + Create Issue
               </p>
             )}
             {open && (
-              <div onClick={(e) => e.stopPropagation()} className="border-2 border-gray-500 flex flex-col gap-y-4 p-1">
+              <div
+                onClick={(e) => e.stopPropagation()}
+                className="border-2 border-gray-500 flex flex-col gap-y-4 p-1"
+              >
                 <Input
                   onChange={(e) => setNewTask(e.target.value)}
                   value={newTask}

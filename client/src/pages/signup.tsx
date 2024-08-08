@@ -12,7 +12,8 @@ import {
   FormMessage,
 } from "../../src/components/ui/form";
 import { Input } from "../../src/components/ui/input";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { env } from "@/lib/config";
 
 const formSchema = z
   .object({
@@ -39,7 +40,7 @@ type FormInputType = z.infer<typeof formSchema>;
 const onSubmit: SubmitHandler<FormInputType> = async (data) => {
   console.log(data);
   try {
-    const resp = await fetch(`api/auth/signup`, {
+    const resp = await fetch(`${env.VITE_SERVER_URL}api/auth/signup`, {
       method: "POST",
       body: JSON.stringify(data),
       headers: {
@@ -57,7 +58,7 @@ export function Signup() {
   const form = useForm<FormInputType>({
     resolver: zodResolver(formSchema),
   });
-  const navigate=useNavigate()
+  const navigate = useNavigate();
 
   return (
     <div className="w-full mt-[7%] md:max-w-md lg:max-w-lg mx-auto border-2 p-5 rounded-md">
@@ -118,7 +119,9 @@ export function Signup() {
               </FormItem>
             )}
           />
-          <p className="cursor-pointer" onClick={()=>navigate('/signin')}>Already have an Account</p>
+          <p className="cursor-pointer" onClick={() => navigate("/signin")}>
+            Already have an Account
+          </p>
           <Button className="w-full" type="submit">
             Signup
           </Button>

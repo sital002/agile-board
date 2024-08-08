@@ -13,6 +13,7 @@ import {
 } from "../../src/components/ui/form";
 import { Input } from "../../src/components/ui/input";
 import { Link, useNavigate } from "react-router-dom";
+import { env } from "@/lib/config";
 
 const formSchema = z.object({
   email: z.string().email({ message: "invalid email" }).min(2, {
@@ -34,20 +35,18 @@ function Login() {
   const onSubmit: SubmitHandler<FormInputType> = async (data) => {
     console.log(data);
     try {
-      const resp = await fetch(
-        `/api/auth/signin`,
-        {
-          method: "POST",
-          body: JSON.stringify(data),
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const resp = await fetch(`${env.VITE_SERVER_URL}/api/auth/signin`, {
+        method: "POST",
+        body: JSON.stringify(data),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
       const resData = await resp.json();
       console.log(resData);
       if (resData.status) {
         localStorage.setItem("access_token", resData.access_token);
+        localStorage.setItem("refresh_token", resData.refresh_token);
         navigate("/board");
       }
     } catch (error: unknown) {
@@ -57,7 +56,7 @@ function Login() {
 
   return (
     <div className="w-full mt-[10%] md:max-w-md lg:max-w-lg mx-auto border-2 p-3 rounded-md">
-      <h1 className="text-4xl font-semibold text-center my-2">Login Form</h1>
+      <h1 className="text-3xl font-semibold text-center my-2">Signin</h1>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
           <FormField
@@ -86,7 +85,9 @@ function Login() {
               </FormItem>
             )}
           />
-<p onClick={()=>navigate('/signup')} className="cursor-pointer">Don't have an account</p>
+          <p onClick={() => navigate("/signup")} className="cursor-pointer">
+            Don't have an account
+          </p>
           <Button className="w-full" type="submit">
             Login
           </Button>

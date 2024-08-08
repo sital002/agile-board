@@ -134,14 +134,18 @@ export async function userSignin(req: Request, res: Response) {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       path: "/",
-      // sameSite: "none",
       expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7),
     };
     return res
       .status(201)
       .cookie("access_token", accessToken, options)
       .cookie("refresh_token", refreshToken, options)
-      .send({status:true,message:"User logged In Successfully"});
+      .send({
+        status: true,
+        message: "User logged In Successfully",
+        access_token: accessToken,
+        refresh_token: refreshToken,
+      });
   } catch (error) {
     if (error instanceof Error) return res.status(500).json(error.message);
     return res.status(500).json("An error occurred");
@@ -172,6 +176,7 @@ export async function verifyEmail(req: Request, res: Response) {
 type CustomRequest = Request & { user?: User };
 export async function getMyProfile(req: CustomRequest, res: Response) {
   const user = req.user;
-  if (!user) return res.status(401).json({status:false, message: "Unauthorized" });
-  return res.status(200).json({user,status:true});
+  if (!user)
+    return res.status(401).json({ status: false, message: "Unauthorized" });
+  return res.status(200).json({ user, status: true });
 }

@@ -1,8 +1,9 @@
-// import { z } from "zod";
+import { z } from "zod";
 
-//  const configSchema=z.object({
-//     SERVER_URL:z.string().default("3000"),
-//   });
+const envSchema = z.object({
+  VITE_SERVER_URL: z.string(),
+});
 
+// const  = import.meta.env;
 
-//   export const env = configSchema.parse(process.env);
+export const env = envSchema.parse(import.meta.env);

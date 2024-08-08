@@ -1,3 +1,4 @@
+import { env } from "@/lib/config";
 import { API } from "@/utils/api";
 import { isAxiosError } from "axios";
 import React, { useLayoutEffect, useState } from "react";
@@ -5,14 +6,15 @@ import { Navigate } from "react-router-dom";
 import { Fragment } from "react/jsx-runtime";
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-  const [auth, setAuth] = useState<boolean | null>(null); 
+  const [auth, setAuth] = useState<boolean | null>(null);
 
   const checkAuth = async () => {
     try {
-      const response = await API.get("/api/auth/me", {
+      const response = await API.get(`${env.VITE_SERVER_URL}/api/auth/me`, {
         withCredentials: true,
       });
       setAuth(response.data.status);
+      console.log(response.data);
     } catch (err) {
       if (isAxiosError(err)) {
         console.log(err.response?.data);
@@ -27,7 +29,7 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   if (auth === null) {
-    return <div>Loading...</div>; 
+    return <div>Loading...</div>;
   }
 
   if (!auth) {

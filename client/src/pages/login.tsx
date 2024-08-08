@@ -30,6 +30,10 @@ function Login() {
   const navigate = useNavigate();
   const form = useForm<FormInputType>({
     resolver: zodResolver(formSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
   });
 
   const onSubmit: SubmitHandler<FormInputType> = async (data) => {
@@ -56,7 +60,7 @@ function Login() {
 
   return (
     <div className="w-full mt-[10%] md:max-w-md lg:max-w-lg mx-auto border-2 p-3 rounded-md">
-      <h1 className="text-3xl font-semibold text-center my-2">Signin</h1>
+      <h1 className="text-2xl font-semibold text-center my-2">Signin</h1>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
           <FormField
@@ -85,9 +89,6 @@ function Login() {
               </FormItem>
             )}
           />
-          <p onClick={() => navigate("/signup")} className="cursor-pointer">
-            Don't have an account
-          </p>
           <Button className="w-full" type="submit">
             Login
           </Button>

@@ -12,9 +12,11 @@ const projectRouter = express.Router();
 
 projectRouter.post("/new", createProject);
 projectRouter.get("/", getProjects);
-projectRouter.get("/all", getAllProjects);
 projectRouter.delete("/:id", deleteProject);
 projectRouter.get("/:id", getProjectById);
+
+// Admin route
+projectRouter.get("/all", getAllProjects);
 // projectRouter.get("/:id")
 
 export default projectRouter;

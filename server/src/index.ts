@@ -7,6 +7,8 @@ import authRouter from "./routes/auth-route";
 import { Resend } from "resend";
 import { env } from "./utils/env";
 import cookieParser from "cookie-parser";
+import columnRouter from "./routes/column-route";
+import { authenticate } from "./middleware/authenticate";
 
 const app = express();
 
@@ -22,7 +24,9 @@ app.use(cookieParser());
 
 app.use("/api/auth", authRouter);
 app.use("/api/users", userRouter);
-app.use("/api/projects", projectRouter);
+app.use("/api/projects", authenticate, projectRouter);
+app.use("/api/columns", authenticate, columnRouter);
+
 const resend = new Resend(env.RESEND_API_KEY);
 
 app.get("/", async (req, res) => {

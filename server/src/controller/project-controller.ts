@@ -87,3 +87,23 @@ export async function getProjectById(req: Request, res: Response) {
     res.status(500).json({ error: "An error occurred" });
   }
 }
+
+export async function deleteProject(req: Request, res: Response) {
+  try {
+    if (!req.user) return res.status(400).json({ error: "Unathorized" });
+    const id = Number(req.params.id);
+    if (!id) return res.status(400).json({ error: "Project ID is required" });
+
+    const project = await prisma.project.delete({
+      where: {
+        id,
+      },
+    });
+    if (project) {
+      res.status(200).json(project);
+    }
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ error: "An error occurred" });
+  }
+}

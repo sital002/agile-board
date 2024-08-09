@@ -1,6 +1,7 @@
 import { SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { useToast } from "@/components/ui/use-toast";
 
 import { Button } from "../../src/components/ui/button";
 import {
@@ -14,6 +15,9 @@ import {
 import { Input } from "../../src/components/ui/input";
 import { Link, useNavigate } from "react-router-dom";
 import { API } from "@/utils/api";
+import { useState } from "react";
+import { Card } from "@/components/ui/card";
+import { isAxiosError } from "axios";
 
 const formSchema = z.object({
   email: z.string().email({ message: "invalid email" }).min(2, {
@@ -35,65 +39,76 @@ function Login() {
       password: "",
     },
   });
+  const [loading, setLoading] = useState(false);
+  const { toast } = useToast();
 
   const onSubmit: SubmitHandler<FormInputType> = async (data) => {
     console.log(data);
     try {
-      
-      const resp=await API.post(`/api/auth/signin`,{
-        data
-      })
+      setLoading(true);
+      const resp = await API.post(`/api/auth/signin`, {
+        data,
+      });
       console.log(resp);
       if (resp.status) {
         navigate("/board");
       }
     } catch (error: unknown) {
       if (error instanceof Error) console.log(error.message);
+      if (isAxiosError(error)) {
+        toast({
+          title: "Something went wrong",
+        });
+      }
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="w-full mt-[10%] md:max-w-md lg:max-w-lg mx-auto border-2 p-3 rounded-md">
-      <h1 className="text-2xl font-semibold text-center my-2">Signin</h1>
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
-          <FormField
-            control={form.control}
-            name="email"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Email</FormLabel>
-                <FormControl>
-                  <Input placeholder="enter your email" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="password"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Password</FormLabel>
-                <FormControl>
-                  <Input placeholder="enter your password" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <Button className="w-full" type="submit">
-            Login
-          </Button>
-          <p>
-            Don't have an account{" "}
-            <Link to={"/signup"} className="underline">
-              Signup
-            </Link>
-          </p>
-        </form>
-      </Form>
+    <div className=" flex justify-center items-center h-screen mx-auto px-2 ">
+      <Card className="p-3 w-full max-w-lg">
+        <h1 className="text-2xl font-semibold text-center my-2">Signin</h1>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Email</FormLabel>
+                  <FormControl>
+                    <Input placeholder="enter your email" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="password"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Password</FormLabel>
+                  <FormControl>
+                    <Input placeholder="enter your password" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <Button className={`w-full`} type="submit" disabled={loading}>
+              {loading ? "Loading" : "Login"}
+            </Button>
+            <p>
+              Don't have an account{" "}
+              <Link to={"/signup"} className="underline">
+                Signup
+              </Link>
+            </p>
+          </form>
+        </Form>
+      </Card>
     </div>
   );
 }

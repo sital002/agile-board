@@ -13,6 +13,7 @@ import {
 } from "../../src/components/ui/form";
 import { Input } from "../../src/components/ui/input";
 import { API } from "@/utils/api";
+import { Link } from "react-router-dom";
 
 const formSchema = z
   .object({
@@ -39,10 +40,9 @@ type FormInputType = z.infer<typeof formSchema>;
 const onSubmit: SubmitHandler<FormInputType> = async (data) => {
   // console.log(data);
   try {
-   
-    const resp=await API.post(`/api/auth/signup`,{
+    const resp = await API.post(`/api/auth/signup`, {
       data,
-    })
+    });
     console.log(resp);
   } catch (error: unknown) {
     if (error instanceof Error) console.log(error.message);
@@ -122,7 +122,12 @@ export function Signup() {
           <Button className="w-full" type="submit">
             Signup
           </Button>
-         
+          <p>
+            Already have an account{" "}
+            <Link to={"/signin"} className="underline">
+              Signin
+            </Link>
+          </p>
         </form>
       </Form>
     </div>

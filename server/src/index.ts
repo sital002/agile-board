@@ -9,6 +9,7 @@ import { env } from "./utils/env";
 import cookieParser from "cookie-parser";
 import columnRouter from "./routes/column-route";
 import { authenticate } from "./middleware/authenticate";
+import issueRouter from "./routes/issue-route";
 
 const app = express();
 
@@ -26,6 +27,7 @@ app.use("/api/auth", authRouter);
 app.use("/api/users", userRouter);
 app.use("/api/projects", authenticate, projectRouter);
 app.use("/api/columns", authenticate, columnRouter);
+app.use("/api/issues", authenticate, issueRouter);
 
 const resend = new Resend(env.RESEND_API_KEY);
 

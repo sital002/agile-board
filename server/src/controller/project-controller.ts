@@ -30,9 +30,28 @@ export async function createProject(req: Request, res: Response) {
   }
 }
 
-export async function getProjects(_: Request, res: Response) {
+export async function getAllProjects(req: Request, res: Response) {
   try {
     const projects = await prisma.project.findMany();
+
+    if (projects) {
+      logger("Projects fetched successfully");
+      res.status(200).json(projects);
+    }
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ error: "An error occurred" });
+  }
+}
+export async function getProjects(req: Request, res: Response) {
+  try {
+    console.log(req.user?.id, typeof req.user?.id + "the is the user id");
+    if (!req.user) return res.status(400).json({ error: "Unathorized" });
+    const projects = await prisma.project.findMany({
+      where: {
+        userId: req.user.id,
+      },
+    });
 
     if (projects) {
       logger("Projects fetched successfully");

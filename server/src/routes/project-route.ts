@@ -4,11 +4,13 @@ import {
   getProjectById,
   getProjects,
 } from "../controller/project-controller";
+import { authenticate } from "../middleware/authenticate";
 
 const projectRouter = express.Router();
 
-projectRouter.get("/new", createProject);
+projectRouter.post("/new", authenticate, createProject);
 projectRouter.get("/", getProjects);
 projectRouter.get("/:id", getProjectById);
+// projectRouter.get("/:id")
 
 export default projectRouter;

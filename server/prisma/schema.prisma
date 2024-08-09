@@ -36,7 +36,7 @@ model User {
   role                   Role      @default(USER)
   created_at             DateTime  @default(now())
   updated_at             DateTime  @updatedAt
-  projects               Project[]
+  Project                Project[]
 }
 
 model Issue {
@@ -48,13 +48,25 @@ model Issue {
   project     Project     @relation(fields: [projectId], references: [id])
   projectId   Int
   attachments String[]
+  Column      Column?     @relation(fields: [columnId], references: [id])
+  columnId    Int
 }
 
 model Project {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String?
+  userId      Int
+  User        User     @relation(fields: [userId], references: [id])
+  Column      Column[]
+  Issue       Issue[]
+}
+
+model Column {
   id          Int     @id @default(autoincrement())
   name        String
   description String?
   tasks       Issue[]
-  User        User    @relation(fields: [userId], references: [id])
-  userId      Int
+  projectId   Int
+  Project     Project @relation(fields: [projectId], references: [id])
 }

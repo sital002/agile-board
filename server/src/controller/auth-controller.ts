@@ -172,8 +172,14 @@ export async function verifyEmail(req: Request, res: Response) {
   });
   return res.send("Email verified successfully");
 }
+export async function logout(_: Request, res: Response) {
+  res.clearCookie("access_token");
+  res.clearCookie("refresh_token");
+  return res.status(200).json({ message: "Logged out successfully" });
+}
 
 type CustomRequest = Request & { user?: User };
+
 export async function getMyProfile(req: CustomRequest, res: Response) {
   const user = req.user;
   if (!user)

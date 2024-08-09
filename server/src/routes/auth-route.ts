@@ -1,6 +1,7 @@
 import express from "express";
 import {
   getMyProfile,
+  logout,
   userSignin,
   userSignup,
   verifyEmail,
@@ -10,6 +11,7 @@ const authRouter = express.Router();
 
 authRouter.post("/signup", userSignup);
 authRouter.post("/signin", userSignin);
+authRouter.get("/logout", logout);
 authRouter.get("/verify-email", verifyEmail);
 authRouter.get("/me", authenticate, getMyProfile);
 export default authRouter;

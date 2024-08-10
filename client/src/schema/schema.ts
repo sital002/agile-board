@@ -36,8 +36,17 @@ const projectSchema = z.object({
   creator: userSchema,
 });
 
+const teamSchema = z.object({
+  id: z.number(),
+  members: userSchema.array(),
+  Project: projectSchema,
+});
+
+export type Team = z.infer<typeof teamSchema>;
+export type User = z.infer<typeof userSchema>;
+
 export type Column = z.infer<typeof columnSchema>;
 export type Project = z.infer<typeof projectSchema>;
 
 export type Issue = z.infer<typeof issueSchema>;
-export { issueSchema, columnSchema, projectSchema };
+export { issueSchema, columnSchema, projectSchema, teamSchema };

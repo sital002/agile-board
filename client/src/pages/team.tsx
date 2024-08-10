@@ -1,24 +1,30 @@
-import { TeamTable } from "@/components/team-list-table";
+import { DataTable } from "@/components/data-table";
+import { teamsColumns } from "@/components/team-columns";
 import { Input } from "@/components/ui/input";
-import React, { useEffect, useState } from "react";
+import { API } from "@/utils/api";
+import { useQuery } from "@tanstack/react-query";
+import React, { useState } from "react";
 
-const demoData = ["first", "second", "third", "fourth"];
+async function getTeams() {
+  const result = await API.get(
+    `/api/teams/${localStorage.getItem("currentProjectId")}`
+  );
+  // const data = teamSchema.array().safeParse(result.data);
+  // console.log(data.error?.errors);
+  console.log(result.data);
+  return result.data ?? [];
+}
 
 const Team = () => {
   const [search, setSearch] = useState("");
-  const [open, setOpen] = useState(false);
 
   const changeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearch(e.target.value);
   };
-
-  useEffect(() => {
-    if (search) {
-      setOpen(true);
-    } else {
-      setOpen(false);
-    }
-  }, [search]);
+  const { data, isLoading } = useQuery({
+    queryKey: ["teams"],
+    queryFn: getTeams,
+  });
 
   return (
     <div className="w-full p-3">
@@ -28,14 +34,12 @@ const Team = () => {
         className="max-w-sm mt-4"
         placeholder="Search member"
       />
-      {open && (
-        <div className="max-w-sm mb-3 border-2 rounded-md p-2">
-          {demoData.map((ele, index) => {
-            return <p key={index}>{ele}</p>;
-          })}
-        </div>
-      )}
-      <TeamTable />
+
+      <DataTable
+        columns={teamsColumns}
+        data={data ?? []}
+        isLoading={isLoading}
+      />
     </div>
   );
 };

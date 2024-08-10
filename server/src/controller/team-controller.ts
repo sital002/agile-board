@@ -3,7 +3,6 @@ import { Request, Response } from "express";
 
 const prisma = new PrismaClient();
 
-
 export async function getTeams(req: Request, res: Response) {
   try {
     const projectId = Number(req.params.projectId);
@@ -13,6 +12,10 @@ export async function getTeams(req: Request, res: Response) {
     const teams = await prisma.team.findMany({
       where: {
         projectId: projectId,
+      },
+      include: {
+        members: true,
+        Project: true,
       },
     });
     if (teams) {

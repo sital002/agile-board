@@ -125,7 +125,7 @@ const Column: React.FC<ColumnProps> = ({ column }) => {
                     {...provided.dragHandleProps}
                   >
                     {column.id == task.columnId && (
-                      <Messagecard issueTitle={task.title} />
+                      <Messagecard id={task.id} issueTitle={task.title} />
                     )}
                   </div>
                 )}

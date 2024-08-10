@@ -1,18 +1,20 @@
 import React, { useState } from "react";
-import { Ellipsis, Pencil } from "lucide-react";
+import {  Pencil } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Card } from "./ui/card";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 import { Dialog, DialogContent } from "./ui/dialog";
 import { DialogTitle } from "@radix-ui/react-dialog";
 import IssueCard from "./issue-details-card";
+import MessageBoxDropDown from "./message-cart-dropdown";
 
 interface MessagecardProps {
   issueTitle: string;
+  id:string
 }
 
 const Messagecard = React.forwardRef<HTMLDivElement, React.HTMLProps<HTMLDivElement> & MessagecardProps>(
-  ({ issueTitle, ...props }, ref) => {
+  ({ id,issueTitle, ...props }, ref) => {
     const [open, setOpen] = useState(false);
 
     function handleOpenIssue() {
@@ -46,7 +48,7 @@ const Messagecard = React.forwardRef<HTMLDivElement, React.HTMLProps<HTMLDivElem
                 </TooltipContent>
               </Tooltip>
             </div>
-            <Ellipsis size={20} className="cursor-pointer self-start" />
+            <MessageBoxDropDown id={id}/>
           </div>
           <div className="flex justify-between py-3 items-center">
             <Tooltip>

@@ -51,7 +51,7 @@ function Login() {
       });
       console.log(resp);
       if (resp.status) {
-        navigate("/products");
+        navigate("/create");
       }
     } catch (error: unknown) {
       if (error instanceof Error) console.log(error.message);

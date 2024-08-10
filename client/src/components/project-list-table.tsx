@@ -32,57 +32,12 @@ type Issue = {
   id: string;
 };
 
-const columns: ColumnDef<Issue>[] = [
-  {
-    id: "select",
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && "indeterminate")
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
-  {
-    accessorKey: "id",
-    header: "Project Id",
-    cell: ({ row }) => <div className="capitalize">{row.getValue("id")}</div>,
-  },
-  {
-    accessorKey: "name",
-    header: "Project Name",
-    cell: ({ row }) => <div className="capitalize">{row.getValue("name")}</div>,
-  },
-  {
-    accessorKey: "description",
-    header: () => <div className="text-right">Description</div>,
-    cell: ({ row }) => {
-      return (
-        <div className="text-right font-medium">
-          {row.getValue("description")}
-        </div>
-      );
-    },
-  },
-];
-
 export function ProjectTable() {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   );
+  // const [open, setOpen] = React.useState(false);
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
@@ -98,6 +53,58 @@ export function ProjectTable() {
     getAllProjects();
   }, []);
   console.log(projects);
+
+  const columns: ColumnDef<Issue>[] = [
+    {
+      id: "select",
+      header: ({ table }) => (
+        <Checkbox
+          checked={
+            table.getIsAllPageRowsSelected() ||
+            (table.getIsSomePageRowsSelected() && "indeterminate")
+          }
+          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+          aria-label="Select all"
+        />
+      ),
+      cell: ({ row }) => (
+        <Checkbox
+          checked={row.getIsSelected()}
+          onCheckedChange={(value) => row.toggleSelected(!!value)}
+          aria-label="Select row"
+        />
+      ),
+      enableSorting: false,
+      enableHiding: false,
+    },
+    {
+      accessorKey: "id",
+      header: "Project Id",
+      cell: ({ row }) => <div className="capitalize">{row.getValue("id")}</div>,
+    },
+    {
+      accessorKey: "name",
+      header: "Project Name",
+      cell: ({ row }) => (
+        <Link to={"/project/" + row.getValue("id")}>
+          <div className="capitalize underline text-blue-500">
+            {row.getValue("name")}
+          </div>
+        </Link>
+      ),
+    },
+    {
+      accessorKey: "description",
+      header: () => <div className="text-right">Description</div>,
+      cell: ({ row }) => {
+        return (
+          <div className="text-right font-medium">
+            {row.getValue("description")}
+          </div>
+        );
+      },
+    },
+  ];
 
   const table = useReactTable({
     data: projects,
@@ -150,12 +157,10 @@ export function ProjectTable() {
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
-                      <Link to={`/project/${row.original.id}`}>
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext()
-                        )}
-                      </Link>
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
                     </TableCell>
                   ))}
                 </TableRow>

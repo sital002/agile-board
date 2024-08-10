@@ -93,7 +93,6 @@ const Board: React.FC = () => {
       name: heading,
       projectId: projectInfo.id,
     });
-    console.log(resp);
     setNewColumn(resp.data)
     setHeading("");
     setOpen(false);
@@ -106,14 +105,11 @@ const Board: React.FC = () => {
 
   const getProjectDetails = async () => {
     const resp = await API.get(`/api/projects/${id}`);
-    console.log(resp);
     setProjectInfo(resp.data);
   };
 
   const getColumn = async () => {
     const resp = await API.get(`/api/columns/${id}`);
-    console.log(resp);
-    console.log(resp.data);
     setColumns(resp.data);
   };
 

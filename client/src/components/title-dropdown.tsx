@@ -42,7 +42,7 @@ const Messagecard = React.forwardRef<HTMLDivElement, React.HTMLProps<HTMLDivElem
                   <Pencil size={15} className="self-end hidden group-hover:block ml-1 absolute right-0" />
                 </TooltipTrigger>
                 <TooltipContent>
-                  <p>Edit Summary</p>
+                  <p>Edit Summaryr</p>
                 </TooltipContent>
               </Tooltip>
             </div>

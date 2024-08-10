@@ -3,6 +3,7 @@ import {
   createTeam,
   deleteTeam,
   getTeams,
+  removeTeammember,
   updateTeamMembers,
 } from "../controller/team-controller";
 
@@ -14,5 +15,6 @@ teamRouter.delete("/:id", deleteTeam);
 
 // Add team member to a project
 teamRouter.put("/update-member/:projectId", updateTeamMembers);
+teamRouter.put("/remove-member/:projectId", removeTeammember);
 
 export default teamRouter;

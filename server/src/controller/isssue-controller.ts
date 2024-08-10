@@ -68,3 +68,34 @@ export async function deleteIssue(req: Request, res: Response) {
     res.status(500).json({ error: "An error occurred" });
   }
 }
+
+export async function updateIssue(req: Request, res: Response) {
+  try {
+    if (!req.user) return res.status(400).json({ error: "Unauthorized" });
+    const id = Number(req.params.id);
+    if (!id) return res.status(400).json({ error: "Issue ID is required" });
+
+    const result = issueSchema.safeParse(req.body);
+    if (!result.success) {
+      return res.status(400).json({ error: result.error });
+    }
+    const { title, description, projectId, columnId } = result.data;
+    const issue = await prisma.issue.update({
+      where: {
+        id,
+      },
+      data: {
+        title,
+        description,
+        projectId,
+        columnId,
+      },
+    });
+    if (issue) {
+      res.status(200).json(issue);
+    }
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ error: "An error occurred" });
+  }
+}

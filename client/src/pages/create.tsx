@@ -14,7 +14,7 @@ import { z } from "zod";
 import { API } from "@/utils/api";
 import { useToast } from "@/components/ui/use-toast";
 import { isAxiosError } from "axios";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const projectSchema = z.object({
   name: z.string().min(5, { message: "project name must be 5 character" }),
@@ -103,7 +103,7 @@ const CreateProject = () => {
                 </div>
               </div>
               <div className="flex my-6 gap-x-4">
-                <Button variant={"secondary"}>Cancel</Button>
+                <Link to={`/project/${localStorage.getItem("currentProjectId")}`}><p className="border-2 p-2 rounded-md">Cancel</p></Link>
                 <Button>Create</Button>
               </div>
             </form>

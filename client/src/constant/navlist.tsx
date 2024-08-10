@@ -4,9 +4,13 @@ import {
   Code,
   Dice6,
   Ellipsis,
+  Eye,
+  FolderDot,
   Fullscreen,
   // Goal,
   List,
+  PersonStandingIcon,
+  Plus,
   // NotebookText,
   // Plus,
   Settings,
@@ -18,14 +22,38 @@ import Dropdown from "../components/dropdown";
 
 export const sidebarlist = [
   {
+    name: "Project",
+    icon: <FolderDot size={20} />,
+    url: "project",
+    children: [
+      {
+        name: "Create Project",
+        icon: <Plus size={20} />,
+        url: "/create",
+      },
+      {
+        name: "View Project",
+        icon: <Eye size={20} />,
+        url: "/projects",
+      },
+    ],
+  },
+  {
     name: "Team",
     icon: <ChartNoAxesGantt size={20} />,
     url: "timeline",
+    children: [
+      {
+        name: "Add Member",
+        icon: <PersonStandingIcon size={20} />,
+        url: "/team",
+      },
+    ],
   },
   {
     name: "Board",
     icon: <Dice6 size={20} />,
-    url: "board",
+    url: `/project/${localStorage.getItem("currentProjectId")}`,
   },
   {
     name: "List",
@@ -127,30 +155,29 @@ export const selectList = [
   },
 ];
 
-
-export const detailsList=[
+export const detailsList = [
   {
-    name:'Labels',
-    value:'None'
+    name: "Labels",
+    value: "None",
   },
   {
-    name:"Due Date",
-    value:'None'
+    name: "Due Date",
+    value: "None",
   },
   {
-    name:"Time Tracking",
-    value:'No Time Log'
+    name: "Time Tracking",
+    value: "No Time Log",
   },
   {
-    name:"Start Date",
-    value:"None"
+    name: "Start Date",
+    value: "None",
   },
   {
-    name:"Category",
-    value:"None"
+    name: "Category",
+    value: "None",
   },
   {
-    name:"Team",
-    value:"None"
-  }
-]
+    name: "Team",
+    value: "None",
+  },
+];

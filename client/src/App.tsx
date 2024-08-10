@@ -9,6 +9,7 @@ import PageNotFound from "./pages/404-page";
 import Signup from "./pages/signup";
 import Login from "./pages/login";
 import ProjectList from "./pages/view-project";
+import Team from "./pages/team";
 
 const App = () => {
   const router = createBrowserRouter([
@@ -30,6 +31,14 @@ const App = () => {
           element: (
             <ProctedRoute>
               <Lists />
+            </ProctedRoute>
+          ),
+        },
+        {
+          path: "team",
+          element: (
+            <ProctedRoute>
+              < Team/>
             </ProctedRoute>
           ),
         },

@@ -110,7 +110,9 @@ export async function userSignup(req: Request, res: Response) {
 }
 
 export async function userSignin(req: Request, res: Response) {
-  const result = SignInSchema.safeParse(req.body);
+  console.log("hit");
+  const result = SignInSchema.safeParse(req.body.data);
+  console.log(result);
   console.log(result.success);
   if (!result.success) {
     return res.status(400).json(result.error.errors);

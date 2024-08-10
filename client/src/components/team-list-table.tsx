@@ -23,7 +23,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { API } from "@/utils/api";
 import { Link } from "react-router-dom";
 import {
   DropdownMenu,
@@ -36,12 +35,10 @@ import { MoreHorizontal } from "lucide-react";
 
 type Issue = {
   name: string;
-  description: string;
   id: string;
-  status?: string;
 };
 
-export function ProjectTable() {
+export function TeamTable() {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -50,23 +47,6 @@ export function ProjectTable() {
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
-  const [projects, setProjects] = React.useState([]);
-
-  const getAllProjects = async () => {
-    const resp = await API.get("/api/projects");
-    console.log(resp);
-    setProjects(resp.data);
-  };
-
-  const deleteHandler = async (id: string) => {
-    const resp = await API.delete(`/api/projects/${id}`);
-    console.log(resp);
-  };
-
-  React.useEffect(() => {
-    getAllProjects();
-  }, []);
-  console.log(projects);
 
   const columns: ColumnDef<Issue>[] = [
     {
@@ -93,12 +73,12 @@ export function ProjectTable() {
     },
     {
       accessorKey: "id",
-      header: "Project Id",
+      header: "UserId",
       cell: ({ row }) => <div className="capitalize">{row.getValue("id")}</div>,
     },
     {
       accessorKey: "name",
-      header: "Project Name",
+      header: "User Name",
       cell: ({ row }) => (
         <Link to={"/project/" + row.getValue("id")}>
           <div className="capitalize underline text-blue-500">
@@ -107,33 +87,12 @@ export function ProjectTable() {
         </Link>
       ),
     },
-    {
-      accessorKey: "status",
-      header: "Status",
-      cell: ({ row }) => (
-        <div className="uppercase">
-          {localStorage.getItem("currentProjectId") == row.getValue("id")
-            ? "current"
-            : ""}
-        </div>
-      ),
-    },
-    {
-      accessorKey: "description",
-      header: () => <div className="text-right">Description</div>,
-      cell: ({ row }) => {
-        return (
-          <div className="text-right font-medium">
-            {row.getValue("description")}
-          </div>
-        );
-      },
-    },
+
     {
       header: "Action",
       id: "actions",
       enableHiding: false,
-      cell: ({ row }) => {
+      cell: () => {
         return (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -145,10 +104,7 @@ export function ProjectTable() {
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
               <DropdownMenuItem>Edit</DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() => deleteHandler(row.getValue("id"))}
-                className="text-destructive py-2"
-              >
+              <DropdownMenuItem className="text-destructive py-2">
                 Delete
               </DropdownMenuItem>
             </DropdownMenuContent>
@@ -159,7 +115,7 @@ export function ProjectTable() {
   ];
 
   const table = useReactTable({
-    data: projects,
+    data: [],
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -178,7 +134,7 @@ export function ProjectTable() {
   });
 
   return (
-    <div className="w-full">
+    <div className="w-full mt-4">
       <div className="rounded-md border">
         <Table>
           <TableHeader>

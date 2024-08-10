@@ -17,7 +17,7 @@ export type TaskType = {
 };
 
 export type ColumnType = {
-  id:number
+  id: number;
   projectId: number;
   name: string;
   // position: number;
@@ -42,8 +42,7 @@ const Board: React.FC = () => {
     userId: "",
     description: "",
   });
-  const [newColumn,setNewColumn]=useState()
-
+  const [newColumn, setNewColumn] = useState();
 
   const dragHandler = (result: DropResult) => {
     console.log(result);
@@ -93,7 +92,7 @@ const Board: React.FC = () => {
       name: heading,
       projectId: projectInfo.id,
     });
-    setNewColumn(resp.data)
+    setNewColumn(resp.data);
     setHeading("");
     setOpen(false);
   };
@@ -111,16 +110,18 @@ const Board: React.FC = () => {
   const getColumn = async () => {
     const resp = await API.get(`/api/columns/${id}`);
     setColumns(resp.data);
+    // console.log(resp.data)
   };
 
   useEffect(() => {
     getProjectDetails();
     getColumn();
+    localStorage.setItem('currentProjectId',id as string)
   }, []);
 
-  useEffect(()=>{
-    getColumn()
-  },[newColumn])
+  useEffect(() => {
+    getColumn();
+  }, [newColumn]);
 
   return (
     <div className="w-full px-8 overflow-hidden ">
@@ -129,10 +130,7 @@ const Board: React.FC = () => {
       <div className="flex gap-2 w-full overflow-x-scroll scrollbar">
         <DragDropContext onDragEnd={dragHandler}>
           {columns?.map((column) => (
-            <Column
-              key={column.projectId}
-              column={column}
-            />
+            <Column key={column.projectId} column={column} />
           ))}
         </DragDropContext>
         <div className="flex flex-col gap-y-2 w-full max-w-[300px]">

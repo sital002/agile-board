@@ -25,7 +25,7 @@ const Column: React.FC<ColumnProps> = ({ column }) => {
   const [newTask, setNewTask] = useState("");
   const submitBtnRef = useRef<HTMLButtonElement | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
-  const [issue, setIssue] = useState<Issue>();
+  // const [issue, setIssue] = useState<Issue>();
   const [issues, setIssues] = useState<Issue[]>();
 
   // const addTaskHandler = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -79,19 +79,21 @@ const Column: React.FC<ColumnProps> = ({ column }) => {
       projectId: column.projectId,
       columnId: column.id,
     });
-    setIssue(resp.data);
+    console.log(resp);
+    // setIssue(resp.data);
     setOpen(false);
   };
 
-  const getIssue = async () => {
-    const resp = await API.get(`/api/issues/${column.projectId}`);
-    console.log(resp);
-    setIssues(resp.data);
-  };
-
   useEffect(() => {
+    const getIssue = async () => {
+      const resp = await API.get(`/api/issues/${column.projectId}`);
+      // console.log(resp.data);
+      setIssues(resp.data);
+    };
     getIssue();
-  }, [issue]);
+  }, []);
+  console.log("Isseu ", issues);
+  console.log("colums ", column);
 
   useEffect(() => {
     if (inputRef.current) {

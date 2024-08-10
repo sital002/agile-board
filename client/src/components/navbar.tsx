@@ -2,16 +2,7 @@ import { Button } from "./ui/button";
 import { Bell, Settings } from "lucide-react";
 import { Input } from "./ui/input";
 import { ModeToggle } from "./mode-toggle";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "./ui/dropdown-menu";
 import { Link } from "react-router-dom";
-import { NavigationMenuDemo } from "./new-navbar";
 import { isAxiosError } from "axios";
 import { useLayoutEffect, useState } from "react";
 import { API } from "@/utils/api";
@@ -39,27 +30,7 @@ const Navbar = () => {
 
   return (
     <header className="flex  justify-between p-4 border-b-2 border-gray-600">
-      <div className="lg:hidden">
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant={"secondary"}>More</Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent className="w-56">
-            <DropdownMenuSeparator />
-            <DropdownMenuGroup>
-              <DropdownMenuItem>Your Work</DropdownMenuItem>
-              <DropdownMenuItem>Create</DropdownMenuItem>
-              <DropdownMenuItem>Filters</DropdownMenuItem>
-              <DropdownMenuItem>Dashboards</DropdownMenuItem>
-              <DropdownMenuItem>Teams</DropdownMenuItem>
-              <DropdownMenuItem>Apps</DropdownMenuItem>
-            </DropdownMenuGroup>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
-      {/* New navigation menu */}
-      <NavigationMenuDemo />
-      <Link to={'/create'}><Button>Create</Button></Link>
+      
       <Input
         className="w-full max-w-[20%] hidden md:block"
         placeholder="Search"

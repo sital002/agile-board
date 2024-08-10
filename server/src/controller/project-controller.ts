@@ -129,8 +129,8 @@ export async function deleteProject(req: Request, res: Response) {
     if (project) {
       res.status(200).json(project);
     }
-  } catch (err) {
-    console.log(err);
+  } catch (err: any) {
+    console.log(err.message);
     res.status(500).json({ error: "An error occurred" });
   }
 }

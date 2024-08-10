@@ -26,27 +26,7 @@ export async function createProject(req: Request, res: Response) {
             ],
           },
         },
-        Issue: {
-          createMany: {
-            data: [
-              {
-                title: "Task 1",
-                description: "Task 1 description",
-                columnId: 1,
-              },
-              {
-                title: "Task 2",
-                description: "Task 2 description",
-                columnId: 2,
-              },
-              {
-                title: "Task 3",
-                description: "Task 3 description",
-                columnId: 3,
-              },
-            ],
-          },
-        },
+
         Team: {
           create: {
             members: {

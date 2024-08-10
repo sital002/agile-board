@@ -10,6 +10,7 @@ import cookieParser from "cookie-parser";
 import columnRouter from "./routes/column-route";
 import { authenticate } from "./middleware/authenticate";
 import issueRouter from "./routes/issue-route";
+import teamRouter from "./routes/team-route";
 
 const app = express();
 
@@ -28,6 +29,7 @@ app.use("/api/users", userRouter);
 app.use("/api/projects", authenticate, projectRouter);
 app.use("/api/columns", authenticate, columnRouter);
 app.use("/api/issues", authenticate, issueRouter);
+app.use("/api/teams", authenticate, teamRouter);
 
 const resend = new Resend(env.RESEND_API_KEY);
 

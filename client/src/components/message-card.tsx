@@ -18,7 +18,6 @@ const Messagecard = React.forwardRef<
   React.HTMLProps<HTMLDivElement> & MessagecardProps
 >(({ id, issueTitle, ...props }, ref) => {
   const [open, setOpen] = useState(false);
-  console.log("dd", issueTitle);
   function handleOpenIssue() {
     setOpen(true);
   }
@@ -29,7 +28,7 @@ const Messagecard = React.forwardRef<
         onClick={handleOpenIssue}
         ref={ref}
         {...props}
-        className={`p-3 border-2 hover:bg-secondary group  rounded-md shadow-md cursor-pointer select-none ${props.className}`}
+        className={`p-3 hover:bg-secondary group rounded-md shadow-md cursor-pointer select-none ${props.className}`}
       >
         <div className="flex justify-between gap-3">
           <div className="flex relative">

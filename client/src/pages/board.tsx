@@ -4,25 +4,10 @@ import Header from "../components/header";
 import Filterbar from "../components/filterbar";
 import { Check, Plus, X } from "lucide-react";
 import { Input } from "../components/ui/input";
-import Column from "@/components/column";
+import ColumnList from "@/components/column";
 import { API } from "@/utils/api";
 import { useParams } from "react-router-dom";
-
-export type TaskType = {
-  id: string;
-  title: string;
-  description: string;
-  columnId: number;
-  position: number;
-};
-
-export type ColumnType = {
-  id: number;
-  projectId: number;
-  name: string;
-  // position: number;
-  // tasks: TaskType[];
-};
+import type { Column } from "@/schema/schema";
 
 type ProjectInfo = {
   id: string;
@@ -32,7 +17,7 @@ type ProjectInfo = {
 };
 
 const Board: React.FC = () => {
-  const [columns, setColumns] = useState<ColumnType[]>([]);
+  const [columns, setColumns] = useState<Column[]>([]);
   const [open, setOpen] = useState(false);
   const [heading, setHeading] = useState<string>("");
   const { id } = useParams();
@@ -116,7 +101,7 @@ const Board: React.FC = () => {
   useEffect(() => {
     getProjectDetails();
     getColumn();
-    localStorage.setItem('currentProjectId',id as string)
+    localStorage.setItem("currentProjectId", id as string);
   }, []);
 
   useEffect(() => {
@@ -130,7 +115,7 @@ const Board: React.FC = () => {
       <div className="flex gap-2 w-full overflow-x-scroll scrollbar">
         <DragDropContext onDragEnd={dragHandler}>
           {columns?.map((column) => (
-            <Column key={column.projectId} column={column} />
+            <ColumnList key={column.id} column={column} />
           ))}
         </DragDropContext>
         <div className="flex flex-col gap-y-2 w-full max-w-[300px]">

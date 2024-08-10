@@ -3,22 +3,14 @@ import { Draggable, Droppable } from "@hello-pangea/dnd";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import Messagecard from "./message-card";
-import { ColumnType } from "../pages/board";
 import { API } from "@/utils/api";
+import type { Column, Issue } from "@/schema/schema";
 
 interface ColumnProps {
-  column: ColumnType;
+  column: Column;
   // columns: ColumnType[];
   // setColumns: React.Dispatch<React.SetStateAction<ColumnType[]>>;
 }
-
-type Issue = {
-  id: string;
-  columnId: number;
-  title: string;
-  projectId: number;
-  description: string;
-};
 
 const Column: React.FC<ColumnProps> = ({ column }) => {
   const [open, setOpen] = useState(false);
@@ -92,8 +84,6 @@ const Column: React.FC<ColumnProps> = ({ column }) => {
     };
     getIssue();
   }, []);
-  console.log("Isseu ", issues);
-  console.log("colums ", column);
 
   useEffect(() => {
     if (inputRef.current) {
@@ -110,7 +100,7 @@ const Column: React.FC<ColumnProps> = ({ column }) => {
           {...provided.droppableProps}
           ref={provided.innerRef}
           style={{ backgroundColor: snapshot.isDraggingOver ? "grey" : "" }}
-          className="border-2 border-gray-500 h-fit min-w-[300px] rounded-sm p-1 relative"
+          className="border-2 h-fit min-w-[300px] rounded-sm p-1 relative"
         >
           <div className="font-medium text-md mb-2 px-2">{column.name}</div>
           <div className="flex flex-col gap-y-2">
@@ -127,7 +117,10 @@ const Column: React.FC<ColumnProps> = ({ column }) => {
                     {...provided.dragHandleProps}
                   >
                     {column.id == task.columnId && (
-                      <Messagecard id={task.id} issueTitle={task.title} />
+                      <Messagecard
+                        id={task.id.toString()}
+                        issueTitle={task.title}
+                      />
                     )}
                   </div>
                 )}

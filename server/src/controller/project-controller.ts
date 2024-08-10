@@ -78,6 +78,9 @@ export async function getProjects(req: Request, res: Response) {
           },
         },
       },
+      include: {
+        creator: true,
+      },
     });
 
     if (projects) {

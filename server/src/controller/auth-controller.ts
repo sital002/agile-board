@@ -40,9 +40,7 @@ const prisma = new PrismaClient();
 const resend = new Resend(env.RESEND_API_KEY);
 
 const SignInSchema = z.object({
-  email: z.string().email({
-    message: "Invaild Email",
-  }),
+  email: z.string(),
   password: z.string(),
 });
 
@@ -111,10 +109,10 @@ export async function userSignup(req: Request, res: Response) {
 
 export async function userSignin(req: Request, res: Response) {
   console.log("hit");
-  const result = SignInSchema.safeParse(req.body.data);
+  const result = SignInSchema.safeParse(req.body);
   console.log(result);
-  console.log(result.success);
   if (!result.success) {
+    console.log(result.error);
     return res.status(400).json(result.error.errors);
   }
   try {
@@ -151,6 +149,7 @@ export async function userSignin(req: Request, res: Response) {
         refresh_token: refreshToken,
       });
   } catch (error) {
+    console.log(error);
     if (error instanceof Error) return res.status(500).json(error.message);
     return res.status(500).json("An error occurred");
   }

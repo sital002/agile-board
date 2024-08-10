@@ -39,6 +39,10 @@ export async function getIssues(req: Request, res: Response) {
       where: {
         projectId: projectId,
       },
+      include: {
+        Column: true,
+        assignee: true,
+      },
     });
     if (issues) {
       res.status(200).json(issues);

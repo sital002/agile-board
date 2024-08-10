@@ -26,17 +26,23 @@ model User {
   updated_at             DateTime  @updatedAt
   Project                Project[]
   Team                   Team[]
+  Issue                  Issue[]
 }
 
 model Issue {
-  id          Int      @id @default(autoincrement())
+  id          Int       @id @default(autoincrement())
   title       String
+  assigneeId  Int?
+  assignee    User?     @relation(fields: [assigneeId], references: [id])
   description String?
-  project     Project  @relation(fields: [projectId], references: [id])
+  project     Project   @relation(fields: [projectId], references: [id])
   projectId   Int
   attachments String[]
-  Column      Column   @relation(fields: [columnId], references: [id])
+  Column      Column    @relation(fields: [columnId], references: [id])
   columnId    Int
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  dueDate     DateTime?
 }
 
 model Project {
@@ -54,7 +60,7 @@ model Column {
   id          Int     @id @default(autoincrement())
   name        String
   description String?
-  tasks       Issue[]
+  issues      Issue[]
   projectId   Int
   Project     Project @relation(fields: [projectId], references: [id])
 }

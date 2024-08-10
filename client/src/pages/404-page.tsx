@@ -12,7 +12,9 @@ const PageNotFound = () => {
           alt=""
         />
         <Button
-          onClick={() => navigate("/board")}
+          onClick={() =>
+            navigate(`/project/${localStorage.getItem("currentProjectId")}`)
+          }
           className="block mx-auto my-8 "
         >
           Back to Home

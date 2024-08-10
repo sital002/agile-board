@@ -29,8 +29,7 @@ const Navbar = () => {
   }, []);
 
   return (
-    <header className="flex  justify-between p-4 border-b-2 border-gray-600">
-      
+    <header className="flex  justify-between p-4 border-b-2 ">
       <Input
         className="w-full max-w-[20%] hidden md:block"
         placeholder="Search"

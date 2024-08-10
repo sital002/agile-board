@@ -11,10 +11,8 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { ArrowUpDown } from "lucide-react";
 
 import { Button } from "../components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 
 import {
   Table,
@@ -24,163 +22,26 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Skeleton } from "./ui/skeleton";
+import { Input } from "./ui/input";
+import { Link } from "react-router-dom";
 
-const data: Issue[] = [
-  {
-    id: "m5gr84i9",
-    status: "done",
-    title: "Payment for ",
-    assignee: "Sora",
-    createdAt: new Date(),
-    dueDate: new Date(),
-  },
-  {
-    id: "3u1reuv4",
-    status: "inprogress",
-    title: "Payment  #1234",
-    assignee: "Nora",
-    createdAt: new Date(),
-    dueDate: new Date(),
-    updatedAt: new Date(),
-  },
-  {
-    id: "derv1ws0",
-    status: "inprogress",
-    title: "Payment 234",
-    assignee: "John",
-    createdAt: new Date(),
-    dueDate: new Date(),
-  },
-  {
-    id: "5kma53ae",
-    status: "todo",
-    title: "abcs",
-    assignee: "John",
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  },
-  {
-    id: "bhqecj4p",
-    status: "todo",
-    title: "Payment der #1234",
-    assignee: "John",
-    createdAt: new Date(),
-    dueDate: new Date(),
-    updatedAt: new Date(),
-  },
-];
-
-type Issue = {
-  id: string;
-  title: string;
-  status: "todo" | "inprogress" | "done";
-  assignee: string;
-  createdAt: Date;
-  dueDate?: Date;
-  updatedAt?: Date;
-};
-
-const columns: ColumnDef<Issue>[] = [
-  {
-    id: "select",
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && "indeterminate")
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
-  {
-    accessorKey: "status",
-    header: "Status",
-    cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("status")}</div>
-    ),
-  },
-  {
-    accessorKey: "title",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Summary
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
-    },
-    cell: ({ row }) => <div className="lowercase">{row.getValue("title")}</div>,
-  },
-  {
-    accessorKey: "assignee",
-    header: () => <div className="text-right">Assignee</div>,
-    cell: ({ row }) => {
-      return (
-        <div className="text-right font-medium">{row.getValue("assignee")}</div>
-      );
-    },
-  },
-  {
-    accessorKey: "createdAt",
-    header: () => <div className="text-right">Created</div>,
-    cell: ({ row }) => {
-      return (
-        <div className="text-right font-medium">
-          {row.original.createdAt.toLocaleDateString()}
-        </div>
-      );
-    },
-  },
-  {
-    accessorKey: "updatedAt",
-    header: () => <div className="text-right">Updated At</div>,
-    cell: ({ row }) => {
-      return (
-        <div className="text-right font-medium">
-          {row.original.updatedAt?.toLocaleDateString() ??
-            row.original.createdAt.toLocaleDateString()}
-        </div>
-      );
-    },
-  },
-  {
-    accessorKey: "dueDate",
-    header: () => <div className="text-left">Due Date</div>,
-    cell: ({ row }) => {
-      return (
-        <div
-          className={`w-fit px-2 py-1 rounded-sm text-left font-medium ${
-            row.original?.dueDate && row.original.dueDate < new Date()
-              ? "bg-red-200 text-red-600"
-              : ""
-          }`}
-        >
-          {row.original.dueDate?.toLocaleDateString() ?? "NONE"}
-        </div>
-      );
-    },
-  },
-];
-
-export function DataTableDemo() {
+interface DataTableProps<TData, TValue> {
+  columns: ColumnDef<TData, TValue>[];
+  data: TData[];
+  isLoading?: boolean;
+}
+export function DataTable<TData, TValue>({
+  columns,
+  data,
+  isLoading,
+}: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   );
+  // const isLoading = true;
+
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
@@ -205,7 +66,20 @@ export function DataTableDemo() {
   });
 
   return (
-    <div className="w-full">
+    <div className="w-full mx-2">
+      <div className="flex gap-3 my-2">
+        <Input
+          placeholder="Filter projects..."
+          value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
+          onChange={(event) =>
+            table.getColumn("name")?.setFilterValue(event.target.value)
+          }
+          className="max-w-sm"
+        />
+        <Button asChild>
+          <Link to={"/create"}>Create</Link>
+        </Button>
+      </div>
       <div className="rounded-md border">
         <Table>
           <TableHeader>
@@ -230,16 +104,27 @@ export function DataTableDemo() {
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow
+                  className="cursor-pointer"
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
                 >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
+                  {row.getVisibleCells().map((cell, index) => (
+                    <React.Fragment key={cell.id + index}>
+                      {isLoading && data.length === 0 ? (
+                        <TableCell>
+                          <Skeleton className="w-full h-4" />
+                        </TableCell>
+                      ) : (
+                        <TableCell>
+                          <>
+                            {flexRender(
+                              cell.column.columnDef.cell,
+                              cell.getContext()
+                            )}
+                          </>
+                        </TableCell>
                       )}
-                    </TableCell>
+                    </React.Fragment>
                   ))}
                 </TableRow>
               ))

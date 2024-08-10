@@ -67,7 +67,15 @@ export async function getProjects(req: Request, res: Response) {
 
     const projects = await prisma.project.findMany({
       where: {
-        creatorId: req.user.id,
+        Team: {
+          every: {
+            members: {
+              some: {
+                id: req.user.id,
+              },
+            },
+          },
+        },
       },
     });
 

@@ -1,38 +1,44 @@
 import { PrismaClient } from "@prisma/client";
-const prisma = new PrismaClient();
+import bcrypt from "bcrypt";
 
+const prisma = new PrismaClient();
 async function main() {
-  await prisma.user.create({
-    data: {
-      display_name: "Alice",
-      password: "password",
-      verification_code: "1234",
-      email: "alice@prisma.io",
-    },
-  });
-  await prisma.user.create({
-    data: {
-      display_name: "Ram",
-      password: "password",
-      verification_code: "1234",
-      email: "ram@prisma.io",
-    },
-  });
-  await prisma.user.create({
-    data: {
-      display_name: "Hari",
-      password: "password",
-      verification_code: "1234",
-      email: "hari@prisma.io",
-    },
-  });
-  await prisma.user.create({
-    data: {
-      display_name: "Mukesh",
-      password: "password",
-      verification_code: "1234",
-      email: "Mukes@prisma.io",
-    },
+  const hashedPassword = await bcrypt.hash("12345678", 10);
+
+  await prisma.user.createMany({
+    data: [
+      {
+        display_name: "Sital Adhikari",
+        password: hashedPassword,
+        verification_code: "1234",
+        email: "sitaladhikari002@gmail.com",
+      },
+
+      {
+        display_name: "Alice",
+        password: hashedPassword,
+        verification_code: "1234",
+        email: "alice@prisma.io",
+      },
+      {
+        display_name: "Ram",
+        password: hashedPassword,
+        verification_code: "1234",
+        email: "ram@prisma.io",
+      },
+      {
+        display_name: "Hari",
+        password: hashedPassword,
+        verification_code: "1234",
+        email: "hari@prisma.io",
+      },
+      {
+        display_name: "Mukesh",
+        password: hashedPassword,
+        verification_code: "1234",
+        email: "Mukes@prisma.io",
+      },
+    ],
   });
 }
 

@@ -14,9 +14,27 @@ export async function createProject(req: Request, res: Response) {
 
     const project = await prisma.project.create({
       data: {
-        userId: req.user.id,
+        creatorId: req.user.id,
         name: result.data.name,
         description: result.data.description,
+        Column: {
+          createMany: {
+            data: [
+              { name: "To Do" },
+              { name: "In Progress" },
+              { name: "Done" },
+            ],
+          },
+        },
+        Team: {
+          create: {
+            members: {
+              connect: {
+                id: req.user.id,
+              },
+            },
+          },
+        },
       },
     });
 
@@ -49,11 +67,7 @@ export async function getProjects(req: Request, res: Response) {
 
     const projects = await prisma.project.findMany({
       where: {
-        Team: {
-          every: {
-            id: req.user.id,
-          },
-        },
+        creatorId: req.user.id,
       },
     });
 

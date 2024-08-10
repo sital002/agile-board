@@ -47,8 +47,10 @@ const SignInSchema = z.object({
 });
 
 export async function userSignup(req: Request, res: Response) {
-  const result = SignUpSchema.safeParse(req.body.data);
+  const result = SignUpSchema.safeParse(req.body);
+  console.log(result.success);
   if (!result.success) {
+    console.log(result.error);
     return res.status(400).send(result.error.errors);
   }
 
@@ -108,8 +110,8 @@ export async function userSignup(req: Request, res: Response) {
 }
 
 export async function userSignin(req: Request, res: Response) {
-  const result = SignInSchema.safeParse(req.body.data);
-  console.log(result.data);
+  const result = SignInSchema.safeParse(req.body);
+  console.log(result.success);
   if (!result.success) {
     return res.status(400).json(result.error.errors);
   }

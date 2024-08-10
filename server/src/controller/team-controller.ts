@@ -4,14 +4,20 @@ import { Request, Response } from "express";
 const prisma = new PrismaClient();
 export async function createTeam(req: Request, res: Response) {
   try {
+    if (!req.user) return res.status(400).json({ error: "Unauthorized" });
     const { name } = req.body;
     if (!name) return res.status(400).json({ error: "Name is required" });
     const projectId = Number(req.params.projectId);
     if (!projectId)
       return res.status(400).json({ error: "Project ID is required" });
+
     const team = await prisma.team.create({
       data: {
-        name,
+        members: {
+          connect: {
+            id: req.user.id,
+          },
+        },
         projectId: projectId,
       },
     });
@@ -63,44 +69,33 @@ export async function deleteTeam(req: Request, res: Response) {
   }
 }
 
-export async function updateTeam(req: Request, res: Response) {
-  try {
-    const id = Number(req.params.id);
-    if (!id) return res.status(400).json({ error: "Team ID is required" });
-    const { name } = req.body;
-    if (!name) return res.status(400).json({ error: "Name is required" });
-
-    const team = await prisma.team.update({
-      where: {
-        id,
-      },
-      data: {
-        name,
-      },
-    });
-    if (team) {
-      res.status(200).json(team);
-    }
-  } catch (err) {
-    console.log(err);
-    res.status(500).json({ error: "An error occurred" });
-  }
-}
-
 export async function updateTeamMembers(req: Request, res: Response) {
   try {
-    const id = Number(req.params.id);
-    if (!id) return res.status(400).json({ error: "Team ID is required" });
-    const { members } = req.body;
-    if (!members)
-      return res.status(400).json({ error: "Members are required" });
+    const id = parseInt(req.params.projectId);
+    if (isNaN(id))
+      return res.status(400).json({ error: "Team ID is mnust be number" });
+    const { member } = req.body;
+    if (!member) return res.status(400).json({ error: "Members are required" });
 
+    const project = await prisma.project.findFirst({
+      where: {
+        id: id,
+      },
+      select: {
+        creator: true,
+      },
+    });
+    if (project?.creator.id !== req.user?.id) {
+      return res.status(400).json({ error: "Unauthorized" });
+    }
     const team = await prisma.team.update({
       where: {
         id,
       },
       data: {
-        members,
+        members: {
+          update: member,
+        },
       },
     });
     if (team) {

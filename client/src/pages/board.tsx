@@ -5,6 +5,8 @@ import Filterbar from "../components/filterbar";
 import { Check, Plus, X } from "lucide-react";
 import { Input } from "../components/ui/input";
 import Column from "@/components/column";
+import { API } from "@/utils/api";
+import { useParams } from "react-router-dom";
 
 export type TaskType = {
   id: string;
@@ -15,141 +17,84 @@ export type TaskType = {
 };
 
 export type ColumnType = {
-  id: number;
-  title: string;
-  position: number;
-  tasks: TaskType[];
+  id:number
+  projectId: number;
+  name: string;
+  // position: number;
+  // tasks: TaskType[];
 };
 
-const initialData: ColumnType[] = [
-  {
-    id: 1,
-    title: "To Do",
-    position: 1,
-    tasks: [
-      {
-        id: "1",
-        title: "Task 1",
-        description: "Description 1",
-        columnId: 1,
-        position: 1,
-      },
-      {
-        id: "2",
-        title: "Task 2",
-        description: "Description 2",
-        columnId: 1,
-        position: 2,
-      },
-    ],
-  },
-  {
-    id: 2,
-    title: "In Progress",
-    position: 2,
-    tasks: [
-      {
-        id: "3",
-        title: "Task 3",
-        description: "Description 3",
-        columnId: 2,
-        position: 1,
-      },
-      {
-        id: "4",
-        title: "Task 4",
-        description: "Description 4",
-        columnId: 2,
-        position: 2,
-      },
-    ],
-  },
-  {
-    id: 3,
-    title: "Done",
-    position: 3,
-    tasks: [
-      {
-        id: "5",
-        title: "Task 3",
-        description: "Description 3",
-        columnId: 3,
-        position: 1,
-      },
-      {
-        id: "6",
-        title: "Task 4",
-        description: "Description 4",
-        columnId: 3,
-        position: 2,
-      },
-    ],
-  },
-];
+type ProjectInfo = {
+  id: string;
+  name: string;
+  userId: string;
+  description: string;
+};
 
 const Board: React.FC = () => {
-  const [columns, setColumns] = useState<ColumnType[]>(initialData);
+  const [columns, setColumns] = useState<ColumnType[]>([]);
   const [open, setOpen] = useState(false);
   const [heading, setHeading] = useState<string>("");
+  const { id } = useParams();
+  const [projectInfo, setProjectInfo] = useState<ProjectInfo>({
+    id: "",
+    name: "",
+    userId: "",
+    description: "",
+  });
+  const [newColumn,setNewColumn]=useState()
 
-  console.log(columns);
 
   const dragHandler = (result: DropResult) => {
-    const { source, destination } = result;
-    if (!destination) return;
-    if (
-      destination.droppableId === source.droppableId &&
-      destination.index === source.index
-    )
-      return;
-
-    const sourceColumnIndex = columns.findIndex(
-      (col) => col.id === parseInt(source.droppableId)
-    );
-    const destinationColumnIndex = columns.findIndex(
-      (col) => col.id === parseInt(destination.droppableId)
-    );
-    const sourceColumn = columns[sourceColumnIndex];
-    const destinationColumn = columns[destinationColumnIndex];
-
-    const [removed] = sourceColumn.tasks.splice(source.index, 1);
-    removed.columnId = parseInt(destination.droppableId); // Update the columnId
-    destinationColumn.tasks.splice(destination.index, 0, removed);
-
-    // Update positions in the destination column
-    destinationColumn.tasks = destinationColumn.tasks.map((task, index) => ({
-      ...task,
-      position: index + 1,
-    }));
-
-    // Update positions in the source column if it's different from the destination
-    if (sourceColumn !== destinationColumn) {
-      sourceColumn.tasks = sourceColumn.tasks.map((task, index) => ({
-        ...task,
-        position: index + 1,
-      }));
-    }
-
-    const updatedColumns = [...columns];
-    updatedColumns[sourceColumnIndex] = sourceColumn;
-    updatedColumns[destinationColumnIndex] = destinationColumn;
-
-    setColumns(updatedColumns);
+    console.log(result);
+    // const { source, destination } = result;
+    // if (!destination) return;
+    // if (
+    //   destination.droppableId === source.droppableId &&
+    //   destination.index === source.index
+    // )
+    //   return;
+    // const sourceColumnIndex = columns.findIndex(
+    //   (col) => col.projectId === parseInt(source.droppableId)
+    // );
+    // const destinationColumnIndex = columns.findIndex(
+    //   (col) => col.projectId === parseInt(destination.droppableId)
+    // );
+    // const sourceColumn = columns[sourceColumnIndex];
+    // const destinationColumn = columns[destinationColumnIndex];
+    // const [removed] = sourceColumn.tasks.splice(source.index, 1);
+    // removed.columnId = parseInt(destination.droppableId); // Update the columnId
+    // destinationColumn.tasks.splice(destination.index, 0, removed);
+    // // Update positions in the destination column
+    // destinationColumn.tasks = destinationColumn.tasks.map((task, index) => ({
+    //   ...task,
+    //   position: index + 1,
+    // }));
+    // // Update positions in the source column if it's different from the destination
+    // if (sourceColumn !== destinationColumn) {
+    //   sourceColumn.tasks = sourceColumn.tasks.map((task, index) => ({
+    //     ...task,
+    //     position: index + 1,
+    //   }));
+    // }
+    // const updatedColumns = [...columns];
+    // updatedColumns[sourceColumnIndex] = sourceColumn;
+    // updatedColumns[destinationColumnIndex] = destinationColumn;
+    // setColumns(updatedColumns);
   };
 
   const closeHandler = () => {
     setOpen(false);
   };
 
-  const headingHandler = (e: React.MouseEvent) => {
+  const headingHandler = async (e: React.MouseEvent) => {
     e.stopPropagation();
-    const newColumn: ColumnType = {
-      id: Math.max(...columns.map((col) => col.id)) + 1,
-      title: heading,
-      position: columns.length + 1,
-      tasks: [],
-    };
-    setColumns([...columns, newColumn]);
+    const resp = await API.post("/api/columns/new", {
+      name: heading,
+      projectId: projectInfo.id,
+    });
+    console.log(resp);
+    setNewColumn(resp.data)
     setHeading("");
     setOpen(false);
   };
@@ -159,26 +104,45 @@ const Board: React.FC = () => {
     return () => window.removeEventListener("click", closeHandler);
   }, [open]);
 
+  const getProjectDetails = async () => {
+    const resp = await API.get(`/api/projects/${id}`);
+    console.log(resp);
+    setProjectInfo(resp.data);
+  };
+
+  const getColumn = async () => {
+    const resp = await API.get(`/api/columns/${id}`);
+    console.log(resp);
+    console.log(resp.data);
+    setColumns(resp.data);
+  };
+
+  useEffect(() => {
+    getProjectDetails();
+    getColumn();
+  }, []);
+
+  useEffect(()=>{
+    getColumn()
+  },[newColumn])
+
   return (
     <div className="w-full px-8 overflow-hidden ">
-      <Header />
+      <Header projectTitle={projectInfo?.name} />
       <Filterbar />
-      <div className="flex gap-2 w-full overflow-x-auto scrollbar ">
+      <div className="flex gap-2 w-full overflow-x-scroll scrollbar">
         <DragDropContext onDragEnd={dragHandler}>
-          {columns
-            .sort((a, b) => a.position - b.position)
-            .map((column) => (
-              <Column
-                key={column.id}
-                column={column}
-                columns={columns}
-                setColumns={setColumns}
-              />
-            ))}
+          {columns?.map((column) => (
+            <Column
+              key={column.projectId}
+              column={column}
+            />
+          ))}
         </DragDropContext>
         <div className="flex flex-col gap-y-2 w-full max-w-[300px]">
           {open && (
             <Input
+              placeholder="enter title"
               onChange={(e) => setHeading(e.target.value)}
               onClick={(e) => e.stopPropagation()}
               className="w-full min-w-[250px] rounded-none "
@@ -189,7 +153,7 @@ const Board: React.FC = () => {
               onClick={(e) => {
                 e.stopPropagation();
                 setOpen(true);
-                if(!heading) return
+                if (!heading) return;
               }}
               size={25}
               className="rounded-md bg-secondary cursor-pointer ml-5"

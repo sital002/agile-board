@@ -3,56 +3,67 @@ import { Draggable, Droppable } from "@hello-pangea/dnd";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import Messagecard from "./message-card";
-import { TaskType, ColumnType } from "../pages/board";
+import { ColumnType } from "../pages/board";
+import { API } from "@/utils/api";
 
 interface ColumnProps {
   column: ColumnType;
-  columns: ColumnType[];
-  setColumns: React.Dispatch<React.SetStateAction<ColumnType[]>>;
+  // columns: ColumnType[];
+  // setColumns: React.Dispatch<React.SetStateAction<ColumnType[]>>;
 }
 
-const Column: React.FC<ColumnProps> = ({ column, columns, setColumns }) => {
+type Issue = {
+  id: string;
+  columnId: number;
+  title: string;
+  projectId: number;
+  description: string;
+};
+
+const Column: React.FC<ColumnProps> = ({ column }) => {
   const [open, setOpen] = useState(false);
   const [newTask, setNewTask] = useState("");
   const submitBtnRef = useRef<HTMLButtonElement | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
+  const [issue, setIssue] = useState<Issue>();
+  const [issues, setIssues] = useState<Issue[]>();
 
-  const addTaskHandler = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.stopPropagation();
-    if (newTask.trim().length === 0) {
-      setOpen(false);
-      return;
-    }
+  // const addTaskHandler = (e: React.MouseEvent<HTMLButtonElement>) => {
+  //   e.stopPropagation();
+  //   if (newTask.trim().length === 0) {
+  //     setOpen(false);
+  //     return;
+  //   }
 
-    const newTaskObj: TaskType = {
-      id: (
-        Math.max(
-          ...columns.flatMap((col) =>
-            col.tasks.map((task) => parseInt(task.id, 10))
-          )
-        ) + 1
-      ).toString(),
-      title: newTask,
-      description: "",
-      columnId: column.id,
-      position: column.tasks.length + 1,
-    };
+  //   const newTaskObj: TaskType = {
+  //     id: (
+  //       Math.max(
+  //         ...columns.flatMap((col) =>
+  //           col.tasks.map((task) => parseInt(task.id, 10))
+  //         )
+  //       ) + 1
+  //     ).toString(),
+  //     title: newTask,
+  //     description: "",
+  //     columnId: column.id,
+  //     position: column.tasks.length + 1,
+  //   };
 
-    const updatedColumns = columns.map((col) => {
-      if (col.id === column.id) {
-        return {
-          ...col,
-          tasks: [...col.tasks, newTaskObj],
-        };
-      }
-      return col;
-    });
+  //   const updatedColumns = columns.map((col) => {
+  //     if (col.id === column.id) {
+  //       return {
+  //         ...col,
+  //         tasks: [...col.tasks, newTaskObj],
+  //       };
+  //     }
+  //     return col;
+  //   });
 
-    console.log("Updated Columns after adding task:", updatedColumns);
-    setColumns(updatedColumns);
-    setNewTask("");
-    setOpen(false);
-  };
+  //   console.log("Updated Columns after adding task:", updatedColumns);
+  //   setColumns(updatedColumns);
+  //   setNewTask("");
+  //   setOpen(false);
+  // };
 
   const closeHandler = () => {
     if (open) setOpen(false);
@@ -62,9 +73,29 @@ const Column: React.FC<ColumnProps> = ({ column, columns, setColumns }) => {
     setNewTask(e.target.value);
   };
 
+  const addIssue = async () => {
+    const resp = await API.post("/api/issues/new", {
+      title: newTask,
+      projectId: column.projectId,
+      columnId: column.id,
+    });
+    setIssue(resp.data);
+    setOpen(false);
+  };
+
+  const getIssue = async () => {
+    const resp = await API.get(`/api/issues/${column.projectId}`);
+    console.log(resp);
+    setIssues(resp.data);
+  };
+
   useEffect(() => {
-    if(inputRef.current){
-      inputRef.current.focus()
+    getIssue();
+  }, [issue]);
+
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.focus();
     }
     window.addEventListener("click", closeHandler);
     return () => window.removeEventListener("click", closeHandler);
@@ -79,27 +110,27 @@ const Column: React.FC<ColumnProps> = ({ column, columns, setColumns }) => {
           style={{ backgroundColor: snapshot.isDraggingOver ? "grey" : "" }}
           className="border-2 border-gray-500 h-fit min-w-[300px] rounded-sm p-1 relative"
         >
-          <div className="font-medium text-md mb-2 px-2">{column.title}</div>
+          <div className="font-medium text-md mb-2 px-2">{column.name}</div>
           <div className="flex flex-col gap-y-2">
-            {column.tasks
-              .sort((a, b) => a.position - b.position)
-              .map((task, index) => (
-                <Draggable
-                  key={task.id}
-                  draggableId={task.id.toString()}
-                  index={index}
-                >
-                  {(provided) => (
-                    <div
-                      ref={provided.innerRef}
-                      {...provided.draggableProps}
-                      {...provided.dragHandleProps}
-                    >
+            {issues?.map((task, index) => (
+              <Draggable
+                key={task.id}
+                draggableId={task.id.toString()}
+                index={index}
+              >
+                {(provided) => (
+                  <div
+                    ref={provided.innerRef}
+                    {...provided.draggableProps}
+                    {...provided.dragHandleProps}
+                  >
+                    {column.id == task.columnId && (
                       <Messagecard issueTitle={task.title} />
-                    </div>
-                  )}
-                </Draggable>
-              ))}
+                    )}
+                  </div>
+                )}
+              </Draggable>
+            ))}
             {provided.placeholder}
             {!open && (
               <p
@@ -129,7 +160,7 @@ const Column: React.FC<ColumnProps> = ({ column, columns, setColumns }) => {
                 <Button
                   ref={submitBtnRef}
                   disabled={newTask.trim().length === 0}
-                  onClick={addTaskHandler}
+                  onClick={addIssue}
                   className="w-fit self-end"
                   variant="secondary"
                   size="sm"

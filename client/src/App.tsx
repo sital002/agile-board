@@ -8,6 +8,7 @@ import PublicRoute from "./components/public-route";
 import PageNotFound from "./pages/404-page";
 import Signup from "./pages/signup";
 import Login from "./pages/login";
+import ProjectList from "./pages/view-project";
 
 const App = () => {
   const router = createBrowserRouter([
@@ -17,16 +18,26 @@ const App = () => {
       errorElement: <PageNotFound />,
       children: [
         {
-          path: "board",
-          element: <ProctedRoute>
-            <Board />
-          </ProctedRoute>,
+          path: "project/:id",
+          element: (
+            <ProctedRoute>
+              <Board />
+            </ProctedRoute>
+          ),
         },
         {
           path: "lists",
           element: (
             <ProctedRoute>
               <Lists />
+            </ProctedRoute>
+          ),
+        },
+        {
+          path: "projects",
+          element: (
+            <ProctedRoute>
+              <ProjectList />
             </ProctedRoute>
           ),
         },

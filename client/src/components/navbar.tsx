@@ -15,10 +15,9 @@ import { NavigationMenuDemo } from "./new-navbar";
 import { isAxiosError } from "axios";
 import { useLayoutEffect, useState } from "react";
 import { API } from "@/utils/api";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 
 const Navbar = () => {
-  const [auth, setAuth] = useState<boolean | null>(null); 
+  const [auth, setAuth] = useState<boolean | null>(null);
 
   const getUserInfo = async () => {
     try {
@@ -60,7 +59,7 @@ const Navbar = () => {
       </div>
       {/* New navigation menu */}
       <NavigationMenuDemo />
-      <Button>Create</Button>
+      <Link to={'/create'}><Button>Create</Button></Link>
       <Input
         className="w-full max-w-[20%] hidden md:block"
         placeholder="Search"
@@ -69,26 +68,24 @@ const Navbar = () => {
         <Bell size={20} />
         <ModeToggle />
         <Settings size={20} />
-       { auth ? 
-       <Avatar className="w-12 h-12 cursor-pointer">
-       <AvatarImage src="https://github.com/shadcn.png" />
-       <AvatarFallback>CN</AvatarFallback>
-     </Avatar>
-        :<>
-        <Link
-          to={"/signin"}
-          className="bg-primary text-primary-foreground px-3 py-2 rounded-md font-bold text-sm"
-        >
-          Signin
-        </Link>
-        <Link
-          to={"/signup"}
-          className="bg-primary text-primary-foreground px-3 py-2 rounded-md font-bold text-sm"
-        >
-          Signup
-        </Link>
-        </>
-       }
+        {auth ? (
+          <Button>Logout</Button>
+        ) : (
+          <>
+            <Link
+              to={"/signin"}
+              className="bg-primary text-primary-foreground px-3 py-2 rounded-md font-bold text-sm"
+            >
+              Signin
+            </Link>
+            <Link
+              to={"/signup"}
+              className="bg-primary text-primary-foreground px-3 py-2 rounded-md font-bold text-sm"
+            >
+              Signup
+            </Link>
+          </>
+        )}
       </div>
     </header>
   );

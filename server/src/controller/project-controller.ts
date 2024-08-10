@@ -10,7 +10,7 @@ export async function createProject(req: Request, res: Response) {
     if (!result.success) {
       return res.status(400).json({ error: result.error });
     }
-    if (!req.user) return res.status(400).json({ error: "Unathorized" });
+    if (!req.user) return res.status(400).json({ error: "Unauthorized" });
 
     const project = await prisma.project.create({
       data: {

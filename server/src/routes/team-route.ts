@@ -1,6 +1,5 @@
 import express from "express";
 import {
-  createTeam,
   deleteTeam,
   getTeams,
   removeTeammember,
@@ -9,7 +8,6 @@ import {
 
 const teamRouter = express.Router();
 
-teamRouter.post("/new", createTeam);
 teamRouter.get("/:projectId", getTeams);
 teamRouter.delete("/:id", deleteTeam);
 

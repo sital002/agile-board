@@ -2,33 +2,7 @@ import { PrismaClient } from "@prisma/client";
 import { Request, Response } from "express";
 
 const prisma = new PrismaClient();
-export async function createTeam(req: Request, res: Response) {
-  try {
-    if (!req.user) return res.status(400).json({ error: "Unauthorized" });
-    const { name } = req.body;
-    if (!name) return res.status(400).json({ error: "Name is required" });
-    const projectId = Number(req.params.projectId);
-    if (!projectId)
-      return res.status(400).json({ error: "Project ID is required" });
 
-    const team = await prisma.team.create({
-      data: {
-        members: {
-          connect: {
-            id: req.user.id,
-          },
-        },
-        projectId: projectId,
-      },
-    });
-    if (team) {
-      res.status(201).json(team);
-    }
-  } catch (err) {
-    console.log(err);
-    res.status(500).json({ error: "An error occurred" });
-  }
-}
 
 export async function getTeams(req: Request, res: Response) {
   try {

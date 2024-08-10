@@ -6,7 +6,6 @@ import {
   getProjects,
   deleteProject,
 } from "../controller/project-controller";
-import { authenticate } from "../middleware/authenticate";
 
 const projectRouter = express.Router();
 

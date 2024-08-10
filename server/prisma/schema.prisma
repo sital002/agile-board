@@ -25,6 +25,7 @@ model User {
   created_at             DateTime  @default(now())
   updated_at             DateTime  @updatedAt
   Project                Project[]
+  Team                   Team[]
 }
 
 model Issue {
@@ -46,6 +47,7 @@ model Project {
   User        User     @relation(fields: [userId], references: [id])
   Column      Column[]
   Issue       Issue[]
+  Team        Team[]
 }
 
 model Column {
@@ -55,4 +57,13 @@ model Column {
   tasks       Issue[]
   projectId   Int
   Project     Project @relation(fields: [projectId], references: [id])
+}
+
+model Team {
+  id          Int     @id @default(autoincrement())
+  name        String
+  description String?
+  members     User[]
+  project     Project @relation(fields: [projectId], references: [id])
+  projectId   Int
 }

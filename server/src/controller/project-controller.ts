@@ -45,11 +45,15 @@ export async function getAllProjects(req: Request, res: Response) {
 }
 export async function getProjects(req: Request, res: Response) {
   try {
-    console.log(req.user?.id, typeof req.user?.id + "the is the user id");
     if (!req.user) return res.status(400).json({ error: "Unathorized" });
+
     const projects = await prisma.project.findMany({
       where: {
-        userId: req.user.id,
+        Team: {
+          every: {
+            id: req.user.id,
+          },
+        },
       },
     });
 

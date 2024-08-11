@@ -1,7 +1,6 @@
 import z from "zod";
 import { env } from "../utils/env";
 import type { CookieOptions, Request, Response } from "express";
-import { Resend } from "resend";
 import { PrismaClient, User } from "@prisma/client";
 import bcrypt from "bcrypt";
 import crypto from "crypto";
@@ -37,8 +36,6 @@ function generateRefreshToken(id: number) {
 
 const prisma = new PrismaClient();
 
-const resend = new Resend(env.RESEND_API_KEY);
-
 const SignInSchema = z.object({
   email: z.string(),
   password: z.string(),
@@ -46,9 +43,7 @@ const SignInSchema = z.object({
 
 export async function userSignup(req: Request, res: Response) {
   const result = SignUpSchema.safeParse(req.body);
-  console.log(result.success);
   if (!result.success) {
-    console.log(result.error);
     return res.status(400).send(result.error.errors);
   }
 
@@ -96,7 +91,6 @@ export async function userSignup(req: Request, res: Response) {
       <button><a href=" https://google.com?code=${verificationCode}">Verify Email</a></button>
       `,
     });
-    console.log(data);
     if (newUser)
       return res
         .status(200)

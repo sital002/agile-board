@@ -11,7 +11,7 @@ async function main() {
         display_name: "Sital Adhikari",
         password: hashedPassword,
         verification_code: "1234",
-        email: "sitaladhikari002@gmail.com",
+        email: "test@gmail.com",
       },
 
       {

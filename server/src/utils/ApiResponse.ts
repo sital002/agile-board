@@ -33,18 +33,3 @@ export const setApiResponse = (
   ApiResponse.setResponse(res);
   next();
 };
-
-//
-class ARes {
-  protected message: string;
-  protected success: boolean;
-  protected statusCode: number;
-  protected data: any;
-  private static res: Response;
-  constructor(statusCode = 200, message: string, data?: any) {
-    this.message = message;
-    this.success = true;
-    this.statusCode = statusCode;
-    this.data = data;
-  }
-}

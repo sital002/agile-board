@@ -4,7 +4,7 @@ export type FunctionType = (
   req: Request,
   res: Response,
   next: NextFunction
-) => Promise<void>;
+) => Promise<any>;
 
 export const asyncHandler = (func: FunctionType) => {
   return async (req: Request, res: Response, next: NextFunction) => {
@@ -14,4 +14,8 @@ export const asyncHandler = (func: FunctionType) => {
       next(error);
     }
   };
+};
+
+const add = (a: number, b: number): number => {
+  return a + b;
 };

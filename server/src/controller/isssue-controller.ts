@@ -1,48 +1,48 @@
 import { PrismaClient } from "@prisma/client";
-import { Request, Response } from "express";
+import type { Request, Response } from "express";
 import { issueSchema } from "../schema/issue-schema";
+import { ApiError } from "../utils/ApiError";
+import { asyncHandler } from "../utils/AsyncHandler";
+import { ApiResponse } from "../utils/ApiResponse";
 
 const prisma = new PrismaClient();
-export async function createIssue(req: Request, res: Response) {
-  try {
-    if (!req.user) return res.status(400).json({ error: "Unauthorized" });
-    const result = issueSchema.safeParse(req.body);
-    if (!result.success) {
-      return res.status(400).json({ error: result.error });
-    }
-    const { title, description, projectId, columnId } = result.data;
 
-    const isAMember = await prisma.team.findFirst({
-      where: {
-        projectId: projectId,
-        members: {
-          some: {
-            id: req.user.id,
-          },
+export const createIssue = asyncHandler(async (req: Request, res: Response) => {
+  if (!req.user) {
+    res.status(400).json({ error: "Unauthorized" });
+    return;
+  }
+  const result = issueSchema.safeParse(req.body);
+  if (!result.success) {
+    return new ApiResponse(400, "Invalid request body");
+  }
+  const { title, description, projectId, columnId } = result.data;
+
+  const isAMember = await prisma.team.findFirst({
+    where: {
+      projectId: projectId,
+      members: {
+        some: {
+          id: req.user.id,
         },
       },
-    });
-    if (!isAMember)
-      return res
-        .status(400)
-        .json({ error: "You are not a member of this project" });
+    },
+  });
+  if (!isAMember)
+    throw new ApiError(401, "You are not a member of this project");
 
-    const issue = await prisma.issue.create({
-      data: {
-        title,
-        description,
-        projectId,
-        columnId,
-      },
-    });
-    if (issue) {
-      res.status(201).json(issue);
-    }
-  } catch (err) {
-    console.log(err);
-    res.status(500).json({ error: "An error occurred" });
+  const issue = await prisma.issue.create({
+    data: {
+      title,
+      description,
+      projectId,
+      columnId,
+    },
+  });
+  if (issue) {
+    res.status(201).json(issue);
   }
-}
+});
 
 export async function getIssues(req: Request, res: Response) {
   try {

@@ -1,5 +1,4 @@
 import express from "express";
-import type { Request, NextFunction, Response } from "express";
 import cors from "cors";
 
 import projectRouter from "./routes/project-route";
@@ -10,8 +9,8 @@ import columnRouter from "./routes/column-route";
 import { authenticate } from "./middleware/authenticate";
 import issueRouter from "./routes/issue-route";
 import teamRouter from "./routes/team-route";
-import { ApiError } from "./utils/ApiError";
 import { globalErrorHandler } from "./utils/globalErrorHandler";
+import { setApiResponse } from "./utils/ApiResponse";
 
 const app = express();
 
@@ -24,6 +23,8 @@ app.use(
 
 app.use(express.json());
 app.use(cookieParser());
+
+app.use(setApiResponse);
 
 app.use("/api/auth", authRouter);
 app.use("/api/users", userRouter);

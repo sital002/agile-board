@@ -3,7 +3,6 @@ import type { Request, Response } from "express";
 import { issueSchema } from "../schema/issue-schema";
 import { ApiError } from "../utils/ApiError";
 import { asyncHandler } from "../utils/AsyncHandler";
-import { ApiResponse } from "../utils/ApiResponse";
 
 const prisma = new PrismaClient();
 
@@ -14,7 +13,7 @@ export const createIssue = asyncHandler(async (req: Request, res: Response) => {
   }
   const result = issueSchema.safeParse(req.body);
   if (!result.success) {
-    return new ApiResponse(400, "Invalid request body");
+    throw new ApiError(400, "Invalid request body");
   }
   const { title, description, projectId, columnId } = result.data;
 

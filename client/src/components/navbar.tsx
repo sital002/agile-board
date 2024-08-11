@@ -2,14 +2,14 @@ import { Button } from "./ui/button";
 import { Bell, Settings } from "lucide-react";
 import { Input } from "./ui/input";
 import { ModeToggle } from "./mode-toggle";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { isAxiosError } from "axios";
 import { useLayoutEffect, useState } from "react";
 import { API } from "@/utils/api";
 
 const Navbar = () => {
   const [auth, setAuth] = useState<boolean | null>(null);
-
+  const navigate = useNavigate();
   const getUserInfo = async () => {
     try {
       const resp = await API.get("/api/auth/me", {
@@ -24,6 +24,23 @@ const Navbar = () => {
     }
   };
 
+  async function handleLogout() {
+    try {
+      const resp = await API.get("/api/auth/logout", {
+        withCredentials: true,
+      });
+      localStorage.removeItem("refresh_token");
+      localStorage.removeItem("access_token");
+      navigate("/signin");
+
+      console.log(resp);
+      setAuth(false);
+    } catch (error) {
+      if (isAxiosError(error)) {
+        console.log(error.response?.data);
+      }
+    }
+  }
   useLayoutEffect(() => {
     getUserInfo();
   }, []);
@@ -39,7 +56,7 @@ const Navbar = () => {
         <ModeToggle />
         <Settings size={20} />
         {auth ? (
-          <Button>Logout</Button>
+          <Button onClick={handleLogout}>Logout</Button>
         ) : (
           <>
             <Link

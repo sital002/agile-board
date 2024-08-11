@@ -23,13 +23,16 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Skeleton } from "./ui/skeleton";
+import { Input } from "./ui/input";
+import { Link } from "react-router-dom";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   isLoading?: boolean;
 }
-export function DataTable<TData, TValue>({
+
+export function SkeletonTable<TData, TValue>({
   columns,
   data,
   isLoading,
@@ -64,7 +67,20 @@ export function DataTable<TData, TValue>({
   });
 
   return (
-    <div className="w-full">
+    <div className="w-full mx-2">
+      <div className="flex gap-3 my-2">
+        <Input
+          placeholder="Filter projects..."
+          value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
+          onChange={(event) =>
+            table.getColumn("name")?.setFilterValue(event.target.value)
+          }
+          className="max-w-sm"
+        />
+        <Button asChild>
+          <Link to={"/create"}>Create</Link>
+        </Button>
+      </div>
       <div className="rounded-md border">
         <Table>
           <TableHeader>

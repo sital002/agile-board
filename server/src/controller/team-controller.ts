@@ -9,7 +9,7 @@ export async function getTeams(req: Request, res: Response) {
     if (!projectId)
       return res.status(400).json({ error: "Project ID is required" });
 
-    const teams = await prisma.team.findMany({
+    const teams = await prisma.team.findFirst({
       where: {
         projectId: projectId,
       },
@@ -51,8 +51,15 @@ export async function updateTeamMembers(req: Request, res: Response) {
     const id = parseInt(req.params.projectId);
     if (isNaN(id))
       return res.status(400).json({ error: "Team ID is mnust be number" });
-    const { member } = req.body;
-    if (!member) return res.status(400).json({ error: "Members are required" });
+    const { email } = req.body;
+    if (!email) return res.status(400).json({ error: "Members are required" });
+    const memberExists = await prisma.user.findFirst({
+      where: {
+        email: email,
+      },
+    });
+    if (!memberExists)
+      return res.status(400).json({ error: "Member does not exist" });
 
     const project = await prisma.project.findFirst({
       where: {
@@ -63,7 +70,7 @@ export async function updateTeamMembers(req: Request, res: Response) {
       },
     });
     if (project?.creator.id !== req.user?.id) {
-      return res.status(400).json({ error: "Unauthorized" });
+      return res.status(400).json({ error: "You aren't the creator" });
     }
     const team = await prisma.team.update({
       where: {
@@ -71,10 +78,13 @@ export async function updateTeamMembers(req: Request, res: Response) {
       },
       data: {
         members: {
-          update: member,
+          connect: {
+            id: memberExists.id,
+          },
         },
       },
     });
+    console.log(team);
     if (team) {
       res.status(200).json(team);
     }

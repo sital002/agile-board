@@ -71,7 +71,9 @@ export const issueColumns: ColumnDef<Issue>[] = [
     header: () => <div>Created</div>,
     cell: ({ row }) => {
       return (
-        <div className="font-medium">{row.original.createdAt.toString()}</div>
+        <div className="font-medium">
+          {new Date(row.original.createdAt).toLocaleDateString()}
+        </div>
       );
     },
   },
@@ -81,8 +83,9 @@ export const issueColumns: ColumnDef<Issue>[] = [
     cell: ({ row }) => {
       return (
         <div className="font-medium">
-          {row.original.updatedAt?.toString() ??
-            row.original.createdAt.toString()}
+          {(row.original.updatedAt &&
+            new Date(row.original.updatedAt).toLocaleDateString()) ??
+            new Date(row.original.createdAt).toLocaleDateString()}
         </div>
       );
     },
@@ -93,7 +96,9 @@ export const issueColumns: ColumnDef<Issue>[] = [
     cell: ({ row }) => {
       return (
         <div className={`w-fit px-2 py-1 rounded-sm font-medium `}>
-          {row.original.dueDate?.toString() ?? "-"}
+          {(row.original.dueDate &&
+            new Date(row.original.dueDate).toLocaleDateString()) ??
+            "-"}
         </div>
       );
     },

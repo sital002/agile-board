@@ -11,6 +11,22 @@ export async function createIssue(req: Request, res: Response) {
       return res.status(400).json({ error: result.error });
     }
     const { title, description, projectId, columnId } = result.data;
+
+    const isAMember = await prisma.team.findFirst({
+      where: {
+        projectId: projectId,
+        members: {
+          some: {
+            id: req.user.id,
+          },
+        },
+      },
+    });
+    if (!isAMember)
+      return res
+        .status(400)
+        .json({ error: "You are not a member of this project" });
+
     const issue = await prisma.issue.create({
       data: {
         title,
@@ -34,6 +50,20 @@ export async function getIssues(req: Request, res: Response) {
     const projectId = Number(req.params.projectId);
     if (!projectId)
       return res.status(400).json({ error: "Project Id is required" });
+    const isAMember = await prisma.team.findFirst({
+      where: {
+        projectId: projectId,
+        members: {
+          some: {
+            id: req.user.id,
+          },
+        },
+      },
+    });
+    if (!isAMember)
+      return res
+        .status(400)
+        .json({ error: "You are not a member of this project" });
 
     const issues = await prisma.issue.findMany({
       where: {

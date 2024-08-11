@@ -20,7 +20,7 @@ export const sidebarlist = [
   {
     name: "Board",
     icon: <Dice6 size={20} />,
-    url: `/project/${localStorage.getItem("currentProjectId")}`,
+    url: `/board`,
   },
   {
     name: "List",

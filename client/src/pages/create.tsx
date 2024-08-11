@@ -39,7 +39,10 @@ const CreateProject = () => {
     try {
       const resp = await API.post("/api/projects/new", data);
       console.log(resp);
-      navigate("/projects");
+      if (resp) {
+        localStorage.setItem("currentProjectId", resp.data.id);
+        navigate("/board");
+      }
     } catch (error: unknown) {
       if (error instanceof Error) {
         toast({
@@ -103,7 +106,9 @@ const CreateProject = () => {
                 </div>
               </div>
               <div className="flex my-6 gap-x-4">
-                <Link to={`/project/${localStorage.getItem("currentProjectId")}`}><p className="border-2 p-2 rounded-md">Cancel</p></Link>
+                <Link to={`/board`}>
+                  <p className="border-2 p-2 rounded-md">Cancel</p>
+                </Link>
                 <Button>Create</Button>
               </div>
             </form>

@@ -19,7 +19,7 @@ const App = () => {
       errorElement: <PageNotFound />,
       children: [
         {
-          path: "project/:id",
+          path: "board",
           element: (
             <ProctedRoute>
               <Board />
@@ -38,7 +38,7 @@ const App = () => {
           path: "team",
           element: (
             <ProctedRoute>
-              < Team/>
+              <Team />
             </ProctedRoute>
           ),
         },

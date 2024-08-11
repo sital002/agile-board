@@ -6,8 +6,11 @@ const userSchema = z.object({
   display_name: z.string(),
   isSubscribed: z.boolean(),
   profile_image_url: z.string().nullable(),
-  created_at: z.string(),
-  updated_at: z.string().nullable(),
+  created_at: z.string().refine((date) => new Date(date).toLocaleDateString()),
+  updated_at: z
+    .string()
+    .nullable()
+    .refine((date) => date && new Date(date).toLocaleDateString()),
 });
 
 const columnSchema = z.object({
@@ -22,9 +25,15 @@ const issueSchema = z.object({
   columnId: z.number(),
   title: z.string(),
   description: z.string(),
-  createdAt: z.string(),
-  updatedAt: z.string(),
-  dueDate: z.string().nullable(),
+  createdAt: z.string().refine((date) => new Date(date).toLocaleDateString()),
+  updatedAt: z
+    .string()
+    .nullable()
+    .refine((date) => date && new Date(date).toLocaleDateString()),
+  dueDate: z
+    .string()
+    .nullable()
+    .refine((date) => date && new Date(date)),
   assignee: z.string().nullable(),
   Column: columnSchema,
 });

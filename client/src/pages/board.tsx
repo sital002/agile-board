@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { DragDropContext, DropResult } from "@hello-pangea/dnd";
 import Header from "../components/header";
 import Filterbar from "../components/filterbar";
@@ -6,8 +6,8 @@ import { Check, Plus, X } from "lucide-react";
 import { Input } from "../components/ui/input";
 import ColumnList from "@/components/column";
 import { API } from "@/utils/api";
-import { useParams } from "react-router-dom";
 import type { Column } from "@/schema/schema";
+import { useNavigate } from "react-router-dom";
 
 type ProjectInfo = {
   id: string;
@@ -20,7 +20,7 @@ const Board: React.FC = () => {
   const [columns, setColumns] = useState<Column[]>([]);
   const [open, setOpen] = useState(false);
   const [heading, setHeading] = useState<string>("");
-  const { id } = useParams();
+  const id = localStorage.getItem("currentProjectId");
   const [projectInfo, setProjectInfo] = useState<ProjectInfo>({
     id: "",
     name: "",
@@ -28,6 +28,7 @@ const Board: React.FC = () => {
     description: "",
   });
   const [newColumn, setNewColumn] = useState();
+  const navigate = useNavigate();
 
   const dragHandler = (result: DropResult) => {
     console.log(result);
@@ -87,26 +88,29 @@ const Board: React.FC = () => {
     return () => window.removeEventListener("click", closeHandler);
   }, [open]);
 
-  const getProjectDetails = async () => {
+  const getProjectDetails = useCallback(async () => {
+    if (!id) return navigate("/create");
     const resp = await API.get(`/api/projects/${id}`);
     setProjectInfo(resp.data);
-  };
+  }, [id, navigate]);
 
-  const getColumn = async () => {
+  const getColumn = useCallback(async () => {
+    if (!id) return navigate("/create");
     const resp = await API.get(`/api/columns/${id}`);
     setColumns(resp.data);
     // console.log(resp.data)
-  };
+  }, [id, navigate]);
 
   useEffect(() => {
+    if (!id) return navigate("/create");
     getProjectDetails();
     getColumn();
     localStorage.setItem("currentProjectId", id as string);
-  }, []);
+  }, [getColumn, getProjectDetails, id, navigate]);
 
   useEffect(() => {
     getColumn();
-  }, [newColumn]);
+  }, [getColumn, newColumn]);
 
   return (
     <div className="w-full px-8 overflow-hidden ">

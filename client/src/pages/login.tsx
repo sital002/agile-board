@@ -46,9 +46,7 @@ function Login() {
     console.log(data);
     try {
       setLoading(true);
-      const resp = await API.post(`/api/auth/signin`, {
-        data,
-      });
+      const resp = await API.post(`/api/auth/signin`, data);
       console.log(resp);
       if (resp.status) {
         navigate("/create");

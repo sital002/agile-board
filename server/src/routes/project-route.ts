@@ -6,12 +6,13 @@ import {
   getProjects,
   deleteProject,
 } from "../controller/project-controller";
+import { isProjectCreator, isProjectMember } from "../middleware/project";
 
 const projectRouter = express.Router();
 
 projectRouter.post("/new", createProject);
-projectRouter.get("/", getProjects);
-projectRouter.delete("/:id", deleteProject);
+projectRouter.get("/", isProjectMember, getProjects);
+projectRouter.delete("/:id", isProjectCreator, deleteProject);
 projectRouter.get("/:id", getProjectById);
 
 // Admin route

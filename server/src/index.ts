@@ -11,6 +11,7 @@ import issueRouter from "./routes/issue-route";
 import teamRouter from "./routes/team-route";
 import { globalErrorHandler } from "./utils/globalErrorHandler";
 import { setApiResponse } from "./utils/ApiResponse";
+import { PrismaClient } from "@prisma/client";
 
 const app = express();
 

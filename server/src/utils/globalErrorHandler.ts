@@ -9,7 +9,7 @@ export const globalErrorHandler = (
   _next: NextFunction
 ) => {
   if (err instanceof ApiError) {
-    res.status(err.statusCode).json({
+    return res.status(err.statusCode).json({
       error: err.message,
       statusCode: err.statusCode,
       success: err.success,

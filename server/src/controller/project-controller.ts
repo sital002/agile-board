@@ -2,7 +2,7 @@ import { PrismaClient } from "@prisma/client";
 import type { Request, Response } from "express";
 import { logger } from "../utils/logger";
 import { projectSchema } from "../schema/project-schema";
-const prisma = new PrismaClient();
+import prisma from "../db/prisma";
 
 export async function createProject(req: Request, res: Response) {
   try {
@@ -49,7 +49,7 @@ export async function createProject(req: Request, res: Response) {
   }
 }
 
-export async function getAllProjects(req: Request, res: Response) {
+export async function getAllProjects(_req: Request, res: Response) {
   try {
     const projects = await prisma.project.findMany();
 
@@ -85,7 +85,7 @@ export async function getProjects(req: Request, res: Response) {
 
     if (projects) {
       logger("Projects fetched successfully");
-      res.status(200).json(projects);
+      return res.status(200).json(projects);
     }
   } catch (err) {
     console.log(err);
@@ -95,16 +95,16 @@ export async function getProjects(req: Request, res: Response) {
 
 export async function getProjectById(req: Request, res: Response) {
   try {
-    const id = req.params.id;
-    if (!id) {
+    const projectId = req.params.projectId || req.body;
+    if (!projectId) {
       return res.status(400).json({ error: "Project ID is required" });
     }
-    if (isNaN(parseInt(id))) {
+    if (isNaN(parseInt(projectId))) {
       return res.status(400).json({ error: "Project ID must be a number" });
     }
     const project = await prisma.project.findUnique({
       where: {
-        id: parseInt(id),
+        id: parseInt(projectId),
       },
     });
 
@@ -121,12 +121,16 @@ export async function getProjectById(req: Request, res: Response) {
 export async function deleteProject(req: Request, res: Response) {
   try {
     if (!req.user) return res.status(400).json({ error: "Unathorized" });
-    const id = Number(req.params.id);
-    if (!id) return res.status(400).json({ error: "Project ID is required" });
-
+    const projectId = req.params.projectId || req.body;
+    if (!projectId) {
+      return res.status(400).json({ error: "Project ID is required" });
+    }
+    if (isNaN(parseInt(projectId))) {
+      return res.status(400).json({ error: "Project ID must be a number" });
+    }
     const project = await prisma.project.delete({
       where: {
-        id,
+        id: parseInt(projectId),
       },
     });
     if (project) {

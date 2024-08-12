@@ -12,8 +12,8 @@ const projectRouter = express.Router();
 
 projectRouter.post("/new", createProject);
 projectRouter.get("/", isProjectMember, getProjects);
-projectRouter.delete("/:id", isProjectCreator, deleteProject);
-projectRouter.get("/:id", getProjectById);
+projectRouter.delete("/:projectId", isProjectCreator, deleteProject);
+projectRouter.get("/:projectId", getProjectById);
 
 // Admin route
 projectRouter.get("/all", getAllProjects);

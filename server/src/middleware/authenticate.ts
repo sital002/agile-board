@@ -28,7 +28,6 @@ export async function authenticate(
     });
     if (!user) return res.status(401).json({ error: "User not found" });
     req.user = user;
-    console.log(req.user);
     next();
   } catch (err) {
     console.log(err);

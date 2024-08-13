@@ -95,7 +95,7 @@ export function DataTable<TData, TValue>({
                 >
                   {row.getVisibleCells().map((cell, index) => (
                     <React.Fragment key={cell.id + index}>
-                      {isLoading && data.length === 0 ? (
+                      {isLoading ? (
                         <TableCell>
                           <Skeleton className="w-full h-4" />
                         </TableCell>

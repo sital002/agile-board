@@ -8,7 +8,7 @@ export const isProjectCreator = asyncHandler(
   async (req: Request, _res: Response, next: NextFunction) => {
     if (!req.user) throw new ApiError(401, "You are not loggedin");
 
-    const { projectId } = req.params.projectId || req.body;
+    const { projectId } = req.params || req.body;
     if (!projectId) throw new ApiError(400, "Project ID is required");
     if (isNaN(parseInt(projectId))) {
       throw new ApiError(400, "Project Id must be number");
@@ -29,7 +29,8 @@ export const isProjectCreator = asyncHandler(
 export const isProjectMember = asyncHandler(
   async (req: Request, _res: Response, next: NextFunction) => {
     if (!req.user) throw new ApiError(400, "You aren't logged in");
-    const { projectId } = req.params.projectId || req.body;
+    const { projectId } = req.params || req.body;
+
     if (!projectId) throw new ApiError(400, "Project Id is required");
     if (isNaN(parseInt(projectId))) {
       throw new ApiError(400, "Project Id must be number");

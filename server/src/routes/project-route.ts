@@ -6,12 +6,12 @@ import {
   getProjects,
   deleteProject,
 } from "../controller/project-controller";
-import { isProjectCreator, isProjectMember } from "../middleware/project";
+import { isProjectCreator } from "../middleware/project";
 
 const projectRouter = express.Router();
 
 projectRouter.post("/new", createProject);
-projectRouter.get("/", isProjectMember, getProjects);
+projectRouter.get("/", getProjects);
 projectRouter.delete("/:projectId", isProjectCreator, deleteProject);
 projectRouter.get("/:projectId", getProjectById);
 

@@ -7,20 +7,21 @@ import { Dialog, DialogContent } from "./ui/dialog";
 import { DialogTitle } from "@radix-ui/react-dialog";
 import IssueCard from "./issue-details-card";
 import MessageBoxDropDown from "./message-cart-dropdown";
+import { Issue } from "@/schema/schema";
 
 interface MessagecardProps {
-  issueTitle: string;
-  id: string;
+  issue: Issue;
 }
 
 const Messagecard = React.forwardRef<
   HTMLDivElement,
   React.HTMLProps<HTMLDivElement> & MessagecardProps
->(({ id, issueTitle, ...props }, ref) => {
+>(({ issue, ...props }, ref) => {
   const [open, setOpen] = useState(false);
   function handleOpenIssue() {
     setOpen(true);
   }
+  console.log(issue);
 
   return (
     <>
@@ -28,25 +29,25 @@ const Messagecard = React.forwardRef<
         onClick={handleOpenIssue}
         ref={ref}
         {...props}
-        className={`p-3 hover:bg-secondary group rounded-md shadow-md cursor-pointer select-none ${props.className}`}
+        className={`group cursor-pointer select-none rounded-md p-3 shadow-md hover:bg-secondary ${props.className}`}
       >
         <div className="flex justify-between gap-3">
-          <div className="flex relative">
+          <div className="relative flex">
             <Tooltip>
               <TooltipTrigger>
-                <p className="w-full text-left text-sm mr-6 group-hover:underline">
-                  {issueTitle} Helo
+                <p className="mr-6 w-full text-left text-sm group-hover:underline">
+                  {issue.title}
                 </p>
               </TooltipTrigger>
               <TooltipContent>
-                <p>{issueTitle}</p>
+                <p>{issue.title}</p>
               </TooltipContent>
             </Tooltip>
             <Tooltip>
               <TooltipTrigger>
                 <Pencil
                   size={15}
-                  className="self-end hidden group-hover:block ml-1 absolute right-0"
+                  className="absolute right-0 ml-1 hidden self-end group-hover:block"
                 />
               </TooltipTrigger>
               <TooltipContent>
@@ -54,18 +55,28 @@ const Messagecard = React.forwardRef<
               </TooltipContent>
             </Tooltip>
           </div>
-          <MessageBoxDropDown id={id} />
+          <MessageBoxDropDown id={issue.id.toString()} />
         </div>
-        <div className="flex justify-between py-3 items-center">
+        <div className="flex items-center justify-between py-3">
           <Tooltip>
             <TooltipTrigger>
-              <Avatar className="w-5 h-5">
-                <AvatarImage src="https://github.com/shadcn.png" />
-                <AvatarFallback>CN</AvatarFallback>
-              </Avatar>
+              {issue.assignee === null ? (
+                <Avatar className="h-5 w-auto">
+                  <AvatarFallback>UN</AvatarFallback>
+                </Avatar>
+              ) : (
+                <Avatar className="h-5 w-auto">
+                  <AvatarImage src={issue.assignee.profile_image_url || ""} />
+                  <AvatarFallback>
+                    {issue.assignee.display_name.slice(0, 2)}
+                  </AvatarFallback>
+                </Avatar>
+              )}
             </TooltipTrigger>
             <TooltipContent>
-              <p>John Doe</p>
+              <p>
+                {issue.assignee ? issue.assignee.display_name : "Unassigned"}
+              </p>
             </TooltipContent>
           </Tooltip>
         </div>
@@ -77,7 +88,7 @@ const Messagecard = React.forwardRef<
             setOpen(false);
           }}
         >
-          <DialogTitle className="sr-only">{issueTitle}</DialogTitle>
+          <DialogTitle className="sr-only">{issue.title}</DialogTitle>
           <DialogContent>
             <IssueCard />
           </DialogContent>

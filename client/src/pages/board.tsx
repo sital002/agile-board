@@ -113,22 +113,22 @@ const Board: React.FC = () => {
   }, [getColumn, newColumn]);
 
   return (
-    <div className="w-full px-8 overflow-hidden ">
+    <div className="w-full overflow-hidden px-8">
       <Header projectTitle={projectInfo?.name} />
       <Filterbar />
-      <div className="flex gap-2 w-full overflow-x-scroll scrollbar">
+      <div className="flex w-full gap-2 overflow-x-scroll scrollbar">
         <DragDropContext onDragEnd={dragHandler}>
           {columns?.map((column) => (
             <ColumnList key={column.id} column={column} />
           ))}
         </DragDropContext>
-        <div className="flex flex-col gap-y-2 w-full max-w-[300px]">
+        <div className="flex w-full max-w-[300px] flex-col gap-y-2">
           {open && (
             <Input
               placeholder="enter title"
               onChange={(e) => setHeading(e.target.value)}
               onClick={(e) => e.stopPropagation()}
-              className="w-full min-w-[250px] rounded-none "
+              className="w-full min-w-[250px] rounded-none"
             />
           )}
           {!open && (
@@ -139,18 +139,18 @@ const Board: React.FC = () => {
                 if (!heading) return;
               }}
               size={25}
-              className="rounded-md bg-secondary cursor-pointer ml-5"
+              className="ml-5 cursor-pointer rounded-md bg-secondary"
             />
           )}
           {open && (
             <div className="flex gap-x-2 self-end">
               <Check
                 onClick={headingHandler}
-                className="dark:bg-black bg-gray-200 rounded-md cursor-pointer"
+                className="cursor-pointer rounded-md bg-gray-200 dark:bg-black"
               />
               <X
                 onClick={() => setOpen(false)}
-                className="dark:bg-black bg-gray-200 rounded-md cursor-pointer"
+                className="cursor-pointer rounded-md bg-gray-200 dark:bg-black"
               />
             </div>
           )}

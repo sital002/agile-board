@@ -64,9 +64,9 @@ function Login() {
   };
 
   return (
-    <div className=" flex justify-center items-center h-screen mx-auto px-2 ">
-      <Card className="p-3 w-full max-w-lg">
-        <h1 className="text-2xl font-semibold text-center my-2">Signin</h1>
+    <div className="mx-auto flex h-screen items-center justify-center px-2">
+      <Card className="w-full max-w-lg p-3">
+        <h1 className="my-2 text-center text-2xl font-semibold">Signin</h1>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
             <FormField

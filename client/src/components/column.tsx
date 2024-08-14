@@ -5,6 +5,7 @@ import { Button } from "./ui/button";
 import Messagecard from "./message-card";
 import { API } from "@/utils/api";
 import type { Column, Issue } from "@/schema/schema";
+import { isAxiosError } from "axios";
 
 interface ColumnProps {
   column: Column;
@@ -12,7 +13,7 @@ interface ColumnProps {
   // setColumns: React.Dispatch<React.SetStateAction<ColumnType[]>>;
 }
 
-const Column: React.FC<ColumnProps> = ({ column }) => {
+const ColumnList: React.FC<ColumnProps> = ({ column }) => {
   const [open, setOpen] = useState(false);
   const [newTask, setNewTask] = useState("");
   const submitBtnRef = useRef<HTMLButtonElement | null>(null);
@@ -65,15 +66,28 @@ const Column: React.FC<ColumnProps> = ({ column }) => {
     setNewTask(e.target.value);
   };
 
-  const addIssue = async () => {
-    const resp = await API.post("/api/issues/new", {
-      title: newTask,
-      projectId: column.projectId,
-      columnId: column.id,
-    });
-    console.log(resp);
+  const addIssue = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    console.log(column.projectId);
+    try {
+      const resp = await API.post("/api/issues/new", {
+        title: newTask,
+        projectId: column.projectId,
+        columnId: column.id,
+      });
+      console.log(resp);
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        console.log(err.message);
+      }
+      if (isAxiosError(err)) {
+        console.log(err.response?.data);
+      }
+    } finally {
+      setNewTask("");
+      setOpen(false);
+    }
     // setIssue(resp.data);
-    setOpen(false);
   };
 
   useEffect(() => {
@@ -99,11 +113,13 @@ const Column: React.FC<ColumnProps> = ({ column }) => {
         <div
           {...provided.droppableProps}
           ref={provided.innerRef}
-          style={{ backgroundColor: snapshot.isDraggingOver ? "grey" : "" }}
-          className="border-2 h-fit min-w-[300px] rounded-sm p-1 relative"
+          style={{
+            backgroundColor: snapshot.isDraggingOver ? "gray" : "",
+          }}
+          className="max-h-[500px] min-w-[300px] rounded-sm border-2 p-1"
         >
-          <div className="font-medium text-md mb-2 px-2">{column.name}</div>
-          <div className="flex flex-col gap-y-2">
+          <div className="text-md mb-2 px-2 font-medium">{column.name}</div>
+          <div className="scrollbar-thumb-rounded-full h-[300px] overflow-auto p-1 scrollbar-thin scrollbar-track-secondary scrollbar-thumb-primary-foreground">
             {issues?.map((task, index) => (
               <Draggable
                 key={task.id}
@@ -112,63 +128,56 @@ const Column: React.FC<ColumnProps> = ({ column }) => {
               >
                 {(provided) => (
                   <div
+                    className="relative my-2"
                     ref={provided.innerRef}
                     {...provided.draggableProps}
                     {...provided.dragHandleProps}
                   >
-                    {column.id == task.columnId && (
-                      <Messagecard
-                        id={task.id.toString()}
-                        issueTitle={task.title}
-                      />
-                    )}
+                    {column.id == task.columnId ? (
+                      <Messagecard issue={task} />
+                    ) : null}
                   </div>
                 )}
               </Draggable>
             ))}
             {provided.placeholder}
-            {!open && (
-              <p
-                onClick={(e) => {
-                  e.stopPropagation(), setOpen(true);
-                }}
-                className="font-semibold cursor-pointer p-2"
-              >
-                + Create Issue
-              </p>
-            )}
-            {open && (
-              <div
-                onClick={(e) => e.stopPropagation()}
-                className="border-2 border-gray-500 flex flex-col gap-y-4 p-1"
-              >
+          </div>
+          {!open && (
+            <p
+              onClick={(e) => {
+                e.stopPropagation(), setOpen(true);
+              }}
+              className="cursor-pointer p-2 font-semibold"
+            >
+              + Create Issue
+            </p>
+          )}
+          {open && (
+            <div onClick={(e) => e.stopPropagation()}>
+              <form onSubmit={addIssue}>
                 <Input
                   ref={inputRef}
-                  onKeyUp={(e) => {
-                    if (e.key == "Enter") submitBtnRef.current?.click();
-                  }}
                   onChange={issueHandler}
                   value={newTask}
-                  className="rounded-none border-none focus:outline-none "
+                  className="my-2 w-full rounded-none border-none outline-none focus:outline"
                   placeholder="Enter your issue..."
                 />
                 <Button
                   ref={submitBtnRef}
                   disabled={newTask.trim().length === 0}
-                  onClick={addIssue}
-                  className="w-fit self-end"
+                  className="ml-auto w-fit"
                   variant="secondary"
                   size="sm"
                 >
                   Create
                 </Button>
-              </div>
-            )}
-          </div>
+              </form>
+            </div>
+          )}
         </div>
       )}
     </Droppable>
   );
 };
 
-export default Column;
+export default ColumnList;

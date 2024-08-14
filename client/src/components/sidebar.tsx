@@ -14,12 +14,12 @@ const Sidebar = () => {
     <aside
       className={`w-full border-r ${
         !width ? "max-w-[50%] md:max-w-[30%] lg:max-w-[20%]" : "max-w-0 p-0"
-      } absolute  p-6 h-screen select-none md:relative transition-all`}
+      } absolute select-none p-6 transition-all md:relative`}
     >
       <ChevronRight
         onClick={clickHandler}
         color="white"
-        className="absolute left-[95%] bg-blue-500 rounded-full top-[10%] cursor-pointer"
+        className="absolute left-[95%] top-[10%] cursor-pointer rounded-full bg-blue-500"
       />
       <div className={width ? "hidden" : "block"}>
         <div className="flex items-center gap-x-4 py-6">
@@ -37,7 +37,7 @@ const Sidebar = () => {
           {sidebarlist.map((ele, index) => (
             <div key={index}>
               <Link to={ele.url}>
-                <div className="flex items-center gap-2 py-3 my-2 px-2 cursor-pointer hover:bg-secondary rounded-md">
+                <div className="my-2 flex cursor-pointer items-center gap-2 rounded-md px-2 py-3 hover:bg-secondary">
                   <span>{ele.icon}</span>
                   <span className="text-sm opacity-60">{ele.name}</span>
                 </div>

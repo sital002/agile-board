@@ -38,7 +38,7 @@ const Team = () => {
         `/api/teams/update-member/${currentProjectId}`,
         {
           email: email,
-        }
+        },
       );
       console.log(result.data);
     } catch (error: unknown) {
@@ -49,11 +49,11 @@ const Team = () => {
   return (
     <div className="w-full p-3">
       <Dialog>
-        <div className="flex gap-3 items-center">
+        <div className="flex items-center gap-3">
           <Input
             value={search}
             onChange={changeHandler}
-            className="max-w-sm my-4"
+            className="my-4 max-w-sm"
             placeholder="Search member"
           />
           <DialogTrigger asChild>
@@ -61,7 +61,7 @@ const Team = () => {
           </DialogTrigger>
           <DialogContent className="max-w-lg" aria-describedby={undefined}>
             <DialogTitle>Add Member</DialogTitle>
-            <form onSubmit={handleSubmit} className="flex gap-2 items-center">
+            <form onSubmit={handleSubmit} className="flex items-center gap-2">
               <Input placeholder="Email" name="email" className="my-2" />
               <Button>Add</Button>
             </form>

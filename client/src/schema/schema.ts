@@ -34,7 +34,8 @@ const issueSchema = z.object({
     .string()
     .nullable()
     .refine((date) => date && new Date(date)),
-  assignee: z.string().nullable(),
+  assignee: userSchema.nullable(),
+  assigneeId: z.number().nullable(),
   Column: columnSchema,
 });
 

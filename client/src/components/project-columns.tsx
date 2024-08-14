@@ -11,8 +11,10 @@ import {
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import { Project } from "@/schema/schema";
+import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "./ui/dialog";
+
 const currentProjectID = parseInt(
-  localStorage.getItem("currentProjectId") ?? ""
+  localStorage.getItem("currentProjectId") ?? "",
 );
 export const projectColumns: ColumnDef<Project>[] = [
   {
@@ -51,10 +53,10 @@ export const projectColumns: ColumnDef<Project>[] = [
       );
     },
     cell: ({ row }) => (
-      <div className="flex gap-2 items-center">
+      <div className="flex items-center gap-2">
         <p>{row.original.name}</p>
         {currentProjectID && currentProjectID === row.original.id && (
-          <p className="rounded-2xl text-green-500 border-2 border-green-800 px-2 py-1">
+          <p className="rounded-2xl border-2 border-green-800 px-2 py-1 text-green-500">
             Current
           </p>
         )}
@@ -93,7 +95,14 @@ export const projectColumns: ColumnDef<Project>[] = [
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>Edit</DropdownMenuItem>
+            <DropdownMenuItem>
+              <Dialog>
+                <DialogTrigger>Edit</DialogTrigger>
+                <DialogContent>
+                  <DialogTitle>Add Member</DialogTitle>
+                </DialogContent>
+              </Dialog>
+            </DropdownMenuItem>
             <DropdownMenuItem className="text-destructive">
               Delete
             </DropdownMenuItem>

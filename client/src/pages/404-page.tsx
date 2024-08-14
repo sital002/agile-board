@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 const PageNotFound = () => {
   const navigate = useNavigate();
   return (
-    <div className="flex justify-center items-center h-screen">
+    <div className="flex h-screen items-center justify-center">
       <div>
         <img
           className="mx-auto my-4 w-[300px]"
@@ -12,10 +12,8 @@ const PageNotFound = () => {
           alt=""
         />
         <Button
-          onClick={() =>
-            navigate(`/project/${localStorage.getItem("currentProjectId")}`)
-          }
-          className="block mx-auto my-8 "
+          onClick={() => navigate(`/board`)}
+          className="mx-auto my-8 block"
         >
           Back to Home
         </Button>

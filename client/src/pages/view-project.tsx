@@ -34,11 +34,11 @@ const ProjectList = () => {
   return (
     <div className="w-full px-2">
       <div className="flex items-center gap-3">
-        <h1 className="text-lg my-4">Project List</h1>
+        <h1 className="my-4 text-lg">Project List</h1>
       </div>
       <DataTable
         columns={projectColumns}
-        data={isLoading ? tempdata : data ?? []}
+        data={isLoading ? tempdata : (data ?? [])}
         isLoading={isLoading}
       />
     </div>

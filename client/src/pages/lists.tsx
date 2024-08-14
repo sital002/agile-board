@@ -15,6 +15,7 @@ export default function Lists() {
     queryKey: ["todos"],
     queryFn: getAllIssue,
   });
+
   return (
     <div className="w-full p-3 px-2">
       <p className="text-lg">Lists</p>

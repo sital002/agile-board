@@ -6,7 +6,7 @@ import {
   getProjects,
   deleteProject,
 } from "../controller/project-controller";
-import { isProjectCreator } from "../middleware/project";
+import { isProjectCreator, isProjectMember } from "../middleware/project";
 
 const projectRouter = express.Router();
 

@@ -28,6 +28,8 @@ model User {
   issues                 Issue[]
   team                   Team?     @relation(fields: [teamId], references: [id])
   teamId                 String?
+  currentProjectId       String?
+  currentProject         Project?  @relation(fields: [currentProjectId], references: [id])
 }
 
 model Issue {
@@ -55,6 +57,7 @@ model Project {
   columns     Column[]
   issues      Issue[]
   team        Team?
+  user        User[]
 }
 
 model Team {

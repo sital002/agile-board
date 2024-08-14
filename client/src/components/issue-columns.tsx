@@ -38,7 +38,7 @@ export const issueColumns: ColumnDef<Issue>[] = [
   {
     accessorKey: "status",
     header: "Status",
-    cell: ({ row }) => <div>{row.original.Column.name}</div>,
+    cell: ({ row }) => <div>{row.original.column.name}</div>,
   },
   {
     accessorKey: "title",
@@ -95,7 +95,7 @@ export const issueColumns: ColumnDef<Issue>[] = [
     header: () => <div>Due Date</div>,
     cell: ({ row }) => {
       return (
-        <div className={`w-fit px-2 py-1 rounded-sm font-medium `}>
+        <div className={`w-fit rounded-sm px-2 py-1 font-medium`}>
           {(row.original.dueDate &&
             new Date(row.original.dueDate).toLocaleDateString()) ??
             "-"}

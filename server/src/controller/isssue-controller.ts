@@ -36,24 +36,10 @@ export async function getIssues(req: Request, res: Response) {
     const projectId = req.params.projectId;
     if (!projectId)
       return res.status(400).json({ error: "Project Id is required" });
-    const isAMember = await prisma.team.findFirst({
-      where: {
-        projectId: projectId,
-        members: {
-          some: {
-            id: req.user.id,
-          },
-        },
-      },
-    });
-    if (!isAMember)
-      return res
-        .status(400)
-        .json({ error: "You are not a member of this project" });
 
     const issues = await prisma.issue.findMany({
       where: {
-        projectId: projectId,
+        projectId,
       },
       include: {
         column: true,

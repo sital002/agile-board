@@ -1,4 +1,3 @@
-import { PrismaClient } from "@prisma/client";
 import type { Request, Response } from "express";
 import { logger } from "../utils/logger";
 import { projectSchema } from "../schema/project-schema";
@@ -17,6 +16,15 @@ export async function createProject(req: Request, res: Response) {
         name: result.data.name,
         description: result.data.description,
         creatorId: req.user.id,
+        columns: {
+          createMany: {
+            data: [
+              { name: "To Do" },
+              { name: "In Progress" },
+              { name: "Done" },
+            ],
+          },
+        },
         team: {
           create: {
             members: {
@@ -56,19 +64,11 @@ export async function getProjects(req: Request, res: Response) {
     if (!req.user) return res.status(400).json({ error: "Unathorized" });
 
     const projects = await prisma.project.findMany({
-      where: {
-        team: {
-          members: {
-            some: {
-              id: req.user.id,
-            },
-          },
-        },
-      },
       include: {
         creator: true,
       },
     });
+    console.log(projects.length);
 
     if (projects) {
       logger("Projects fetched successfully");

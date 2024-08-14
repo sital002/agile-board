@@ -13,9 +13,7 @@ import {
 import { Project } from "@/schema/schema";
 import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "./ui/dialog";
 
-const currentProjectID = parseInt(
-  localStorage.getItem("currentProjectId") ?? "",
-);
+const currentProjectID = localStorage.getItem("currentProjectId") ?? "";
 export const projectColumns: ColumnDef<Project>[] = [
   {
     id: "select",

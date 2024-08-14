@@ -50,6 +50,8 @@ export async function deleteTeam(req: Request, res: Response) {
 
 export async function updateTeamMembers(req: Request, res: Response) {
   try {
+    if (!req.user)
+      return res.status(400).json({ error: "You arenot loggedin" });
     const id = req.params.projectId;
     const { email } = req.body;
     if (!email) return res.status(400).json({ error: "Members are required" });
@@ -69,12 +71,12 @@ export async function updateTeamMembers(req: Request, res: Response) {
         creator: true,
       },
     });
-    if (project?.creator.id !== req.user?.id) {
+    if (project?.creator.id !== req.user.id) {
       return res.status(400).json({ error: "You aren't the creator" });
     }
     const team = await prisma.team.update({
       where: {
-        id,
+        projectId: id,
       },
       data: {
         members: {
@@ -84,6 +86,19 @@ export async function updateTeamMembers(req: Request, res: Response) {
         },
       },
     });
+
+    // const team = await prisma.team.update({
+    //   where: {
+    //     id,
+    //   },
+    //   data: {
+    //     members: {
+    //       connect: {
+    //         id: memberExists.id,
+    //       },
+    //     },
+    //   },
+    // });
     console.log(team);
     if (team) {
       res.status(200).json(team);

@@ -6,7 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 
 async function getAllIssue() {
   const result = await API.get(
-    `/api/issues/${localStorage.getItem("currentProjectId")}`
+    `/api/issues/${localStorage.getItem("currentProjectId")}`,
   );
   return result.data;
 }
@@ -16,7 +16,7 @@ export default function Lists() {
     queryFn: getAllIssue,
   });
   return (
-    <div className="p-3 w-full px-2 overflow-hidden">
+    <div className="w-full p-3 px-2">
       <p className="text-lg">Lists</p>
       <Filterbar />
       <DataTable

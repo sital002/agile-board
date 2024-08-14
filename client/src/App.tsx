@@ -50,6 +50,14 @@ const App = () => {
             </ProctedRoute>
           ),
         },
+        {
+          path: "settings",
+          element: (
+            <ProctedRoute>
+              <div>Settings</div>
+            </ProctedRoute>
+          ),
+        },
       ],
     },
     {

@@ -36,7 +36,7 @@ export function DataTable<TData, TValue>({
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    []
+    [],
   );
   // const isLoading = true;
 
@@ -64,8 +64,8 @@ export function DataTable<TData, TValue>({
   });
 
   return (
-    <div className="w-full">
-      <div className="rounded-md border">
+    <>
+      <div className="rounded-md border px-2">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -77,7 +77,7 @@ export function DataTable<TData, TValue>({
                         ? null
                         : flexRender(
                             header.column.columnDef.header,
-                            header.getContext()
+                            header.getContext(),
                           )}
                     </TableHead>
                   );
@@ -97,14 +97,14 @@ export function DataTable<TData, TValue>({
                     <React.Fragment key={cell.id + index}>
                       {isLoading ? (
                         <TableCell>
-                          <Skeleton className="w-full h-4" />
+                          <Skeleton className="h-4 w-full" />
                         </TableCell>
                       ) : (
                         <TableCell>
                           <>
                             {flexRender(
                               cell.column.columnDef.cell,
-                              cell.getContext()
+                              cell.getContext(),
                             )}
                           </>
                         </TableCell>
@@ -150,6 +150,6 @@ export function DataTable<TData, TValue>({
           </Button>
         </div>
       </div>
-    </div>
+    </>
   );
 }

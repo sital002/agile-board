@@ -8,6 +8,7 @@ import ColumnList from "@/components/column";
 import { API } from "@/utils/api";
 import type { Column } from "@/schema/schema";
 import { useNavigate } from "react-router-dom";
+import { useUser } from "@/hooks/useUser";
 
 type ProjectInfo = {
   id: string;
@@ -20,7 +21,9 @@ const Board: React.FC = () => {
   const [columns, setColumns] = useState<Column[]>([]);
   const [open, setOpen] = useState(false);
   const [heading, setHeading] = useState<string>("");
-  const id = localStorage.getItem("currentProjectId");
+  const { user } = useUser();
+  const id = user?.currentProjectId || "";
+
   const [projectInfo, setProjectInfo] = useState<ProjectInfo>({
     id: "",
     name: "",
@@ -105,7 +108,6 @@ const Board: React.FC = () => {
     if (!id) return navigate("/create");
     getProjectDetails();
     getColumn();
-    localStorage.setItem("currentProjectId", id as string);
   }, [getColumn, getProjectDetails, id, navigate]);
 
   useEffect(() => {

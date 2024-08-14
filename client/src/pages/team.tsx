@@ -14,6 +14,7 @@ import { useQuery } from "@tanstack/react-query";
 import React, { useState } from "react";
 
 async function getTeams(projectId: string) {
+  console.log(projectId);
   if (!projectId) return [];
   const result = await API.get(`/api/teams/${projectId}`);
   return result.data ?? [];
@@ -28,7 +29,7 @@ const Team = () => {
   const { user } = useUser();
   const { data, isLoading } = useQuery({
     queryKey: ["teams"],
-    queryFn: () => getTeams(user?.currentProjectId ?? ""),
+    queryFn: () => getTeams(user?.currentProjectId || ""),
   });
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -50,14 +51,14 @@ const Team = () => {
 
   return (
     <div className="w-full p-3">
-      <Dialog>
-        <div className="flex items-center gap-3">
-          <Input
-            value={search}
-            onChange={changeHandler}
-            className="my-4 max-w-sm"
-            placeholder="Search member"
-          />
+      <div className="flex items-center gap-3">
+        <Input
+          value={search}
+          onChange={changeHandler}
+          className="my-4 max-w-sm"
+          placeholder="Search member"
+        />
+        <Dialog>
           <DialogTrigger asChild>
             <Button>Add</Button>
           </DialogTrigger>
@@ -68,8 +69,8 @@ const Team = () => {
               <Button>Add</Button>
             </form>
           </DialogContent>
-        </div>
-      </Dialog>
+        </Dialog>
+      </div>
 
       <DataTable
         columns={teamsColumns}

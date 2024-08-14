@@ -1,44 +1,33 @@
 import { useUser } from "@/hooks/useUser";
-import { env } from "@/lib/config";
 import { API } from "@/utils/api";
-import { isAxiosError } from "axios";
-import React, { useLayoutEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { useLayoutEffect } from "react";
 import { Navigate } from "react-router-dom";
 import { Fragment } from "react/jsx-runtime";
 
+export async function getMyProfile() {
+  return API.get("/api/auth/me");
+}
+
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-  const [auth, setAuth] = useState<boolean | null>(null);
   const { setUser } = useUser();
 
-  const checkAuth = async () => {
-    try {
-      const response = await API.get(`${env.VITE_SERVER_URL}/api/auth/me`, {
-        withCredentials: true,
-        headers: {
-          "x-access-server": localStorage.getItem("access_token"),
-        },
-      });
-      setAuth(response.data.status);
-      console.log(response.data);
-      setUser(response.data.user);
-    } catch (err) {
-      if (isAxiosError(err)) {
-        console.log(err.response?.data);
-      }
-      console.log(err);
-      setAuth(false);
-    }
-  };
+  const { data, isError, isLoading } = useQuery({
+    queryKey: ["user"],
+    queryFn: getMyProfile,
+  });
 
   useLayoutEffect(() => {
-    checkAuth();
-  }, []);
+    if (data) {
+      // console.log(data.data.user);
+      setUser(data.data.user);
+    }
+  }, [data, setUser]);
 
-  if (auth === null) {
+  if (isLoading) {
     return <div>Loading...</div>;
   }
-
-  if (!auth) {
+  if (!isLoading && isError) {
     return <Navigate to={"/signin"} />;
   }
   return <Fragment>{children}</Fragment>;

@@ -3,17 +3,18 @@ import { DataTable } from "../components/data-table";
 import Filterbar from "../components/filterbar";
 import { API } from "@/utils/api";
 import { useQuery } from "@tanstack/react-query";
+import { useUser } from "@/hooks/useUser";
 
-async function getAllIssue() {
-  const result = await API.get(
-    `/api/issues/${localStorage.getItem("currentProjectId")}`,
-  );
+async function getAllIssue(projectId: string) {
+  if (!projectId) return [];
+  const result = await API.get(`/api/issues/${projectId}`);
   return result.data;
 }
 export default function Lists() {
+  const { user } = useUser();
   const { data, isLoading } = useQuery({
-    queryKey: ["todos"],
-    queryFn: getAllIssue,
+    queryKey: ["issues"],
+    queryFn: () => getAllIssue(user?.currentProjectId || ""),
   });
 
   return (

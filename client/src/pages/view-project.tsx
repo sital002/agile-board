@@ -7,6 +7,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 
 async function getProjects() {
+  console.log("gfeting projects");
   const result = await API.get(`/api/projects`);
   return result.data;
 }

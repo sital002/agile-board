@@ -1,5 +1,7 @@
+import { getMyProfile } from "@/components/protected-route";
 import type { User } from "@/schema/schema";
-import { createContext } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { createContext, useLayoutEffect } from "react";
 import React from "react";
 
 interface UserWithProjectId extends User {
@@ -14,6 +16,15 @@ const userContext = createContext<UserContextType | null>(null);
 
 export function UserProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = React.useState<UserWithProjectId | null>(null);
+  const { data } = useQuery({
+    queryKey: ["user"],
+    queryFn: getMyProfile,
+  });
+  useLayoutEffect(() => {
+    if (data) {
+      setUser(data.data.user);
+    }
+  }, []);
   return (
     <userContext.Provider
       value={{

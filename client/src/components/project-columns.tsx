@@ -133,13 +133,9 @@ const CurrentProjectChange = ({ id }: ShowCurrentStatusProps) => {
     mutationFn: handleChangeProject,
     onSuccess: (res) => {
       console.log(res.data);
-      queryClient.invalidateQueries({ queryKey: ["projects"] });
+      queryClient.invalidateQueries({ queryKey: ["user"] });
     },
   });
 
-  const handleClick = () => {
-    mutation.mutate(id);
-  };
-
-  return <p onClick={handleClick}>Change</p>;
+  return <div onClick={() => mutation.mutate(id)}>Change</div>;
 };

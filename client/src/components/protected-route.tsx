@@ -18,16 +18,15 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   });
 
   useLayoutEffect(() => {
-    if (data) {
-      // console.log(data.data.user);
+    if (data && !isLoading && !isError) {
       setUser(data.data.user);
     }
-  }, [data, setUser]);
+  }, [data, isError, isLoading, setUser]);
 
   if (isLoading) {
     return <div>Loading...</div>;
   }
-  if (!isLoading && isError) {
+  if (!data && !isLoading && isError) {
     return <Navigate to={"/signin"} />;
   }
   return <Fragment>{children}</Fragment>;

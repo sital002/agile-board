@@ -133,7 +133,7 @@ const CurrentProjectChange = ({ id }: ShowCurrentStatusProps) => {
     mutationFn: handleChangeProject,
     onSuccess: (res) => {
       console.log(res.data);
-      queryClient.invalidateQueries({ queryKey: ["user"] });
+      queryClient.invalidateQueries();
     },
   });
 

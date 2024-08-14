@@ -6,6 +6,7 @@
     "dev": "nodemon",
     "prod": "ts-node --project tsconfig.json src/index.ts",
     "db:push": "npx prisma db push",
+    "db:generate":"npx prisma generate",
     "db:seed": "ts-node ./src/utils/seed.ts",
     "db:stdio": "npx prisma studio",
     "ts": "tsc -w "

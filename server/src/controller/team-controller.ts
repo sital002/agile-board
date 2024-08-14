@@ -5,17 +5,19 @@ const prisma = new PrismaClient();
 
 export async function getTeams(req: Request, res: Response) {
   try {
-    const projectId = Number(req.params.projectId);
+    const projectId = req.params.projectId;
     if (!projectId)
       return res.status(400).json({ error: "Project ID is required" });
 
     const teams = await prisma.team.findFirst({
       where: {
-        projectId: projectId,
+        project: {
+          id: projectId,
+        },
       },
       include: {
         members: true,
-        Project: true,
+        project: true,
       },
     });
     if (teams) {
@@ -29,7 +31,7 @@ export async function getTeams(req: Request, res: Response) {
 
 export async function deleteTeam(req: Request, res: Response) {
   try {
-    const id = Number(req.params.id);
+    const id = req.params.id;
     if (!id) return res.status(400).json({ error: "Team ID is required" });
 
     const team = await prisma.team.delete({
@@ -48,9 +50,7 @@ export async function deleteTeam(req: Request, res: Response) {
 
 export async function updateTeamMembers(req: Request, res: Response) {
   try {
-    const id = parseInt(req.params.projectId);
-    if (isNaN(id))
-      return res.status(400).json({ error: "Team ID is mnust be number" });
+    const id = req.params.projectId;
     const { email } = req.body;
     if (!email) return res.status(400).json({ error: "Members are required" });
     const memberExists = await prisma.user.findFirst({
@@ -96,9 +96,8 @@ export async function updateTeamMembers(req: Request, res: Response) {
 
 export async function removeTeammember(req: Request, res: Response) {
   try {
-    const id = parseInt(req.params.projectId);
-    if (isNaN(id))
-      return res.status(400).json({ error: "Team ID must be a number" });
+    const id = req.params.projectId;
+
     const { member } = req.body;
     if (!member) return res.status(400).json({ error: "Members are required" });
 

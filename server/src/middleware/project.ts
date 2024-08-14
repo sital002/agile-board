@@ -1,5 +1,4 @@
 import type { NextFunction, Request, Response } from "express";
-import { ApiResponse } from "../utils/ApiResponse";
 import prisma from "../db/prisma";
 import { asyncHandler } from "../utils/AsyncHandler";
 import { ApiError } from "../utils/ApiError";
@@ -10,13 +9,10 @@ export const isProjectCreator = asyncHandler(
 
     const projectId = req.params.projectId || req.body.projectId;
     if (!projectId) throw new ApiError(400, "Project ID is required");
-    if (isNaN(parseInt(projectId))) {
-      throw new ApiError(400, "Project Id must be number");
-    }
 
     const projectCreator = await prisma.project.findUnique({
       where: {
-        id: parseInt(projectId),
+        id: projectId,
       },
     });
     if (!projectCreator) throw new ApiError(404, "Project not found");
@@ -32,12 +28,12 @@ export const isProjectMember = asyncHandler(
     const projectId = req.params.projectId || req.body.projectId;
 
     if (!projectId) throw new ApiError(400, "Project Id is required");
-    if (isNaN(parseInt(projectId))) {
-      throw new ApiError(400, "Project Id must be number");
-    }
+
     const members = await prisma.team.findFirst({
       where: {
-        projectId: parseInt(projectId),
+        project: {
+          id: projectId,
+        },
         AND: {
           members: {
             some: {

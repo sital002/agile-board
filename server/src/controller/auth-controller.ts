@@ -22,7 +22,7 @@ function generateAccessToken(user: User) {
   );
 }
 
-function generateRefreshToken(id: number) {
+function generateRefreshToken(id: string) {
   return jwt.sign(
     {
       id,

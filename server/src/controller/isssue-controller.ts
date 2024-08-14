@@ -17,25 +17,12 @@ export const createIssue = asyncHandler(async (req: Request, res: Response) => {
   }
   const { title, description, projectId, columnId } = result.data;
 
-  const isAMember = await prisma.team.findFirst({
-    where: {
-      projectId: projectId,
-      members: {
-        some: {
-          id: req.user.id,
-        },
-      },
-    },
-  });
-  if (!isAMember)
-    throw new ApiError(401, "You are not a member of this project");
-
   const issue = await prisma.issue.create({
     data: {
+      columnId,
       title,
       description,
       projectId,
-      columnId,
     },
   });
   if (issue) {
@@ -46,7 +33,7 @@ export const createIssue = asyncHandler(async (req: Request, res: Response) => {
 export async function getIssues(req: Request, res: Response) {
   try {
     if (!req.user) return res.status(400).json({ error: "Unauthorized" });
-    const projectId = Number(req.params.projectId);
+    const projectId = req.params.projectId;
     if (!projectId)
       return res.status(400).json({ error: "Project Id is required" });
     const isAMember = await prisma.team.findFirst({
@@ -69,7 +56,7 @@ export async function getIssues(req: Request, res: Response) {
         projectId: projectId,
       },
       include: {
-        Column: true,
+        column: true,
         assignee: true,
       },
     });
@@ -85,7 +72,7 @@ export async function getIssues(req: Request, res: Response) {
 export async function deleteIssue(req: Request, res: Response) {
   try {
     if (!req.user) return res.status(400).json({ error: "Unauthorized" });
-    const id = Number(req.params.id);
+    const id = req.params.id;
     if (!id) return res.status(400).json({ error: "Issue ID is required" });
 
     const issue = await prisma.issue.delete({
@@ -105,7 +92,7 @@ export async function deleteIssue(req: Request, res: Response) {
 export async function updateIssue(req: Request, res: Response) {
   try {
     if (!req.user) return res.status(400).json({ error: "Unauthorized" });
-    const id = Number(req.params.id);
+    const id = req.params.id;
     if (!id) return res.status(400).json({ error: "Issue ID is required" });
 
     const result = issueSchema.safeParse(req.body);

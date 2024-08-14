@@ -24,7 +24,7 @@ export async function createColumn(req: Request, res: Response) {
 export async function getColumns(req: Request, res: Response) {
   try {
     if (!req.user) return res.status(400).json({ error: "Unathorized" });
-    const projectId = Number(req.params.projectId);
+    const projectId = req.params.projectId;
     if (!projectId)
       return res.status(400).json({ error: "Project Id is required" });
 
@@ -45,7 +45,7 @@ export async function getColumns(req: Request, res: Response) {
 export async function deleteColumn(req: Request, res: Response) {
   try {
     if (!req.user) return res.status(400).json({ error: "Unathorized" });
-    const id = Number(req.params.id);
+    const id = req.params.id;
     if (!id) return res.status(400).json({ error: "Column ID is required" });
 
     const column = await prisma.column.delete({
@@ -65,7 +65,7 @@ export async function deleteColumn(req: Request, res: Response) {
 export async function updateColumn(req: Request, res: Response) {
   try {
     if (!req.user) return res.status(400).json({ error: "Unathorized" });
-    const id = Number(req.params.id);
+    const id = req.params.id;
     if (!id) return res.status(400).json({ error: "Column ID is required" });
     const { name } = req.body;
     const column = await prisma.column.update({

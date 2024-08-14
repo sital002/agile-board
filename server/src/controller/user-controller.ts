@@ -57,12 +57,10 @@ export async function getUsersById(req: Request, res: Response) {
     if (!id) {
       return res.status(400).json({ error: "User ID is required" });
     }
-    if (isNaN(parseInt(id))) {
-      return res.status(400).json({ error: "User ID must be a number" });
-    }
+
     const user = await prisma.user.findUnique({
       where: {
-        id: parseInt(id),
+        id: id,
       },
     });
     if (user) {

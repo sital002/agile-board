@@ -12,9 +12,8 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { API } from "@/utils/api";
-import { useToast } from "@/components/ui/use-toast";
-import { isAxiosError } from "axios";
 import { Link, useNavigate } from "react-router-dom";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 const projectSchema = z.object({
   name: z.string().min(5, { message: "project name must be 5 character" }),
@@ -24,9 +23,7 @@ const projectSchema = z.object({
 type ProjectType = z.infer<typeof projectSchema>;
 
 const CreateProject = () => {
-  const { toast } = useToast();
   const navigate = useNavigate();
-
   const form = useForm<ProjectType>({
     resolver: zodResolver(projectSchema),
     defaultValues: {
@@ -34,31 +31,27 @@ const CreateProject = () => {
       name: "",
     },
   });
+  const queryClient = useQueryClient();
 
-  const onSubmit = async (data: ProjectType) => {
-    try {
-      const resp = await API.post("/api/projects/new", data);
-      console.log(resp);
-      if (resp) {
-        localStorage.setItem("currentProjectId", resp.data.id);
-        navigate("/board");
-      }
-    } catch (error: unknown) {
-      if (error instanceof Error) {
-        toast({
-          title: error.message,
-        });
-      }
-      if (isAxiosError(error)) {
-        toast({
-          title: "Something went wrong",
-        });
-      }
-    }
+  const mutation = useMutation({
+    mutationFn: createNewProject,
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ["projects"] });
+      console.log(data.data);
+      navigate("/board");
+    },
+  });
+
+  function createNewProject(data: ProjectType) {
+    return API.post("/api/projects/new", data);
+  }
+
+  const onSubmit = (data: ProjectType) => {
+    mutation.mutate(data);
   };
   return (
-    <div className="flex w-full max-w-[80%] mx-auto mt-[5%] dark:bg-black">
-      <div className=" rounded-md  cursor-pointer p-4 border-2">
+    <div className="mx-auto mt-[5%] flex w-full max-w-[80%] dark:bg-black">
+      <div className="cursor-pointer rounded-md border-2 p-4">
         <div className="flex flex-col gap-y-4">
           <h1 className="text-3xl font-semibold">Create Project</h1>
           <p>
@@ -94,20 +87,20 @@ const CreateProject = () => {
                 )}
               />
               <h1 className="font-semibold">Recent Projects</h1>
-              <div className="flex  gap-x-4  items-center border-2  rounded-md">
+              <div className="flex items-center gap-x-4 rounded-md border-2">
                 <img
                   className="w-[15%]"
                   src="https://sitaladhikari111-1721917254800.atlassian.net/rest/api/2/universal_avatar/view/type/project/avatar/10406?size=xxlarge"
                   alt=""
                 />
                 <div>
-                  <h1 className="font-medium ">Agile Board</h1>
+                  <h1 className="font-medium">Agile Board</h1>
                   <p className="text-sm opacity-90">Software project</p>
                 </div>
               </div>
-              <div className="flex my-6 gap-x-4">
+              <div className="my-6 flex gap-x-4">
                 <Link to={`/board`}>
-                  <p className="border-2 p-2 rounded-md">Cancel</p>
+                  <p className="rounded-md border-2 p-2">Cancel</p>
                 </Link>
                 <Button>Create</Button>
               </div>
@@ -116,7 +109,7 @@ const CreateProject = () => {
         </div>
       </div>
       <img
-        className="lg:w-[50%] xl:w-[80%]  lg:block hidden"
+        className="hidden lg:block lg:w-[50%] xl:w-[80%]"
         src="https://cdni.iconscout.com/illustration/premium/thumb/business-meeting-2750496-2289786.png"
         alt=""
       />

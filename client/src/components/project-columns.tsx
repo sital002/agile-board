@@ -11,9 +11,16 @@ import {
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import { Project } from "@/schema/schema";
-import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "./ui/dialog";
+import { API } from "@/utils/api";
+import { useUser } from "@/hooks/useUser";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+// import { useUser } from "@/hooks/useUser";
+// import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-const currentProjectID = localStorage.getItem("currentProjectId") ?? "";
+const handleChangeProject = async (id: string) => {
+  return API.put(`/api/users/change-current-project/${id}`);
+};
+
 export const projectColumns: ColumnDef<Project>[] = [
   {
     id: "select",
@@ -50,16 +57,14 @@ export const projectColumns: ColumnDef<Project>[] = [
         </Button>
       );
     },
-    cell: ({ row }) => (
-      <div className="flex items-center gap-2">
-        <p>{row.original.name}</p>
-        {currentProjectID && currentProjectID === row.original.id && (
-          <p className="rounded-2xl border-2 border-green-800 px-2 py-1 text-green-500">
-            Current
-          </p>
-        )}
-      </div>
-    ),
+    cell: ({ row }) => {
+      return (
+        <div className="flex items-center gap-2">
+          <p>{row.original.name}</p>
+          <ShowCurrentStatus id={row.original.id} />
+        </div>
+      );
+    },
   },
   {
     accessorKey: "lead",
@@ -81,7 +86,7 @@ export const projectColumns: ColumnDef<Project>[] = [
   {
     id: "actions",
     enableHiding: false,
-    cell: () => {
+    cell: ({ row }) => {
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -94,13 +99,9 @@ export const projectColumns: ColumnDef<Project>[] = [
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem>
-              <Dialog>
-                <DialogTrigger>Edit</DialogTrigger>
-                <DialogContent>
-                  <DialogTitle>Add Member</DialogTitle>
-                </DialogContent>
-              </Dialog>
+              <CurrentProjectChange id={row.original.id} />
             </DropdownMenuItem>
+            <DropdownMenuItem>Edit</DropdownMenuItem>
             <DropdownMenuItem className="text-destructive">
               Delete
             </DropdownMenuItem>
@@ -110,3 +111,35 @@ export const projectColumns: ColumnDef<Project>[] = [
     },
   },
 ];
+
+interface ShowCurrentStatusProps {
+  id: string;
+}
+
+function ShowCurrentStatus({ id }: ShowCurrentStatusProps) {
+  const { user } = useUser();
+  if (user?.currentProjectId === id) {
+    return (
+      <p className="rounded-2xl border-2 border-green-800 px-2 py-1 text-green-500">
+        Current
+      </p>
+    );
+  }
+}
+
+const CurrentProjectChange = ({ id }: ShowCurrentStatusProps) => {
+  const queryClient = useQueryClient();
+  const mutation = useMutation({
+    mutationFn: handleChangeProject,
+    onSuccess: (res) => {
+      console.log(res.data);
+      queryClient.invalidateQueries({ queryKey: ["projects"] });
+    },
+  });
+
+  const handleClick = () => {
+    mutation.mutate(id);
+  };
+
+  return <p onClick={handleClick}>Change</p>;
+};

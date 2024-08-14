@@ -8,14 +8,15 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { useUser } from "@/hooks/useUser";
 import { API } from "@/utils/api";
 import { useQuery } from "@tanstack/react-query";
 import React, { useState } from "react";
 
-const currentProjectId = localStorage.getItem("currentProjectId") ?? "";
-async function getTeams() {
-  const result = await API.get(`/api/teams/${currentProjectId}`);
-  return result.data.members ?? [];
+async function getTeams(projectId: string) {
+  if (!projectId) return [];
+  const result = await API.get(`/api/teams/${projectId}`);
+  return result.data ?? [];
 }
 
 const Team = () => {
@@ -24,9 +25,10 @@ const Team = () => {
   const changeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearch(e.target.value);
   };
+  const { user } = useUser();
   const { data, isLoading } = useQuery({
     queryKey: ["teams"],
-    queryFn: getTeams,
+    queryFn: () => getTeams(user?.currentProjectId ?? ""),
   });
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -35,7 +37,7 @@ const Team = () => {
     const email = e.currentTarget.email.value;
     try {
       const result = await API.put(
-        `/api/teams/update-member/${currentProjectId}`,
+        `/api/teams/update-member/${user?.currentProjectId}`,
         {
           email: email,
         },

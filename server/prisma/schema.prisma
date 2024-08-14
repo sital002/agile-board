@@ -26,8 +26,7 @@ model User {
   updated_at             DateTime  @updatedAt
   projects               Project[] @relation("creator")
   issues                 Issue[]
-  team                   Team?     @relation(fields: [teamId], references: [id])
-  teamId                 String?
+  teams                  Team[]
   currentProjectId       String?
   currentProject         Project?  @relation(fields: [currentProjectId], references: [id])
 }

@@ -2,6 +2,9 @@ import { PrismaClient } from "@prisma/client";
 import type { Request, Response } from "express";
 import { logger } from "../utils/logger";
 import { SignUpSchema } from "../schema/user-schema";
+import { asyncHandler } from "../utils/AsyncHandler";
+import { ApiError } from "../utils/ApiError";
+import { ApiResponse } from "../utils/ApiResponse";
 
 const prisma = new PrismaClient();
 
@@ -72,3 +75,21 @@ export async function getUsersById(req: Request, res: Response) {
     res.status(500).json({ error: "An error occurred" });
   }
 }
+
+export const updateCurrentProject = asyncHandler(
+  async (req: Request, _res: Response) => {
+    if (!req.user) throw new ApiError(400, "You are not logged in");
+    const projectId = req.body.projectId || req.params.projectId;
+    if (!projectId) throw new ApiError(400, "Project ID is required");
+    const user = await prisma.user.update({
+      where: {
+        id: req.user.id,
+      },
+      data: {
+        currentProjectId: projectId,
+      },
+    });
+    if (!user) throw new ApiError(400, "User not found");
+    return new ApiResponse(200, "Project changed successfully", user);
+  }
+);

@@ -1,62 +1,67 @@
-import { z } from "zod";
+export enum Role {
+  USER = "USER",
+  ADMIN = "ADMIN",
+}
 
-const userSchema = z.object({
-  id: z.string(),
-  email: z.string().email(),
-  display_name: z.string(),
-  isSubscribed: z.boolean(),
-  profile_image_url: z.string().nullable(),
-  created_at: z.string().refine((date) => new Date(date).toLocaleDateString()),
-  updated_at: z
-    .string()
-    .nullable()
-    .refine((date) => date && new Date(date).toLocaleDateString()),
-});
+export interface User {
+  id: string;
+  email: string;
+  display_name: string;
+  password: string;
+  isSubscribed: boolean;
+  verification_code: string;
+  primary_email_verified: boolean;
+  profile_image_url?: string;
+  role: Role;
+  created_at: Date;
+  updated_at: Date;
+  projects: Project[];
+  issues: Issue[];
+  teams: Team[];
+  currentProjectId?: string;
+  currentProject?: Project;
+}
 
-const columnSchema = z.object({
-  id: z.string(),
-  projectId: z.string(),
-  name: z.string(),
-  description: z.string().nullable(),
-});
+export interface Issue {
+  id: string;
+  title: string;
+  assigneeId?: string;
+  assignee?: User;
+  description?: string;
+  projectId: string;
+  project: Project;
+  attachments: string[];
+  columnId: string;
+  column: Column;
+  createdAt: Date;
+  updatedAt: Date;
+  dueDate?: Date;
+}
 
-const issueSchema = z.object({
-  id: z.string(),
-  columnId: z.string(),
-  title: z.string(),
-  description: z.string(),
-  createdAt: z.string().refine((date) => new Date(date).toLocaleDateString()),
-  updatedAt: z
-    .string()
-    .nullable()
-    .refine((date) => date && new Date(date).toLocaleDateString()),
-  dueDate: z
-    .string()
-    .nullable()
-    .refine((date) => date && new Date(date)),
-  assignee: userSchema.nullable(),
-  assigneeId: z.string().nullable(),
-  column: columnSchema,
-});
+export interface Project {
+  id: string;
+  name: string;
+  description?: string;
+  creatorId: string;
+  creator: User;
+  columns: Column[];
+  issues: Issue[];
+  team?: Team;
+  user: User[];
+}
 
-const projectSchema = z.object({
-  id: z.string(),
-  name: z.string(),
-  description: z.string().nullable(),
-  creator: userSchema,
-});
+export interface Team {
+  id: string;
+  projectId: string;
+  project: Project;
+  members: User[];
+}
 
-const teamSchema = z.object({
-  id: z.string(),
-  members: userSchema.array(),
-  Project: projectSchema,
-});
-
-export type Team = z.infer<typeof teamSchema>;
-export type User = z.infer<typeof userSchema>;
-
-export type Column = z.infer<typeof columnSchema>;
-export type Project = z.infer<typeof projectSchema>;
-
-export type Issue = z.infer<typeof issueSchema>;
-export { issueSchema, columnSchema, projectSchema, teamSchema };
+export interface Column {
+  id: string;
+  name: string;
+  description?: string;
+  issues: Issue[];
+  projectId: string;
+  project: Project;
+}

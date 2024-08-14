@@ -28,7 +28,7 @@ app.use(cookieParser());
 app.use(setApiResponse);
 
 app.use("/api/auth", authRouter);
-app.use("/api/users", userRouter);
+app.use("/api/users", authenticate, userRouter);
 app.use("/api/projects", authenticate, projectRouter);
 app.use("/api/columns", authenticate, columnRouter);
 app.use("/api/issues", authenticate, issueRouter);

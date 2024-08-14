@@ -1,3 +1,4 @@
+import { useUser } from "@/hooks/useUser";
 import { env } from "@/lib/config";
 import { API } from "@/utils/api";
 import { isAxiosError } from "axios";
@@ -7,17 +8,19 @@ import { Fragment } from "react/jsx-runtime";
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const [auth, setAuth] = useState<boolean | null>(null);
+  const { setUser } = useUser();
 
   const checkAuth = async () => {
     try {
       const response = await API.get(`${env.VITE_SERVER_URL}/api/auth/me`, {
         withCredentials: true,
-        headers:{
-          'x-access-server':localStorage.getItem('access_token')
-        }
+        headers: {
+          "x-access-server": localStorage.getItem("access_token"),
+        },
       });
       setAuth(response.data.status);
       console.log(response.data);
+      setUser(response.data.user);
     } catch (err) {
       if (isAxiosError(err)) {
         console.log(err.response?.data);

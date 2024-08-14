@@ -11,17 +11,15 @@ export async function getTeams(req: Request, res: Response) {
 
     const teams = await prisma.team.findFirst({
       where: {
-        project: {
-          id: projectId,
-        },
+        projectId,
       },
       include: {
         members: true,
-        project: true,
       },
     });
     if (teams) {
-      res.status(200).json(teams);
+      console.log("The tams", teams.members);
+      res.status(200).json(teams.members);
     }
   } catch (err) {
     console.log(err);
@@ -32,7 +30,7 @@ export async function getTeams(req: Request, res: Response) {
 export async function deleteTeam(req: Request, res: Response) {
   try {
     const id = req.params.id;
-    if (!id) return res.status(400).json({ error: "Team ID is required" });
+    if (!id) return res.status(400).json({ error: "Team IDj is required" });
 
     const team = await prisma.team.delete({
       where: {
@@ -86,20 +84,6 @@ export async function updateTeamMembers(req: Request, res: Response) {
         },
       },
     });
-
-    // const team = await prisma.team.update({
-    //   where: {
-    //     id,
-    //   },
-    //   data: {
-    //     members: {
-    //       connect: {
-    //         id: memberExists.id,
-    //       },
-    //     },
-    //   },
-    // });
-    console.log(team);
     if (team) {
       res.status(200).json(team);
     }

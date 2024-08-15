@@ -21,11 +21,11 @@ async function getTeams(projectId: string) {
 
 const Team = () => {
   const [search, setSearch] = useState("");
+  const { user } = useUser();
 
   const changeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearch(e.target.value);
   };
-  const { user } = useUser();
   const { data, isLoading } = useQuery({
     queryKey: ["teams"],
     queryFn: () => getTeams(user!.currentProjectId || ""),
@@ -37,7 +37,7 @@ const Team = () => {
     const email = e.currentTarget.email.value;
     try {
       const result = await API.put(
-        `/api/teams/update-member/${user?.currentProjectId}`,
+        `/api/teams/update-member/${user!.currentProjectId}`,
         {
           email: email,
         },
@@ -57,18 +57,21 @@ const Team = () => {
           className="my-4 max-w-sm"
           placeholder="Search member"
         />
-        <Dialog>
-          <DialogTrigger asChild>
-            <Button>Add</Button>
-          </DialogTrigger>
-          <DialogContent className="max-w-lg" aria-describedby={undefined}>
-            <DialogTitle>Add Member</DialogTitle>
-            <form onSubmit={handleSubmit} className="flex items-center gap-2">
-              <Input placeholder="Email" name="email" className="my-2" />
+
+        {user!.currentProject.creatorId === user!.id ? (
+          <Dialog>
+            <DialogTrigger asChild>
               <Button>Add</Button>
-            </form>
-          </DialogContent>
-        </Dialog>
+            </DialogTrigger>
+            <DialogContent className="max-w-lg" aria-describedby={undefined}>
+              <DialogTitle>Add Member</DialogTitle>
+              <form onSubmit={handleSubmit} className="flex items-center gap-2">
+                <Input placeholder="Email" name="email" className="my-2" />
+                <Button>Add</Button>
+              </form>
+            </DialogContent>
+          </Dialog>
+        ) : null}
       </div>
 
       <DataTable

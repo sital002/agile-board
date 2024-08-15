@@ -116,7 +116,7 @@ const Board: React.FC = () => {
 
   return (
     <div className="w-full overflow-hidden px-8">
-      <Header projectTitle={projectInfo?.name} />
+      <Header />
       <Filterbar />
       <div className="flex w-full gap-2 overflow-x-scroll scrollbar">
         <DragDropContext onDragEnd={dragHandler}>

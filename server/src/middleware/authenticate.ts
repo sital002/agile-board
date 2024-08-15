@@ -25,6 +25,9 @@ export async function authenticate(
       where: {
         id: payload.id,
       },
+      include: {
+        currentProject: true,
+      },
     });
     if (!user) return res.status(401).json({ error: "User not found" });
     req.user = user;

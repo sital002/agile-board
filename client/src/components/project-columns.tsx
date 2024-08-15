@@ -99,10 +99,7 @@ export const projectColumns: ColumnDef<Project>[] = [
             <DropdownMenuItem>
               <CurrentProjectChange id={row.original.id} />
             </DropdownMenuItem>
-            <DropdownMenuItem>Edit</DropdownMenuItem>
-            <DropdownMenuItem className="text-destructive">
-              Delete
-            </DropdownMenuItem>
+            <ProjectActions project={row.original} />
           </DropdownMenuContent>
         </DropdownMenu>
       );
@@ -137,3 +134,19 @@ const CurrentProjectChange = ({ id }: ShowCurrentStatusProps) => {
 
   return <div onClick={() => mutation.mutate(id)}>Change</div>;
 };
+
+type ProjectActionsProps = {
+  project: Project;
+};
+function ProjectActions({ project }: ProjectActionsProps) {
+  const { user } = useUser();
+
+  if (user!.id === project.creatorId) {
+    return (
+      <>
+        <DropdownMenuItem>Edit</DropdownMenuItem>
+        <DropdownMenuItem className="text-destructive">Delete</DropdownMenuItem>
+      </>
+    );
+  }
+}

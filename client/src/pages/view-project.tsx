@@ -1,6 +1,7 @@
 import { projectColumns } from "@/components/project-columns";
 import { ProjectDataTable } from "@/components/project-data-table";
 import { Button } from "@/components/ui/button";
+import { useUser } from "@/hooks/useUser";
 // import { useUser } from "@/hooks/useUser";
 import { API } from "@/utils/api";
 import { useQuery } from "@tanstack/react-query";
@@ -13,12 +14,13 @@ async function getProjects() {
 }
 
 const ProjectList = () => {
-  // const { user } = useUser();
+  const { user } = useUser();
+  console.log("Rendering project page");
   const { data, isLoading } = useQuery({
     queryKey: ["projects"],
     queryFn: getProjects,
   });
-  // console.log("the data", data);
+  console.log("the data", user);
 
   return (
     <div className="w-full px-2">

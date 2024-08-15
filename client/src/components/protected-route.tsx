@@ -1,35 +1,20 @@
 import { useUser } from "@/hooks/useUser";
-import { API } from "@/utils/api";
-import { useQuery } from "@tanstack/react-query";
-import { useLayoutEffect } from "react";
 import { Navigate } from "react-router-dom";
-import { Fragment } from "react/jsx-runtime";
-
-export async function getMyProfile() {
-  return API.get("/api/auth/me");
-}
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-  const { setUser } = useUser();
-
-  const { data, isError, isLoading } = useQuery({
-    queryKey: ["user"],
-    queryFn: getMyProfile,
-  });
-
-  useLayoutEffect(() => {
-    if (data && !isLoading && !isError) {
-      setUser(data.data.user);
-    }
-  }, [data, isError, isLoading, setUser]);
+  const { user, isLoading, isError } = useUser();
 
   if (isLoading) {
+    console.log("Verifying user");
     return <div>Loading...</div>;
   }
-  if (!data && !isLoading && isError) {
+  if (!isLoading && isError) {
+    console.log("Redirecting to signin");
     return <Navigate to={"/signin"} />;
   }
-  return <Fragment>{children}</Fragment>;
+  console.log("user is", user, "loading is", isLoading, "error is", isError);
+  console.log("rednering children");
+  return children;
 };
 
 export default ProtectedRoute;

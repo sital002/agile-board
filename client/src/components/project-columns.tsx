@@ -14,8 +14,6 @@ import { Project } from "@/schema/schema";
 import { API } from "@/utils/api";
 import { useUser } from "@/hooks/useUser";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-// import { useUser } from "@/hooks/useUser";
-// import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 const handleChangeProject = async (id: string) => {
   return API.put(`/api/users/change-current-project/${id}`);

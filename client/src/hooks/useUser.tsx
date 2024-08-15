@@ -1,35 +1,34 @@
-import { getMyProfile } from "@/components/protected-route";
-import type { User } from "@/schema/schema";
+import type { Project, User } from "@/schema/schema";
+import { API } from "@/utils/api";
 import { useQuery } from "@tanstack/react-query";
-import { createContext, useLayoutEffect } from "react";
+import { createContext } from "react";
 import React from "react";
 
-interface UserWithProjectId extends User {
-  projectId: string;
+interface UserWithProject extends User {
+  currentProject: Project;
 }
 type UserContextType = {
-  user: UserWithProjectId | null;
-  setUser: React.Dispatch<React.SetStateAction<UserWithProjectId | null>>;
+  user?: UserWithProject;
+  isLoading: boolean;
+  isError: boolean;
 };
 
 const userContext = createContext<UserContextType | null>(null);
 
-export function UserProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = React.useState<UserWithProjectId | null>(null);
-  const { data } = useQuery({
+async function getMyProfile() {
+  return API.get("/api/auth/me");
+}
+function UserProvider({ children }: { children: React.ReactNode }) {
+  const { data, isLoading, isError } = useQuery({
     queryKey: ["user"],
     queryFn: getMyProfile,
   });
-  useLayoutEffect(() => {
-    if (data) {
-      setUser(data.data.user);
-    }
-  }, []);
   return (
     <userContext.Provider
       value={{
-        setUser,
-        user,
+        user: data?.data?.user,
+        isError,
+        isLoading,
       }}
     >
       {children}
@@ -37,10 +36,12 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   );
 }
 
-export function useUser() {
+function useUser() {
   const context = React.useContext(userContext);
   if (!context) {
     throw new Error("useUser must be used within a UserProvider");
   }
   return context;
 }
+
+export { UserProvider, useUser };

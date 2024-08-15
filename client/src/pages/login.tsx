@@ -18,6 +18,7 @@ import { API } from "@/utils/api";
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { isAxiosError } from "axios";
+import { useQueryClient } from "@tanstack/react-query";
 
 const formSchema = z.object({
   email: z.string().email({ message: "invalid email" }).min(2, {
@@ -41,15 +42,18 @@ function Login() {
   });
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
+  const queryClient = useQueryClient();
 
   const onSubmit: SubmitHandler<FormInputType> = async (data) => {
-    console.log(data);
     try {
       setLoading(true);
       const resp = await API.post(`/api/auth/signin`, data);
       console.log(resp);
       if (resp.status) {
         navigate("/create");
+        queryClient.invalidateQueries({
+          queryKey: ["user"],
+        });
       }
     } catch (error: unknown) {
       if (error instanceof Error) console.log(error.message);

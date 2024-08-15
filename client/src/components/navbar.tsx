@@ -1,5 +1,5 @@
 import { Button } from "./ui/button";
-import { Bell, Settings } from "lucide-react";
+import { Bell } from "lucide-react";
 import { Input } from "./ui/input";
 import { ModeToggle } from "./mode-toggle";
 import { Link } from "react-router-dom";
@@ -38,9 +38,8 @@ const Navbar = () => {
         placeholder="Search"
       />
       <div className="flex items-center gap-x-2 md:gap-x-4">
-        <Bell size={20} />
         <ModeToggle />
-        <Settings size={20} />
+        <Bell size={20} />
         {user ? (
           <Button onClick={handleLogout}>Logout</Button>
         ) : (

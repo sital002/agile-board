@@ -85,24 +85,7 @@ export const projectColumns: ColumnDef<Project>[] = [
     id: "actions",
     enableHiding: false,
     cell: ({ row }) => {
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>
-              <CurrentProjectChange id={row.original.id} />
-            </DropdownMenuItem>
-            <ProjectActions project={row.original} />
-          </DropdownMenuContent>
-        </DropdownMenu>
-      );
+      return <ProjectActions project={row.original} />;
     },
   },
 ];
@@ -113,7 +96,7 @@ interface ShowCurrentStatusProps {
 
 function ShowCurrentStatus({ id }: ShowCurrentStatusProps) {
   const { user } = useUser();
-  if (user?.currentProjectId === id) {
+  if (user!.currentProjectId === id) {
     return (
       <p className="rounded-2xl border-2 border-green-800 px-2 py-1 text-green-500">
         Current
@@ -122,8 +105,13 @@ function ShowCurrentStatus({ id }: ShowCurrentStatusProps) {
   }
 }
 
-const CurrentProjectChange = ({ id }: ShowCurrentStatusProps) => {
+type ProjectActionsProps = {
+  project: Project;
+};
+function ProjectActions({ project }: ProjectActionsProps) {
   const queryClient = useQueryClient();
+  const { user } = useUser();
+
   const mutation = useMutation({
     mutationFn: handleChangeProject,
     onSuccess: (res) => {
@@ -132,21 +120,37 @@ const CurrentProjectChange = ({ id }: ShowCurrentStatusProps) => {
     },
   });
 
-  return <div onClick={() => mutation.mutate(id)}>Change</div>;
-};
-
-type ProjectActionsProps = {
-  project: Project;
-};
-function ProjectActions({ project }: ProjectActionsProps) {
-  const { user } = useUser();
-
-  if (user!.id === project.creatorId) {
-    return (
-      <>
-        <DropdownMenuItem>Edit</DropdownMenuItem>
-        <DropdownMenuItem className="text-destructive">Delete</DropdownMenuItem>
-      </>
-    );
-  }
+  return (
+    <>
+      {user!.currentProjectId !== project.id &&
+      project.creatorId !== project.id ? (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" className="h-8 w-8 p-0">
+              <span className="sr-only">Open menu</span>
+              <MoreHorizontal className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            {user!.currentProjectId !== project.id && (
+              <DropdownMenuItem onClick={() => mutation.mutate(project.id)}>
+                Change
+              </DropdownMenuItem>
+            )}
+            {project.creatorId === user!.id &&
+              user!.currentProjectId !== project.id && (
+                <>
+                  <DropdownMenuItem>Edit</DropdownMenuItem>
+                  <DropdownMenuItem className="text-destructive">
+                    Delete
+                  </DropdownMenuItem>
+                </>
+              )}
+          </DropdownMenuContent>
+        </DropdownMenu>
+      ) : null}
+    </>
+  );
 }

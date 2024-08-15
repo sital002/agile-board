@@ -6,6 +6,7 @@ import Messagecard from "./message-card";
 import { API } from "@/utils/api";
 import type { Column, Issue } from "@/schema/schema";
 import { isAxiosError } from "axios";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 interface ColumnProps {
   column: Column;
@@ -19,8 +20,17 @@ const ColumnList: React.FC<ColumnProps> = ({ column }) => {
   const submitBtnRef = useRef<HTMLButtonElement | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
   // const [issue, setIssue] = useState<Issue>();
-  const [issues, setIssues] = useState<Issue[]>();
+  const queryClient = useQueryClient();
 
+  const { data } = useQuery({
+    queryKey: ["issues"],
+    queryFn: getIssues,
+  });
+
+  async function getIssues(): Promise<Issue[]> {
+    const res = await API.get(`/api/issues/${column.projectId}`);
+    return res.data;
+  }
   // const addTaskHandler = (e: React.MouseEvent<HTMLButtonElement>) => {
   //   e.stopPropagation();
   //   if (newTask.trim().length === 0) {
@@ -66,6 +76,7 @@ const ColumnList: React.FC<ColumnProps> = ({ column }) => {
     setNewTask(e.target.value);
   };
 
+  console.log(data);
   const addIssue = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     console.log(column.projectId);
@@ -76,6 +87,11 @@ const ColumnList: React.FC<ColumnProps> = ({ column }) => {
         columnId: column.id,
       });
       console.log(resp);
+      if (resp) {
+        queryClient.invalidateQueries({
+          queryKey: ["issues"],
+        });
+      }
     } catch (err: unknown) {
       if (err instanceof Error) {
         console.log(err.message);
@@ -89,15 +105,6 @@ const ColumnList: React.FC<ColumnProps> = ({ column }) => {
     }
     // setIssue(resp.data);
   };
-
-  useEffect(() => {
-    const getIssue = async () => {
-      const resp = await API.get(`/api/issues/${column.projectId}`);
-      // console.log(resp.data);
-      setIssues(resp.data);
-    };
-    getIssue();
-  }, []);
 
   useEffect(() => {
     if (inputRef.current) {
@@ -119,8 +126,8 @@ const ColumnList: React.FC<ColumnProps> = ({ column }) => {
           className="max-h-[500px] min-w-[300px] rounded-sm border-2 p-1"
         >
           <div className="text-md mb-2 px-2 font-medium">{column.name}</div>
-          <div className="scrollbar-thumb-rounded-full h-[300px] overflow-auto p-1 scrollbar-thin scrollbar-track-secondary scrollbar-thumb-primary-foreground">
-            {issues?.map((task, index) => (
+          <div className="h-[300px] overflow-auto p-1 scrollbar-thin scrollbar-track-secondary scrollbar-thumb-primary-foreground scrollbar-thumb-rounded-full">
+            {data?.map((task, index) => (
               <Draggable
                 key={task.id}
                 draggableId={task.id.toString()}

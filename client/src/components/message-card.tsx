@@ -66,9 +66,9 @@ const Messagecard = React.forwardRef<
                 </Avatar>
               ) : (
                 <Avatar className="h-5 w-auto">
-                  <AvatarImage src={issue.assignee.profile_image_url || ""} />
+                  <AvatarImage src={issue?.assignee?.profile_image_url || ""} />
                   <AvatarFallback>
-                    {issue.assignee.display_name.slice(0, 2)}
+                    {issue?.assignee?.display_name.slice(0, 2)}
                   </AvatarFallback>
                 </Avatar>
               )}

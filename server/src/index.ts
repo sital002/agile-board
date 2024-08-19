@@ -12,6 +12,7 @@ import teamRouter from "./routes/team-route";
 import { globalErrorHandler } from "./utils/globalErrorHandler";
 import { setApiResponse } from "./utils/ApiResponse";
 import { PrismaClient } from "@prisma/client";
+import { logger } from "./middleware/logger";
 
 const app = express();
 
@@ -21,6 +22,8 @@ app.use(
     credentials: true,
   })
 );
+
+app.use(logger);
 
 app.use(express.json());
 app.use(cookieParser());

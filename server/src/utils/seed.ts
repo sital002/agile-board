@@ -8,7 +8,7 @@ async function main() {
   await prisma.user.createMany({
     data: [
       {
-        display_name: "Sital Adhikari",
+        display_name: "Nexel",
         password: hashedPassword,
         verification_code: "1234",
         email: "test@gmail.com",

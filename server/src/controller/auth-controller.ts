@@ -8,6 +8,9 @@ import jwt from "jsonwebtoken";
 
 import { SignUpSchema } from "../schema/user-schema";
 import { createTransport } from "../utils/nodemailer.config";
+import { asyncHandler } from "../utils/AsyncHandler";
+import { ApiResponse } from "../utils/ApiResponse";
+import { ApiError } from "../utils/ApiError";
 
 function generateAccessToken(user: User) {
   return jwt.sign(
@@ -175,11 +178,79 @@ export async function logout(_: Request, res: Response) {
   return res.status(200).json({ message: "Logged out successfully" });
 }
 
-type CustomRequest = Request & { user?: User };
-
-export async function getMyProfile(req: CustomRequest, res: Response) {
-  const user = req.user;
-  if (!user)
+export async function getMyProfile(req: Request, res: Response) {
+  if (!req.user)
     return res.status(401).json({ status: false, message: "Unauthorized" });
-  return res.status(200).json({ user, status: true });
+  return res.status(200).json({ user: req.user, status: true });
 }
+
+const emailSchema = z.string().email();
+
+export const forgotPassword = asyncHandler(async (req: Request) => {
+  const result = emailSchema.safeParse(req.body?.email);
+  if (!result.success) throw new ApiError(400, "Invalid email format");
+
+  const user = await prisma.user.findUnique({
+    where: {
+      email: result.data,
+    },
+  });
+  if (!user) throw new ApiError(400, "User not found");
+  const resetToken = crypto.randomBytes(20).toString("hex");
+  const resetTokenExpiry = Date.now() + 1000 * 60 * 60 * 24;
+  await prisma.user.update({
+    where: {
+      id: user.id,
+    },
+    data: {
+      reset_token: resetToken,
+      reset_token_expiry: new Date(resetTokenExpiry),
+    },
+  });
+  const resetUrl = `http://localhost:3000/reset-password?token=${resetToken}`;
+  const mailOptions = {
+    from: "agileboard.test.com.np",
+    to: user.email,
+    subject: "Reset Password",
+    html: `
+    <h1>Reset your password</h1>
+    <p>Click the link below to reset your password</p>
+    <a href="${resetUrl}">Reset Password</a>
+    `,
+  };
+  await createTransport.sendMail(mailOptions);
+  return new ApiResponse(200, "Reset link sent to your email");
+});
+
+const resetPasswordSchema = z.object({
+  token: z.string(),
+  password: z
+    .string()
+    .min(8, "Password must be 8 charactor long")
+    .max(64, "Password must be at most 64 charactor long"),
+});
+export const resetPassword = asyncHandler(async (req: Request) => {
+  const result = resetPasswordSchema.safeParse(req.body);
+  if (!result.success) throw new ApiError(400, "Invalid password format");
+  const user = await prisma.user.findFirst({
+    where: {
+      reset_token: result.data.token,
+      reset_token_expiry: {
+        gt: new Date(),
+      },
+    },
+  });
+  if (!user) throw new ApiError(400, "Invalid or expired token");
+  const hashedPassword = await bcrypt.hash(result.data.token, 10);
+  await prisma.user.update({
+    where: {
+      id: user.id,
+    },
+    data: {
+      password: hashedPassword,
+      reset_token: null,
+      reset_token_expiry: null,
+    },
+  });
+  return new ApiResponse(200, "Password reset successfully");
+});

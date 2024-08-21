@@ -28,7 +28,7 @@ model User {
   issues                 Issue[]
   teams                  Team[]
   currentProjectId       String?
-  currentProject         Project?  @relation(fields: [currentProjectId], references: [id])
+  currentProject         Project?  @relation(fields: [currentProjectId], references: [id], onDelete: Cascade)
   reset_token            String?
   reset_token_expiry     DateTime?
 }
@@ -39,7 +39,7 @@ model Issue {
   assigneeId  String?
   assignee    User?     @relation(fields: [assigneeId], references: [id])
   description String?
-  project     Project   @relation(fields: [projectId], references: [id])
+  project     Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
   projectId   String
   attachments String[]
   column      Column    @relation(fields: [columnId], references: [id])
@@ -54,7 +54,7 @@ model Project {
   name        String
   description String?
   creatorId   String
-  creator     User     @relation("creator", fields: [creatorId], references: [id])
+  creator     User     @relation("creator", fields: [creatorId], references: [id], onDelete: Restrict)
   columns     Column[]
   issues      Issue[]
   team        Team?
@@ -64,7 +64,7 @@ model Project {
 model Team {
   id        String  @id @default(uuid())
   projectId String  @unique
-  project   Project @relation(fields: [projectId], references: [id])
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
   members   User[]
 }
 
@@ -74,5 +74,5 @@ model Column {
   description String?
   issues      Issue[]
   projectId   String
-  project     Project @relation(fields: [projectId], references: [id])
+  project     Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
 }

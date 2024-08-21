@@ -46,6 +46,7 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { isAxiosError } from "axios";
 
 const handleChangeProject = async (id: string) => {
   return API.put(`/api/users/change-current-project/${id}`);
@@ -181,7 +182,7 @@ function ProjectActions({ project }: ProjectActionsProps) {
               user!.currentProjectId !== project.id && (
                 <>
                   <EditButton project={project} />
-                  <DeleteButton />
+                  <DeleteButton projectId={project.id} />
                 </>
               )}
           </DropdownMenuContent>
@@ -191,18 +192,35 @@ function ProjectActions({ project }: ProjectActionsProps) {
   );
 }
 
-function DeleteButton() {
+interface DeleteButtonProps {
+  projectId: string;
+}
+function DeleteButton({ projectId }: DeleteButtonProps) {
+  const queryClient = useQueryClient();
+  const mutation = useMutation({
+    mutationFn: async () => {
+      return API.delete(`/api/projects/${projectId}`);
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries();
+      console.log(data);
+    },
+    onError: (error) => {
+      console.log(error);
+      if (isAxiosError(error)) {
+        error.response?.data;
+      }
+    },
+  });
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <DropdownMenuItem>
-          <Button
-            variant="ghost"
-            className="h-4 w-full cursor-default p-0 font-normal text-destructive"
-          >
-            <span>Delete</span>
-          </Button>
-        </DropdownMenuItem>
+        <Button
+          variant="ghost"
+          className="h-8 w-full cursor-default p-0 font-normal text-destructive"
+        >
+          <span>Delete</span>
+        </Button>
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
@@ -214,7 +232,9 @@ function DeleteButton() {
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction>Delete</AlertDialogAction>
+          <AlertDialogAction onClick={() => mutation.mutate()}>
+            Delete
+          </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
@@ -244,12 +264,10 @@ export function EditButton({ project }: EditButtonProps) {
 
   const mutation = useMutation({
     mutationFn: async (data: z.infer<typeof formSchema>) => {
-      console.log(data);
       return API.put(`/api/projects/${project.id}`, data);
     },
-    onSuccess: (data) => {
+    onSuccess: () => {
       queryClient.invalidateQueries();
-      console.log(data);
     },
   });
 

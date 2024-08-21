@@ -12,10 +12,7 @@ export const asyncHandler = (func: FunctionType) => {
       await func(req, res, next);
     } catch (error: unknown) {
       next(error);
+      console.error(error);
     }
   };
-};
-
-const add = (a: number, b: number): number => {
-  return a + b;
 };

@@ -4,6 +4,7 @@ import { projectSchema } from "../schema/project-schema";
 import prisma from "../db/prisma";
 import { asyncHandler } from "../utils/AsyncHandler";
 import { ApiResponse } from "../utils/ApiResponse";
+import { ApiError } from "../utils/ApiError";
 
 export async function createProject(req: Request, res: Response) {
   try {
@@ -121,26 +122,21 @@ export async function getProjectById(req: Request, res: Response) {
   }
 }
 
-export async function deleteProject(req: Request, res: Response) {
-  try {
-    if (!req.user) return res.status(400).json({ error: "Unathorized" });
-    const projectId = req.params.projectId || req.body;
-    if (!projectId) {
-      return res.status(400).json({ error: "Project ID is required" });
-    }
+export const deleteProject = asyncHandler(
+  async (req: Request, res: Response) => {
+    if (!req.user) throw new ApiError(400, "Unauthorized");
+    const projectId = req.params.projectId || req.body.projectId;
+    if (!projectId) throw new ApiError(400, "Project ID is required");
+
     const project = await prisma.project.delete({
       where: {
         id: projectId,
       },
     });
-    if (project) {
-      res.status(200).json(project);
-    }
-  } catch (err: any) {
-    console.log(err.message);
-    res.status(500).json({ error: "An error occurred" });
+    if (!project) throw new ApiError(404, "Project not found");
+    if (project) return new ApiResponse(200, "Project deleted successfully");
   }
-}
+);
 
 export const editProject = asyncHandler(async (req: Request, res: Response) => {
   if (!req.user) return res.status(400).json({ error: "Unauthorized" });

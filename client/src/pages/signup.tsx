@@ -38,11 +38,9 @@ const formSchema = z
 type FormInputType = z.infer<typeof formSchema>;
 
 const onSubmit: SubmitHandler<FormInputType> = async (data) => {
-  // console.log(data);
+  console.log(data);
   try {
-    const resp = await API.post(`/api/auth/signup`, {
-      data,
-    });
+    const resp = await API.post(`/api/auth/signup`, data);
     console.log(resp);
   } catch (error: unknown) {
     if (error instanceof Error) console.log(error.message);
@@ -61,8 +59,8 @@ export function Signup() {
   });
 
   return (
-    <div className="w-full mt-[7%] md:max-w-md lg:max-w-lg mx-auto border-2 p-5 rounded-md">
-      <h1 className="text-2xl font-semibold text-center my-2">
+    <div className="mx-auto mt-[7%] w-full rounded-md border-2 p-5 md:max-w-md lg:max-w-lg">
+      <h1 className="my-2 text-center text-2xl font-semibold">
         Create Your Account
       </h1>
       <Form {...form}>

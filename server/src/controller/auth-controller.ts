@@ -47,6 +47,7 @@ const SignInSchema = z.object({
 export async function userSignup(req: Request, res: Response) {
   const result = SignUpSchema.safeParse(req.body);
   if (!result.success) {
+    console.log(result.error.errors);
     return res.status(400).send(result.error.errors);
   }
 

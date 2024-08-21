@@ -76,7 +76,6 @@ const ColumnList: React.FC<ColumnProps> = ({ column }) => {
     setNewTask(e.target.value);
   };
 
-  console.log(data);
   const addIssue = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     console.log(column.projectId);

@@ -1,26 +1,20 @@
 import { projectColumns } from "@/components/project-columns";
 import { ProjectDataTable } from "@/components/project-data-table";
 import { Button } from "@/components/ui/button";
-import { useUser } from "@/hooks/useUser";
-// import { useUser } from "@/hooks/useUser";
 import { API } from "@/utils/api";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 
 async function getProjects() {
-  console.log("gfeting projects");
   const result = await API.get(`/api/projects`);
   return result.data;
 }
 
 const ProjectList = () => {
-  const { user } = useUser();
-  console.log("Rendering project page");
   const { data, isLoading } = useQuery({
     queryKey: ["projects"],
     queryFn: getProjects,
   });
-  console.log("the data", user);
 
   return (
     <div className="w-full px-2">

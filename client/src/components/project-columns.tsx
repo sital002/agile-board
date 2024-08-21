@@ -14,6 +14,38 @@ import { Project } from "@/schema/schema";
 import { API } from "@/utils/api";
 import { useUser } from "@/hooks/useUser";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "./ui/alert-dialog";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "./ui/dialog";
+import { Input } from "./ui/input";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "./ui/form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 
 const handleChangeProject = async (id: string) => {
   return API.put(`/api/users/change-current-project/${id}`);
@@ -135,22 +167,146 @@ function ProjectActions({ project }: ProjectActionsProps) {
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuSeparator />
             {user!.currentProjectId !== project.id && (
-              <DropdownMenuItem onClick={() => mutation.mutate(project.id)}>
-                Change
+              <DropdownMenuItem>
+                <Button
+                  onClick={() => mutation.mutate(project.id)}
+                  variant="ghost"
+                  className="h-5 w-full cursor-default p-0 font-normal"
+                >
+                  <span>Change</span>
+                </Button>
               </DropdownMenuItem>
             )}
             {project.creatorId === user!.id &&
               user!.currentProjectId !== project.id && (
                 <>
-                  <DropdownMenuItem>Edit</DropdownMenuItem>
-                  <DropdownMenuItem className="text-destructive">
-                    Delete
-                  </DropdownMenuItem>
+                  <EditButton project={project} />
+                  <DeleteButton />
                 </>
               )}
           </DropdownMenuContent>
         </DropdownMenu>
       ) : null}
     </>
+  );
+}
+
+function DeleteButton() {
+  return (
+    <AlertDialog>
+      <AlertDialogTrigger asChild>
+        <DropdownMenuItem>
+          <Button
+            variant="ghost"
+            className="h-4 w-full cursor-default p-0 font-normal text-destructive"
+          >
+            <span>Delete</span>
+          </Button>
+        </DropdownMenuItem>
+      </AlertDialogTrigger>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+          <AlertDialogDescription>
+            This action cannot be undone. This will permanently delete your
+            project and remove your data from our servers.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogAction>Delete</AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  );
+}
+
+interface EditButtonProps {
+  project: Project;
+}
+export function EditButton({ project }: EditButtonProps) {
+  const queryClient = useQueryClient();
+
+  const formSchema = z.object({
+    name: z.string().min(2, {
+      message: "Project Name must be at least 2 characters.",
+    }),
+    description: z.string().optional().default(""),
+  });
+
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      name: project.name ?? "",
+      description: project.description ?? "",
+    },
+  });
+
+  const mutation = useMutation({
+    mutationFn: async (data: z.infer<typeof formSchema>) => {
+      console.log(data);
+      return API.put(`/api/projects/${project.id}`, data);
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries();
+      console.log(data);
+    },
+  });
+
+  return (
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button
+          variant="ghost"
+          className="h-8 w-full cursor-default p-0 font-normal"
+        >
+          <span>Edit</span>
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>Edit Project</DialogTitle>
+          <DialogDescription>
+            Make changes to your project here. Click save when you're done.
+          </DialogDescription>
+        </DialogHeader>
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit((e) => mutation.mutate(e))}
+            className="space-y-8"
+          >
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Name</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Test Project" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="description"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Description</FormLabel>
+                  <FormControl>
+                    <Input placeholder="This is a description" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <DialogClose asChild>
+              <Button type="submit">Save Changes</Button>
+            </DialogClose>
+          </form>
+        </Form>
+      </DialogContent>
+    </Dialog>
   );
 }

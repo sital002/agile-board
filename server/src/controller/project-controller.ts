@@ -2,6 +2,8 @@ import type { Request, Response } from "express";
 import { logger } from "../utils/logger";
 import { projectSchema } from "../schema/project-schema";
 import prisma from "../db/prisma";
+import { asyncHandler } from "../utils/AsyncHandler";
+import { ApiResponse } from "../utils/ApiResponse";
 
 export async function createProject(req: Request, res: Response) {
   try {
@@ -139,3 +141,22 @@ export async function deleteProject(req: Request, res: Response) {
     res.status(500).json({ error: "An error occurred" });
   }
 }
+
+export const editProject = asyncHandler(async (req: Request, res: Response) => {
+  if (!req.user) return res.status(400).json({ error: "Unauthorized" });
+  const result = projectSchema.safeParse(req.body);
+  if (!result.success) return new ApiResponse(400, "Invalid data format");
+  const projectId = req.params.projectId || req.body.projectId;
+  if (!projectId) return new ApiResponse(400, "Project ID is required");
+  const updatedProject = await prisma.project.update({
+    where: {
+      id: projectId,
+    },
+    data: {
+      name: result.data.name,
+      description: result.data.description,
+    },
+  });
+  if (!updatedProject) return new ApiResponse(404, "Project not found");
+  return new ApiResponse(200, "Project updated successfully");
+});

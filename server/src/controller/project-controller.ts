@@ -127,6 +127,8 @@ export const deleteProject = asyncHandler(
     if (!req.user) throw new ApiError(400, "Unauthorized");
     const projectId = req.params.projectId || req.body.projectId;
     if (!projectId) throw new ApiError(400, "Project ID is required");
+    if (req.user.currentProjectId === projectId)
+      throw new ApiError(400, "Cannot delete current project");
 
     const project = await prisma.project.delete({
       where: {

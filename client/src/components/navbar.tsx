@@ -1,6 +1,5 @@
 import { Button } from "./ui/button";
 import { Bell } from "lucide-react";
-import { Input } from "./ui/input";
 import { ModeToggle } from "./mode-toggle";
 import { Link } from "react-router-dom";
 import { isAxiosError } from "axios";
@@ -33,10 +32,11 @@ const Navbar = () => {
 
   return (
     <header className="flex justify-between border-b-2 p-4">
-      <Input
-        className="hidden w-full max-w-[20%] md:block"
-        placeholder="Search"
-      />
+      <div>
+        <Link to={"/board"} className="text-lg font-bold">
+          Agile Board
+        </Link>
+      </div>
       <div className="flex items-center gap-x-2 md:gap-x-4">
         <ModeToggle />
         <Bell size={20} />

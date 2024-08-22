@@ -28,7 +28,7 @@ model User {
   issues                 Issue[]
   teams                  Team[]
   currentProjectId       String?
-  currentProject         Project?  @relation(fields: [currentProjectId], references: [id], onDelete: Cascade)
+  currentProject         Project?  @relation(fields: [currentProjectId], references: [id], onDelete: NoAction)
   reset_token            String?
   reset_token_expiry     DateTime?
 }

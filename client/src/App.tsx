@@ -9,7 +9,7 @@ import PageNotFound from "./pages/404-page";
 import Signup from "./pages/signup";
 import Login from "./pages/login";
 import ProjectList from "./pages/view-project";
-import Team from "./pages/team";
+import Teams from "./pages/team";
 
 const App = () => {
   const router = createBrowserRouter([
@@ -38,7 +38,7 @@ const App = () => {
           path: "team",
           element: (
             <ProctedRoute>
-              <Team />
+              <Teams />
             </ProctedRoute>
           ),
         },

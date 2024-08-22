@@ -8,13 +8,14 @@ import {
   editProject,
 } from "../controller/project-controller";
 import { isProjectCreator } from "../middleware/project";
+import { isAdmin } from "../middleware/admin";
 
 const projectRouter = express.Router();
 
 projectRouter.post("/new", createProject);
 projectRouter.get("/", getProjects);
-projectRouter.delete("/:projectId", isProjectCreator, deleteProject);
-projectRouter.put("/:projectId", isProjectCreator, editProject);
+projectRouter.delete("/:projectId", isAdmin, isProjectCreator, deleteProject);
+projectRouter.put("/:projectId", isAdmin, isProjectCreator, editProject);
 projectRouter.get("/:projectId", getProjectById);
 
 // Admin route

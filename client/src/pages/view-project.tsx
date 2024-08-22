@@ -1,19 +1,21 @@
 import { projectColumns } from "@/components/project-columns";
 import { ProjectDataTable } from "@/components/project-data-table";
 import { Button } from "@/components/ui/button";
+import { Project } from "@/schema/schema";
 import { API } from "@/utils/api";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 
 async function getProjects() {
   const result = await API.get(`/api/projects`);
-  return result.data;
+  return result.data as Project[];
 }
 
 const ProjectList = () => {
   const { data, isLoading } = useQuery({
     queryKey: ["projects"],
     queryFn: getProjects,
+    initialData: [],
   });
 
   return (
@@ -26,7 +28,7 @@ const ProjectList = () => {
       </div>
       <ProjectDataTable
         columns={projectColumns}
-        data={data ?? []}
+        data={data}
         isLoading={isLoading}
       />
     </div>

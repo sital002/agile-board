@@ -4,7 +4,6 @@ import { z } from "zod";
 
 import { API } from "@/utils/api";
 import { useState } from "react";
-import { useQueryClient } from "@tanstack/react-query";
 import {
   Form,
   FormControl,
@@ -17,6 +16,8 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import Link from "next/link";
+import { redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
 
 const formSchema = z.object({
   email: z.string().email({ message: "invalid email" }),
@@ -36,17 +37,15 @@ export function LoginForm() {
     },
   });
   const [loading, setLoading] = useState(false);
-  const queryClient = useQueryClient();
 
   const onSubmit: SubmitHandler<FormInputType> = async (data: any) => {
     try {
       setLoading(true);
       const resp = await API.post(`/api/auth/signin`, data);
       console.log(resp);
-      if (resp.status) {
-        queryClient.invalidateQueries({
-          queryKey: ["user"],
-        });
+      if (resp) {
+        revalidatePath("/dashboard");
+        redirect("/dashboard");
       }
     } catch (error: unknown) {
       if (error instanceof Error) console.log(error.message);
@@ -91,7 +90,7 @@ export function LoginForm() {
               {loading ? "Loading" : "Login"}
             </Button>
             <p>
-              Don't have an account{" "}
+              Don &apos;t have an account{" "}
               <Link href={"/signup"} className="underline">
                 Signup
               </Link>

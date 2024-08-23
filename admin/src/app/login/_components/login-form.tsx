@@ -4,7 +4,6 @@ import { z } from "zod";
 
 import { API } from "@/utils/api";
 import { useState } from "react";
-import { isAxiosError } from "axios";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   Form,
@@ -20,11 +19,9 @@ import { Card } from "@/components/ui/card";
 import Link from "next/link";
 
 const formSchema = z.object({
-  email: z.string().email({ message: "invalid email" }).min(2, {
-    message: "Username must be at least 2 characters.",
-  }),
+  email: z.string().email({ message: "invalid email" }),
   password: z.string().min(6, {
-    message: "Password must be at least 6 characters.",
+    message: "Password must be at least 8 characters.",
   }),
 });
 

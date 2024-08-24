@@ -24,9 +24,9 @@ export const isProjectCreator = asyncHandler(
 
 export const isProjectMember = asyncHandler(
   async (req: Request, _res: Response, next: NextFunction) => {
-    console.log(req.user);
     if (!req.user) throw new ApiError(400, "You aren't logged in");
-    const projectId = req.params.projectId || req.body.projectId;
+    const projectId =
+      req.user.currentProjectId || req.params.projectId || req.body.projectId;
 
     if (!projectId) throw new ApiError(400, "Project Id is required");
 

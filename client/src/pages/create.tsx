@@ -99,7 +99,7 @@ const CreateProject = () => {
                 </div>
               </div>
               <div className="my-6 flex gap-x-4">
-                <Link to={`/board`}>
+                <Link to={`/projects`}>
                   <p className="rounded-md border-2 p-2">Cancel</p>
                 </Link>
                 <Button>Create</Button>

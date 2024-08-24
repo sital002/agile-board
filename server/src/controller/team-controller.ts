@@ -5,7 +5,7 @@ const prisma = new PrismaClient();
 
 export async function getTeams(req: Request, res: Response) {
   try {
-    const projectId = req.params.projectId;
+    const projectId = req.params.projectId || req.body.projectId;
     if (!projectId)
       return res.status(400).json({ error: "Project ID is required" });
 
@@ -18,12 +18,11 @@ export async function getTeams(req: Request, res: Response) {
       },
     });
     if (teams) {
-      console.log("The tams", teams.members);
-      res.status(200).json(teams.members);
+      return res.status(200).json(teams.members);
     }
   } catch (err) {
     console.log(err);
-    res.status(500).json({ error: "An error occurred" });
+    return res.status(500).json({ error: "An error occurred" });
   }
 }
 
@@ -38,11 +37,11 @@ export async function deleteTeam(req: Request, res: Response) {
       },
     });
     if (team) {
-      res.status(200).json(team);
+      return res.status(200).json(team);
     }
   } catch (err) {
     console.log(err);
-    res.status(500).json({ error: "An error occurred" });
+    return res.status(500).json({ error: "An error occurred" });
   }
 }
 
@@ -85,11 +84,11 @@ export async function updateTeamMembers(req: Request, res: Response) {
       },
     });
     if (team) {
-      res.status(200).json(team);
+      return res.status(200).json(team);
     }
   } catch (err) {
     console.log(err);
-    res.status(500).json({ error: "An error occurred" });
+    return res.status(500).json({ error: "An error occurred" });
   }
 }
 
@@ -122,10 +121,10 @@ export async function removeTeammember(req: Request, res: Response) {
       },
     });
     if (team) {
-      res.status(200).json(team);
+      return res.status(200).json(team);
     }
   } catch (err) {
     console.log(err);
-    res.status(500).json({ error: "An error occurred" });
+    return res.status(500).json({ error: "An error occurred" });
   }
 }

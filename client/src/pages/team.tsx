@@ -14,8 +14,7 @@ import { API } from "@/utils/api";
 import { useQuery } from "@tanstack/react-query";
 import React, { useState } from "react";
 
-async function getTeams(projectId: string) {
-  if (!projectId) return [];
+export async function getTeams(projectId: string) {
   const result = await API.get(`/api/teams/${projectId}`);
   return result.data as User[];
 }
@@ -29,7 +28,6 @@ const Teams = () => {
   };
   const { data, isLoading } = useQuery({
     queryKey: ["teams"],
-    initialData: [],
     queryFn: () => getTeams(user!.currentProjectId || ""),
   });
 
@@ -75,7 +73,11 @@ const Teams = () => {
         ) : null}
       </div>
 
-      <DataTable columns={teamsColumns} data={data} isLoading={isLoading} />
+      <DataTable
+        columns={teamsColumns}
+        data={data ?? []}
+        isLoading={isLoading}
+      />
     </div>
   );
 };

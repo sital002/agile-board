@@ -43,7 +43,6 @@ export function DataTable<TData, TValue>({
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
-
   const table = useReactTable({
     data,
     columns,
@@ -95,18 +94,18 @@ export function DataTable<TData, TValue>({
                 >
                   {row.getVisibleCells().map((cell, index) => (
                     <React.Fragment key={cell.id + index}>
-                      {isLoading ? (
+                      {isLoading && data.length ? (
                         <TableCell>
-                          <Skeleton className="h-4 w-full" />
+                          {new Array(6).fill(0).map((_, index) => (
+                            <Skeleton className="h-4 w-full" key={index} />
+                          ))}
                         </TableCell>
                       ) : (
                         <TableCell>
-                          <>
-                            {flexRender(
-                              cell.column.columnDef.cell,
-                              cell.getContext(),
-                            )}
-                          </>
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext(),
+                          )}
                         </TableCell>
                       )}
                     </React.Fragment>

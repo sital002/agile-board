@@ -48,30 +48,3 @@ export const selectList = [
     value: "subtask",
   },
 ];
-
-export const detailsList = [
-  {
-    name: "Labels",
-    value: "None",
-  },
-  {
-    name: "Due Date",
-    value: "None",
-  },
-  {
-    name: "Time Tracking",
-    value: "No Time Log",
-  },
-  {
-    name: "Start Date",
-    value: "None",
-  },
-  {
-    name: "Category",
-    value: "None",
-  },
-  {
-    name: "Team",
-    value: "None",
-  },
-];

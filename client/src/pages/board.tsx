@@ -7,7 +7,7 @@ import { Input } from "../components/ui/input";
 import ColumnList from "@/components/column";
 import { API } from "@/utils/api";
 import type { Column } from "@/schema/schema";
-import { useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import { useUser } from "@/hooks/useUser";
 
 type ProjectInfo = {
@@ -30,7 +30,6 @@ const Board: React.FC = () => {
     userId: "",
     description: "",
   });
-  const [newColumn, setNewColumn] = useState();
   const navigate = useNavigate();
 
   const dragHandler = (result: DropResult) => {
@@ -81,7 +80,7 @@ const Board: React.FC = () => {
       name: heading,
       projectId: projectInfo.id,
     });
-    setNewColumn(resp.data);
+    console.log(resp.data);
     setHeading("");
     setOpen(false);
   };
@@ -92,17 +91,17 @@ const Board: React.FC = () => {
   }, [open]);
 
   const getProjectDetails = useCallback(async () => {
-    if (!id) return navigate("/create");
+    if (!id) return;
     const resp = await API.get(`/api/projects/${id}`);
     setProjectInfo(resp.data);
-  }, [id, navigate]);
+  }, [id]);
 
   const getColumn = useCallback(async () => {
-    if (!id) return navigate("/create");
+    if (!id) return;
     const resp = await API.get(`/api/columns/${id}`);
     setColumns(resp.data);
     // console.log(resp.data)
-  }, [id, navigate]);
+  }, [id]);
 
   useEffect(() => {
     if (!id) return navigate("/create");
@@ -111,8 +110,11 @@ const Board: React.FC = () => {
   }, [getColumn, getProjectDetails, id, navigate]);
 
   useEffect(() => {
+    if (!id) return;
     getColumn();
-  }, [getColumn, newColumn]);
+  }, [getColumn, id]);
+
+  if (!id) return <Navigate to="/projects" />;
 
   return (
     <div className="w-full overflow-hidden px-8">

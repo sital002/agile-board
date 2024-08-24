@@ -61,7 +61,7 @@ export const issueColumns: ColumnDef<Issue>[] = [
     cell: ({ row }) => {
       return (
         <div className="font-medium">
-          {row.getValue("assignee") ?? "Unassigned"}
+          {row.original.assignee?.display_name ?? "Unassigned"}
         </div>
       );
     },

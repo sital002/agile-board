@@ -16,14 +16,13 @@ export default function Lists() {
     queryKey: ["issues"],
     queryFn: () => getAllIssue(user?.currentProjectId || ""),
   });
-
   return (
     <div className="w-full p-3 px-2">
       <p className="text-lg">Lists</p>
       <Filterbar />
       <DataTable
         columns={issueColumns}
-        data={data ?? []}
+        data={data || []}
         isLoading={isLoading}
       />
     </div>

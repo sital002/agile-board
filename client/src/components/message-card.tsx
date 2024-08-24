@@ -21,7 +21,6 @@ const Messagecard = React.forwardRef<
   function handleOpenIssue() {
     setOpen(true);
   }
-  console.log(issue);
 
   return (
     <>
@@ -62,12 +61,12 @@ const Messagecard = React.forwardRef<
             <TooltipTrigger>
               {issue.assignee === null ? (
                 <Avatar className="h-5 w-auto">
-                  <AvatarFallback>UN</AvatarFallback>
+                  <AvatarFallback className="uppercase">UN</AvatarFallback>
                 </Avatar>
               ) : (
                 <Avatar className="h-5 w-auto">
                   <AvatarImage src={issue?.assignee?.profile_image_url || ""} />
-                  <AvatarFallback>
+                  <AvatarFallback className="uppercase">
                     {issue?.assignee?.display_name.slice(0, 2)}
                   </AvatarFallback>
                 </Avatar>
@@ -90,7 +89,7 @@ const Messagecard = React.forwardRef<
         >
           <DialogTitle className="sr-only">{issue.title}</DialogTitle>
           <DialogContent>
-            <IssueCard />
+            <IssueCard id={issue.id} />
           </DialogContent>
         </Dialog>
       )}

@@ -15,9 +15,8 @@ const ProjectList = () => {
   const { data, isLoading } = useQuery({
     queryKey: ["projects"],
     queryFn: getProjects,
-    initialData: [],
   });
-
+  console.log(data);
   return (
     <div className="w-full px-2">
       <div className="flex items-center gap-6">
@@ -26,9 +25,10 @@ const ProjectList = () => {
           <Link to="/create">Create</Link>
         </Button>
       </div>
+      {isLoading && <p>Loading...</p>}
       <ProjectDataTable
         columns={projectColumns}
-        data={data}
+        data={data ?? []}
         isLoading={isLoading}
       />
     </div>

@@ -13,8 +13,8 @@ export interface User {
   primary_email_verified: boolean;
   profile_image_url?: string;
   role: Role;
-  created_at: Date;
-  updated_at: Date;
+  created_at: string;
+  updated_at: string;
   projects: Project[];
   issues: Issue[];
   teams: Team[];
@@ -33,9 +33,9 @@ export interface Issue {
   attachments: string[];
   columnId: string;
   column: Column;
-  createdAt: Date;
-  updatedAt: Date;
-  dueDate?: Date;
+  createdAt: string;
+  updatedAt: string;
+  dueDate?: string;
 }
 
 export interface Project {

@@ -11,7 +11,7 @@ import { Input } from "@/components/ui/input";
 import { useUser } from "@/hooks/useUser";
 import type { User } from "@/schema/schema";
 import { API } from "@/utils/api";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import React, { useState } from "react";
 
 export async function getTeams(projectId: string) {
@@ -31,6 +31,8 @@ const Teams = () => {
     queryFn: () => getTeams(user!.currentProjectId || ""),
   });
 
+  const queryClient = useQueryClient();
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const email = e.currentTarget.email.value;
@@ -42,6 +44,7 @@ const Teams = () => {
         },
       );
       console.log(result.data);
+      queryClient.invalidateQueries({ queryKey: ["teams"] });
     } catch (error: unknown) {
       console.log(error);
     }

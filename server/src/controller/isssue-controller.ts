@@ -34,7 +34,8 @@ export const createIssue = asyncHandler(async (req: Request, res: Response) => {
 export async function getIssues(req: Request, res: Response) {
   try {
     if (!req.user) return res.status(400).json({ error: "Unauthorized" });
-    const projectId = req.params.projectId;
+    const projectId =
+      req.user.currentProjectId || req.params.projectId || req.body.projectId;
     if (!projectId)
       return res.status(400).json({ error: "Project Id is required" });
 
@@ -47,9 +48,7 @@ export async function getIssues(req: Request, res: Response) {
         assignee: true,
       },
     });
-    if (issues) {
-      return res.status(200).json(issues);
-    }
+    return res.status(200).json(issues);
   } catch (err) {
     console.log(err);
     res.status(500).json({ error: "An error occurred" });
@@ -97,11 +96,9 @@ export async function updateIssue(req: Request, res: Response) {
         assigneeId: assigneeId || null,
       },
     });
-    if (issue) {
-      return res.status(200).json(issue);
-    }
+    return res.status(200).json(issue);
   } catch (err) {
-    console.log(err);
+    console.error(err);
     res.status(500).json({ error: "An error occurred" });
   }
 }

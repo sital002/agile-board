@@ -15,6 +15,6 @@ issueRouter.get("/:projectId", isProjectMember, getIssues);
 issueRouter.get("/single/:issueId", isProjectMember, getIssue);
 issueRouter.delete("/:id", isProjectMember, deleteIssue);
 issueRouter.put("/:issueId", isProjectMember, updateIssue);
-issueRouter.patch("/update-assignee/:issueId", isProjectMember, updateIssue);
+// issueRouter.patch("/update-assignee/:issueId", isProjectMember, updateIssue);
 
 export default issueRouter;

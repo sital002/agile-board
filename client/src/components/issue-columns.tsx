@@ -11,6 +11,8 @@ import {
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import { Issue } from "@/schema/schema";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { API } from "@/utils/api";
 
 export const issueColumns: ColumnDef<Issue>[] = [
   {
@@ -106,25 +108,47 @@ export const issueColumns: ColumnDef<Issue>[] = [
   {
     id: "actions",
     enableHiding: false,
-    cell: () => {
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>Edit</DropdownMenuItem>
-            <DropdownMenuItem className="text-destructive">
-              Delete
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      );
+    cell: ({ row }) => {
+      return <Actions issueId={row.original.id} />;
     },
   },
 ];
+
+type ActionsProps = {
+  issueId: string;
+};
+function Actions({ issueId }: ActionsProps) {
+  const queryClient = useQueryClient();
+  const mutation = useMutation({
+    mutationFn: () => API.delete(`/api/issues/${issueId}`),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["issues"],
+      });
+    },
+    onError: (error) => {
+      console.error(error);
+    },
+  });
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="ghost" className="h-8 w-8 p-0">
+          <span className="sr-only">Open menu</span>
+          <MoreHorizontal className="h-4 w-4" />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        <DropdownMenuLabel>Actions</DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem>Edit</DropdownMenuItem>
+        <DropdownMenuItem
+          className="text-destructive"
+          onClick={() => mutation.mutate()}
+        >
+          Delete
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}

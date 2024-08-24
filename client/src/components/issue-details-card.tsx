@@ -35,7 +35,7 @@ async function getIssue(id: string) {
 }
 const IssueCard = ({ id }: IssueCardProps) => {
   const { data, isLoading } = useQuery({
-    queryKey: ["issue", id],
+    queryKey: ["issues", id],
     queryFn: () => getIssue(id),
   });
 
@@ -44,7 +44,8 @@ const IssueCard = ({ id }: IssueCardProps) => {
   const mutation = useMutation({
     mutationFn: (data: Issue) => API.put(`/api/issues/${id}`, data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["issue", id] });
+      queryClient.invalidateQueries({ queryKey: ["issues"] });
+      // queryClient.invalidateQueries({ queryKey: ["issues"] });
     },
   });
 
@@ -162,9 +163,10 @@ function AssigneeCard({ issue }: AssigneeCardProps) {
         ...data,
         assigneeId: value,
       }),
-    onSuccess: () => {
+    onSuccess: (data) => {
+      console.log(data);
       queryClient.invalidateQueries({
-        queryKey: ["issues", "issue", issue.id],
+        queryKey: ["issues"],
       });
       setOpen(false);
     },
@@ -225,7 +227,11 @@ function AssigneeCard({ issue }: AssigneeCardProps) {
                         value={member.id}
                         onSelect={(currentValue) => {
                           setValue(currentValue === value ? "" : currentValue);
-                          mutation.mutate(issue);
+                          mutation.mutate({
+                            ...issue,
+                            assigneeId:
+                              currentValue === value ? "" : currentValue,
+                          });
                         }}
                       >
                         <Check

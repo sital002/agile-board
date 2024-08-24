@@ -48,7 +48,7 @@ export async function getIssues(req: Request, res: Response) {
       },
     });
     if (issues) {
-      res.status(200).json(issues);
+      return res.status(200).json(issues);
     }
   } catch (err) {
     console.log(err);
@@ -98,7 +98,7 @@ export async function updateIssue(req: Request, res: Response) {
       },
     });
     if (issue) {
-      res.status(200).json(issue);
+      return res.status(200).json(issue);
     }
   } catch (err) {
     console.log(err);

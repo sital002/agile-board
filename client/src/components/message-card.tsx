@@ -6,7 +6,6 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 import { Dialog, DialogContent } from "./ui/dialog";
 import { DialogTitle } from "@radix-ui/react-dialog";
 import IssueCard from "./issue-details-card";
-import MessageBoxDropDown from "./message-cart-dropdown";
 import { Issue } from "@/schema/schema";
 
 interface MessagecardProps {
@@ -54,7 +53,6 @@ const Messagecard = React.forwardRef<
               </TooltipContent>
             </Tooltip>
           </div>
-          <MessageBoxDropDown id={issue.id.toString()} />
         </div>
         <div className="flex items-center justify-between py-3">
           <Tooltip>

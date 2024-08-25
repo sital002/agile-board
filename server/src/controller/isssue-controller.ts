@@ -131,6 +131,7 @@ export const getSingleIssue = asyncHandler(
       include: {
         column: true,
         assignee: true,
+        comments: true,
       },
     });
     if (!issue) throw new ApiError(404, "Issue not found");

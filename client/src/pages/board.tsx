@@ -104,7 +104,6 @@ const Board: React.FC = () => {
   }, [id]);
 
   useEffect(() => {
-    if (!id) return navigate("/create");
     getProjectDetails();
     getColumn();
   }, [getColumn, getProjectDetails, id, navigate]);

@@ -65,3 +65,14 @@ export interface Column {
   projectId: string;
   project: Project;
 }
+
+export type Comment = {
+  id: string;
+  issueId: string;
+  issue: Issue;
+  authorId: string;
+  author: User;
+  content: string;
+  createdAt: string;
+  updatedAt: string;
+};

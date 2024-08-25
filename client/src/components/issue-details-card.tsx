@@ -4,7 +4,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Input } from "./ui/input";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { API } from "@/utils/api";
-import { Issue } from "@/schema/schema";
+import type { Comment, Issue } from "@/schema/schema";
 import { Textarea } from "./ui/text-area";
 import * as React from "react";
 import { format } from "date-fns";
@@ -31,15 +31,41 @@ type IssueCardProps = {
 
 async function getIssue(id: string) {
   const result = await API.get(`/api/issues/single/${id}`);
-  return result.data.data as Issue;
+  return result.data.data as Issue & { comments: Comment[] };
 }
 const IssueCard = ({ id }: IssueCardProps) => {
+  const { user } = useUser();
+
+  const queryClient = useQueryClient();
   const { data, isLoading } = useQuery({
     queryKey: ["issues", id],
     queryFn: () => getIssue(id),
   });
+  const [comment, setComment] = useState("");
+  const mutation = useMutation({
+    mutationFn: () => {
+      return API.post(`/api/comments/new`, {
+        content: comment,
+        issueId: id,
+      });
+    },
+    onSuccess: (data) => {
+      console.log(data);
+      queryClient.invalidateQueries({
+        queryKey: ["issues", id],
+      });
+      setComment("");
+    },
+  });
+
+  function addComment(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    if (!comment.trim()) return;
+    mutation.mutate();
+  }
 
   if (isLoading) return <p>Loading...</p>;
+
   return (
     <>
       <div className="flex items-center justify-between">
@@ -65,8 +91,10 @@ const IssueCard = ({ id }: IssueCardProps) => {
               </Button>
             </div>
           </div>
+
           <div className="my-4">
             <h1 className="my-2 font-normal">Description</h1>
+            {data?.description && <p>{data.description}</p>}
             <Textarea
               className="w-full"
               defaultValue={data?.description}
@@ -86,13 +114,34 @@ const IssueCard = ({ id }: IssueCardProps) => {
             <div className="flex items-center gap-x-3">
               <Avatar>
                 <AvatarImage
-                  src="https://github.com/shadcn.png"
-                  alt="@shadcn"
+                  src={user?.profile_image_url || ""}
+                  alt={user?.display_name || ""}
                 />
-                <AvatarFallback>CN</AvatarFallback>
+                <AvatarFallback>
+                  {user?.display_name.slice(0, 2)}
+                </AvatarFallback>
               </Avatar>
-              <Input className="h-[50px]" placeholder="Add a comment" />
+              <form onSubmit={addComment}>
+                <Input
+                  placeholder="Add a comment"
+                  value={comment}
+                  onChange={(e) => setComment(e.currentTarget.value)}
+                />
+              </form>
             </div>
+          </div>
+          <div>
+            {data && data.comments.length > 0 ? (
+              <div>
+                {data.comments.map((comment) => (
+                  <div key={comment.id}>
+                    <p>{comment.content}</p>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p>No comments to display</p>
+            )}
           </div>
         </div>
 
@@ -158,7 +207,7 @@ function AssigneeCard({ issue }: AssigneeCardProps) {
       setOpen(false);
     },
     onError: (error) => {
-      console.log(error);
+      console.error(error);
     },
   });
   return (

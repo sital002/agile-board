@@ -77,7 +77,7 @@ export async function getUsersById(req: Request, res: Response) {
 }
 
 export const updateCurrentProject = asyncHandler(
-  async (req: Request, _res: Response) => {
+  async (req: Request, res: Response) => {
     if (!req.user) throw new ApiError(400, "You are not logged in");
     const projectId = req.body.projectId || req.params.projectId;
     if (!projectId) throw new ApiError(400, "Project ID is required");
@@ -90,6 +90,8 @@ export const updateCurrentProject = asyncHandler(
       },
     });
     if (!user) throw new ApiError(400, "User not found");
-    return new ApiResponse(200, "Project changed successfully", user).send();
+    return res
+      .status(200)
+      .json(new ApiResponse("Project updated successfully"));
   }
 );

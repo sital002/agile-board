@@ -1,7 +1,7 @@
 import z from "zod";
 import { ApiError } from "../utils/ApiError";
 import { asyncHandler } from "../utils/AsyncHandler";
-import { Request } from "express";
+import { Request, Response } from "express";
 import prisma from "../db/prisma";
 import { ApiResponse } from "../utils/ApiResponse";
 
@@ -11,7 +11,7 @@ const replySchema = z.object({
   commentId: z.string(),
 });
 
-export const createReply = asyncHandler(async (req: Request) => {
+export const createReply = asyncHandler(async (req: Request, res: Response) => {
   if (!req.user) throw new ApiError(401, "You are not logged in");
 
   const result = replySchema.safeParse(req.body);
@@ -30,10 +30,12 @@ export const createReply = asyncHandler(async (req: Request) => {
     },
   });
   if (!newReply) throw new ApiError(500, "Failed to reply to comment");
-  return new ApiResponse(201, "Reply added successfully", newReply).send();
+  return res
+    .status(201)
+    .json(new ApiResponse("Reply created successfully", newReply));
 });
 
-export const getReplies = asyncHandler(async (req: Request) => {
+export const getReplies = asyncHandler(async (req: Request, res: Response) => {
   if (!req.user) throw new ApiError(401, "You are not logged in");
 
   const commentId = req.params.commentId;
@@ -43,10 +45,12 @@ export const getReplies = asyncHandler(async (req: Request) => {
     },
   });
   if (!replies) throw new ApiError(404, "No replies found");
-  return new ApiResponse(200, "", replies).send();
+  return res
+    .status(200)
+    .json(new ApiResponse("Replies retrieved successfully", replies));
 });
 
-export const updateReply = asyncHandler(async (req: Request) => {
+export const updateReply = asyncHandler(async (req: Request, res: Response) => {
   if (!req.user) throw new ApiError(401, "You are not logged in");
 
   const result = replySchema.safeParse(req.body);
@@ -61,14 +65,12 @@ export const updateReply = asyncHandler(async (req: Request) => {
     },
   });
   if (!updatedReply) throw new ApiError(500, "Failed to update reply");
-  return new ApiResponse(
-    200,
-    "Reply updated successfully",
-    updatedReply
-  ).send();
+  return res
+    .status(200)
+    .json(new ApiResponse("Reply updated successfully", updatedReply));
 });
 
-export const deleteReply = asyncHandler(async (req: Request) => {
+export const deleteReply = asyncHandler(async (req: Request, res: Response) => {
   if (!req.user) throw new ApiError(401, "You are not logged in");
 
   const replyId = req.params.replyId;
@@ -78,9 +80,5 @@ export const deleteReply = asyncHandler(async (req: Request) => {
     },
   });
   if (!deletedReply) throw new ApiError(500, "Failed to delete reply");
-  return new ApiResponse(
-    200,
-    "Reply deleted successfully",
-    deletedReply
-  ).send();
+  return res.status(200).json(new ApiResponse("Reply deleted successfully"));
 });

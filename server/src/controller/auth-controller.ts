@@ -188,41 +188,46 @@ export async function getMyProfile(req: Request, res: Response) {
 
 const emailSchema = z.string().email();
 
-export const forgotPassword = asyncHandler(async (req: Request) => {
-  const result = emailSchema.safeParse(req.body?.email);
-  if (!result.success) throw new ApiError(400, "Invalid email format");
+export const forgotPassword = asyncHandler(
+  async (req: Request, res: Response) => {
+    const result = emailSchema.safeParse(req.body?.email);
+    if (!result.success) throw new ApiError(400, "Invalid email format");
 
-  const user = await prisma.user.findUnique({
-    where: {
-      email: result.data,
-    },
-  });
-  if (!user) throw new ApiError(400, "User not found");
-  const resetToken = crypto.randomBytes(20).toString("hex");
-  const resetTokenExpiry = Date.now() + 1000 * 60 * 60 * 24;
-  await prisma.user.update({
-    where: {
-      id: user.id,
-    },
-    data: {
-      reset_token: resetToken,
-      reset_token_expiry: new Date(resetTokenExpiry),
-    },
-  });
-  const resetUrl = `http://localhost:3000/reset-password?token=${resetToken}`;
-  const mailOptions = {
-    from: "agileboard.test.com.np",
-    to: user.email,
-    subject: "Reset Password",
-    html: `
+    const user = await prisma.user.findUnique({
+      where: {
+        email: result.data,
+      },
+    });
+    if (!user) throw new ApiError(400, "User not found");
+    const resetToken = crypto.randomBytes(20).toString("hex");
+    const resetTokenExpiry = Date.now() + 1000 * 60 * 60 * 24;
+    await prisma.user.update({
+      where: {
+        id: user.id,
+      },
+      data: {
+        reset_token: resetToken,
+        reset_token_expiry: new Date(resetTokenExpiry),
+      },
+    });
+    const resetUrl = `http://localhost:3000/reset-password?token=${resetToken}`;
+    const mailOptions = {
+      from: "agileboard.test.com.np",
+      to: user.email,
+      subject: "Reset Password",
+      html: `
     <h1>Reset your password</h1>
     <p>Click the link below to reset your password</p>
     <a href="${resetUrl}">Reset Password</a>
     `,
-  };
-  await createTransport.sendMail(mailOptions);
-  return new ApiResponse(200, "Reset link sent to your email").send();
-});
+    };
+    await createTransport.sendMail(mailOptions);
+
+    return res
+      .status(200)
+      .json(new ApiResponse("Reset link sent to your email"));
+  }
+);
 
 const resetPasswordSchema = z.object({
   token: z.string(),
@@ -231,29 +236,31 @@ const resetPasswordSchema = z.object({
     .min(8, "Password must be 8 charactor long")
     .max(64, "Password must be at most 64 charactor long"),
 });
-export const resetPassword = asyncHandler(async (req: Request) => {
-  const result = resetPasswordSchema.safeParse(req.body);
-  if (!result.success) throw new ApiError(400, "Invalid password format");
-  const user = await prisma.user.findFirst({
-    where: {
-      reset_token: result.data.token,
-      reset_token_expiry: {
-        gt: new Date(),
+export const resetPassword = asyncHandler(
+  async (req: Request, res: Response) => {
+    const result = resetPasswordSchema.safeParse(req.body);
+    if (!result.success) throw new ApiError(400, "Invalid password format");
+    const user = await prisma.user.findFirst({
+      where: {
+        reset_token: result.data.token,
+        reset_token_expiry: {
+          gt: new Date(),
+        },
       },
-    },
-  });
-  if (!user) throw new ApiError(400, "Invalid or expired token");
-  const hashedPassword = await bcrypt.hash(result.data.token, 10);
-  await prisma.user.update({
-    where: {
-      id: user.id,
-    },
-    data: {
-      password: hashedPassword,
-      reset_token: null,
-      reset_token_expiry: null,
-    },
-  });
-  if (!hashedPassword) throw new ApiError(500, "Failed to reset password");
-  return new ApiResponse(200, "Password reset successfully").send();
-});
+    });
+    if (!user) throw new ApiError(400, "Invalid or expired token");
+    const hashedPassword = await bcrypt.hash(result.data.token, 10);
+    await prisma.user.update({
+      where: {
+        id: user.id,
+      },
+      data: {
+        password: hashedPassword,
+        reset_token: null,
+        reset_token_expiry: null,
+      },
+    });
+    if (!hashedPassword) throw new ApiError(500, "Failed to reset password");
+    return res.status(200).json(new ApiResponse("Password reset successfully"));
+  }
+);

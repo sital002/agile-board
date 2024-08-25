@@ -45,7 +45,9 @@ export const getIssues = asyncHandler(async (req: Request, res: Response) => {
     },
   });
   if (!issues) throw new ApiError(404, "No issues found");
-  return new ApiResponse(200, "", issues).send();
+  console.log(issues);
+  return res.status(200).json(issues);
+  // return new ApiResponse(200, "", issues).send();
 });
 
 export async function deleteIssue(req: Request, res: Response) {
@@ -59,9 +61,9 @@ export async function deleteIssue(req: Request, res: Response) {
         id,
       },
     });
-    return new ApiResponse(200, "Issue deleted successfully", issue).send();
+    return res.status(200).json(new ApiResponse("Issue deleted successfully"));
   } catch (err) {
-    console.log(err);
+    console.error(err);
     res.status(500).json({ error: "An error occurred" });
   }
 }
@@ -120,26 +122,30 @@ export const updateAssignee = asyncHandler(
         assigneeId,
       },
     });
-    if (issue) {
-      return new ApiResponse(200, "", issue).send();
-    }
+    if (!issue) throw new ApiError(404, "Issue not found");
+    return res
+      .status(200)
+      .json(new ApiResponse("Assignee updated successfully", issue));
   }
 );
 
-export const getIssue = asyncHandler(async (req: Request, res: Response) => {
-  if (!req.user) throw new ApiError(400, "You are not logged in");
-  const id = req.params.issueId || req.body.issueId;
-  if (!id) throw new ApiError(400, "Issue ID is required");
-  const issue = await prisma.issue.findUnique({
-    where: {
-      id,
-    },
-    include: {
-      column: true,
-      assignee: true,
-    },
-  });
-  if (issue) {
-    return new ApiResponse(200, "", issue).send();
+export const getSingleIssue = asyncHandler(
+  async (req: Request, res: Response) => {
+    if (!req.user) throw new ApiError(400, "You are not logged in");
+    const id = req.params.issueId || req.body.issueId;
+    if (!id) throw new ApiError(400, "Issue ID is required");
+    const issue = await prisma.issue.findUnique({
+      where: {
+        id,
+      },
+      include: {
+        column: true,
+        assignee: true,
+      },
+    });
+    if (!issue) throw new ApiError(404, "Issue not found");
+    return res
+      .status(200)
+      .json(new ApiResponse("Issue retrieved successfully", issue));
   }
-});
+);

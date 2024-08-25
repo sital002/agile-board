@@ -134,7 +134,9 @@ export const deleteProject = asyncHandler(
       },
     });
     if (!project) throw new ApiError(404, "Project not found");
-    return new ApiResponse(200, "Project deleted successfully").send();
+    return res
+      .status(200)
+      .json(new ApiResponse("Project deleted successfully"));
   }
 );
 
@@ -154,5 +156,5 @@ export const editProject = asyncHandler(async (req: Request, res: Response) => {
     },
   });
   if (!updatedProject) throw new ApiError(404, "Project not found");
-  return new ApiResponse(200, "Project updated successfully").send();
+  return res.status(200).json(new ApiResponse("Project updated successfully"));
 });

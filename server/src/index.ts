@@ -10,7 +10,6 @@ import { authenticate } from "./middleware/authenticate";
 import issueRouter from "./routes/issue-route";
 import teamRouter from "./routes/team-route";
 import { globalErrorHandler } from "./utils/globalErrorHandler";
-import { setApiResponse } from "./utils/ApiResponse";
 import { logger } from "./middleware/logger";
 import prisma from "./db/prisma";
 import commentRouter from "./routes/comment-route";
@@ -34,8 +33,6 @@ app.use(logger);
 
 app.use(express.json());
 app.use(cookieParser());
-
-app.use(setApiResponse);
 
 app.use("/api/auth", authRouter);
 app.use("/api/users", authenticate, userRouter);

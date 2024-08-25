@@ -28,9 +28,10 @@ const ColumnList: React.FC<ColumnProps> = ({ column }) => {
   });
 
   async function getIssues(): Promise<Issue[]> {
+    console.log("Inside getIssues");
     const res = await API.get(`/api/issues/${column.projectId}`);
-    console.log(res.data.data);
-    return res.data.data || [];
+    console.log(res.data);
+    return res.data || [];
   }
   // const addTaskHandler = (e: React.MouseEvent<HTMLButtonElement>) => {
   //   e.stopPropagation();
@@ -127,26 +128,28 @@ const ColumnList: React.FC<ColumnProps> = ({ column }) => {
         >
           <div className="text-md mb-2 px-2 font-medium">{column.name}</div>
           <div className="h-[300px] overflow-auto p-1 scrollbar-thin scrollbar-track-secondary scrollbar-thumb-primary-foreground scrollbar-thumb-rounded-full">
-            {data?.map((task, index) => (
-              <Draggable
-                key={task.id}
-                draggableId={task.id.toString()}
-                index={index}
-              >
-                {(provided) => (
-                  <div
-                    className="relative my-2"
-                    ref={provided.innerRef}
-                    {...provided.draggableProps}
-                    {...provided.dragHandleProps}
-                  >
-                    {column.id == task.columnId ? (
-                      <Messagecard issue={task} />
-                    ) : null}
-                  </div>
-                )}
-              </Draggable>
-            ))}
+            {data &&
+              data.length > 0 &&
+              data?.map((task, index) => (
+                <Draggable
+                  key={task.id}
+                  draggableId={task.id.toString()}
+                  index={index}
+                >
+                  {(provided) => (
+                    <div
+                      className="relative my-2"
+                      ref={provided.innerRef}
+                      {...provided.draggableProps}
+                      {...provided.dragHandleProps}
+                    >
+                      {column.id == task.columnId ? (
+                        <Messagecard issue={task} />
+                      ) : null}
+                    </div>
+                  )}
+                </Draggable>
+              ))}
             {provided.placeholder}
           </div>
           {!open && (

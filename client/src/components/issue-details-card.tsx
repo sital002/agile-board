@@ -158,9 +158,6 @@ function AssigneeCard({ issue }: AssigneeCardProps) {
       queryClient.invalidateQueries({
         queryKey: ["issues"],
       });
-      queryClient.invalidateQueries({
-        queryKey: ["issues", issue.id],
-      });
       setOpen(false);
     },
     onError: (error) => {

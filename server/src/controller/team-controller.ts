@@ -17,9 +17,7 @@ export async function getTeams(req: Request, res: Response) {
         members: true,
       },
     });
-    if (teams) {
-      return res.status(200).json(teams.members);
-    }
+    return res.status(200).json(teams?.members || []);
   } catch (err) {
     console.log(err);
     return res.status(500).json({ error: "An error occurred" });

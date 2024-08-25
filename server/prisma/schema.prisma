@@ -31,6 +31,8 @@ model User {
   currentProject         Project?  @relation(fields: [currentProjectId], references: [id], onDelete: NoAction)
   reset_token            String?
   reset_token_expiry     DateTime?
+  comments               Comment[]
+  replies                Reply[]
 }
 
 model Issue {
@@ -47,6 +49,7 @@ model Issue {
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   dueDate     DateTime?
+  comments    Comment[]
 }
 
 model Project {
@@ -75,4 +78,27 @@ model Column {
   issues      Issue[]
   projectId   String
   project     Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+}
+
+model Comment {
+  id        String   @id @default(uuid())
+  content   String
+  authorId  String
+  author    User     @relation(fields: [authorId], references: [id])
+  issueId   String
+  issue     Issue    @relation(fields: [issueId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  replies   Reply[]
+}
+
+model Reply {
+  id        String   @id @default(uuid())
+  content   String
+  authorId  String
+  author    User     @relation(fields: [authorId], references: [id])
+  commentId String
+  comment   Comment  @relation(fields: [commentId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

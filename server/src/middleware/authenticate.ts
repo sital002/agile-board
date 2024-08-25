@@ -33,7 +33,7 @@ export async function authenticate(
     req.user = user;
     next();
   } catch (err) {
-    console.log(err);
+    console.error(err);
     return res.status(401).json({ status: false, error: "Unauthorized" });
   }
 }

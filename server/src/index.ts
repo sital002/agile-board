@@ -13,29 +13,21 @@ import { globalErrorHandler } from "./utils/globalErrorHandler";
 import { setApiResponse } from "./utils/ApiResponse";
 import { logger } from "./middleware/logger";
 import prisma from "./db/prisma";
+import commentRouter from "./routes/comment-route";
 
 const app = express();
 
 app.use(
   cors({
-    origin: ["http://localhost:5173", "https://test.com"],
+    origin: ["http://localhost:5173"],
     credentials: true,
   })
 );
 
 function connectDB() {
   console.log("Connecting to database");
-  prisma
-    .$connect()
-    .then(() => {
-      console.log("Connected to database");
-    })
-    .catch((err) => {
-      console.error("Error connecting to database", err);
-    });
+  return prisma.$connect();
 }
-
-connectDB();
 
 app.use(logger);
 
@@ -50,9 +42,17 @@ app.use("/api/projects", authenticate, projectRouter);
 app.use("/api/columns", authenticate, columnRouter);
 app.use("/api/issues", authenticate, issueRouter);
 app.use("/api/teams", authenticate, teamRouter);
+app.use("/api/comments", authenticate, commentRouter);
 
 app.use(globalErrorHandler);
 
-app.listen(3000, () =>
-  console.log(`🚀 Server ready at: http://localhost:3000`)
-);
+connectDB()
+  .then(() => {
+    console.log("Connected to database");
+    app.listen(3000, () =>
+      console.log(`🚀 Server ready at: http://localhost:3000`)
+    );
+  })
+  .catch((err) => {
+    console.error("Error connecting to database", err);
+  });

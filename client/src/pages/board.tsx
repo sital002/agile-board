@@ -116,7 +116,7 @@ const Board: React.FC = () => {
   if (!id) return <Navigate to="/projects" />;
 
   return (
-    <div className="w-full overflow-hidden px-8">
+    <div className="w-full px-8">
       <Header />
       <Filterbar />
       <div className="flex w-full gap-2 overflow-auto scrollbar">

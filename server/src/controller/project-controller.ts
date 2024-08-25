@@ -112,13 +112,11 @@ export async function getProjectById(req: Request, res: Response) {
       },
     });
 
-    if (project) {
-      logger("Project fetched successfully");
-      res.status(200).json(project);
-    }
+    if (!project) return res.status(404).json({ error: "Project not found" });
+    return res.status(200).json(project);
   } catch (err) {
     console.log(err);
-    res.status(500).json({ error: "An error occurred" });
+    return res.status(500).json({ error: "An error occurred" });
   }
 }
 
@@ -136,16 +134,16 @@ export const deleteProject = asyncHandler(
       },
     });
     if (!project) throw new ApiError(404, "Project not found");
-    if (project) return new ApiResponse(200, "Project deleted successfully");
+    return new ApiResponse(200, "Project deleted successfully").send();
   }
 );
 
 export const editProject = asyncHandler(async (req: Request, res: Response) => {
-  if (!req.user) return res.status(400).json({ error: "Unauthorized" });
+  if (!req.user) throw new ApiError(400, "Unauthorized");
   const result = projectSchema.safeParse(req.body);
-  if (!result.success) return new ApiResponse(400, "Invalid data format");
+  if (!result.success) throw new ApiError(400, result.error.errors[0].message);
   const projectId = req.params.projectId || req.body.projectId;
-  if (!projectId) return new ApiResponse(400, "Project ID is required");
+  if (!projectId) throw new ApiError(400, "Project ID is required");
   const updatedProject = await prisma.project.update({
     where: {
       id: projectId,
@@ -155,6 +153,6 @@ export const editProject = asyncHandler(async (req: Request, res: Response) => {
       description: result.data.description,
     },
   });
-  if (!updatedProject) return new ApiResponse(404, "Project not found");
-  return new ApiResponse(200, "Project updated successfully");
+  if (!updatedProject) throw new ApiError(404, "Project not found");
+  return new ApiResponse(200, "Project updated successfully").send();
 });

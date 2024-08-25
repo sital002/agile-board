@@ -29,29 +29,24 @@ export const createIssue = asyncHandler(async (req: Request, res: Response) => {
   return res.status(201).json(issue);
 });
 
-export async function getIssues(req: Request, res: Response) {
-  try {
-    if (!req.user) return res.status(400).json({ error: "Unauthorized" });
-    const projectId =
-      req.user.currentProjectId || req.params.projectId || req.body.projectId;
-    if (!projectId)
-      return res.status(400).json({ error: "Project Id is required" });
+export const getIssues = asyncHandler(async (req: Request, res: Response) => {
+  if (!req.user) throw new ApiError(400, "Unauthorized");
+  const projectId =
+    req.user.currentProjectId || req.params.projectId || req.body.projectId;
+  if (!projectId) throw new ApiError(400, "Project Id is required");
 
-    const issues = await prisma.issue.findMany({
-      where: {
-        projectId,
-      },
-      include: {
-        column: true,
-        assignee: true,
-      },
-    });
-    return res.status(200).json(issues);
-  } catch (err) {
-    console.log(err);
-    return res.status(500).json({ error: "An error occurred" });
-  }
-}
+  const issues = await prisma.issue.findMany({
+    where: {
+      projectId,
+    },
+    include: {
+      column: true,
+      assignee: true,
+    },
+  });
+  if (!issues) throw new ApiError(404, "No issues found");
+  return new ApiResponse(200, "", issues).send();
+});
 
 export async function deleteIssue(req: Request, res: Response) {
   try {
@@ -64,7 +59,7 @@ export async function deleteIssue(req: Request, res: Response) {
         id,
       },
     });
-    return res.status(200).json(issue);
+    return new ApiResponse(200, "Issue deleted successfully", issue).send();
   } catch (err) {
     console.log(err);
     res.status(500).json({ error: "An error occurred" });
@@ -81,15 +76,16 @@ export async function updateIssue(req: Request, res: Response) {
     if (!result.success) {
       return res.status(400).json({ error: result.error });
     }
-    const isValidAssignee = await prisma.user.findUnique({
-      where: {
-        id: result.data.assigneeId || "",
-      },
-    });
-    if (!isValidAssignee)
-      return res.status(400).json({ error: "Invalid assignee ID" });
-
     const { title, description, assigneeId } = result.data;
+    if (assigneeId) {
+      const isValidAssignee = await prisma.user.findUnique({
+        where: {
+          id: assigneeId,
+        },
+      });
+      if (!isValidAssignee)
+        return res.status(400).json({ error: "Invalid assignee ID" });
+    }
     const issue = await prisma.issue.update({
       where: {
         id,
@@ -100,6 +96,7 @@ export async function updateIssue(req: Request, res: Response) {
         assigneeId: assigneeId || null,
       },
     });
+    if (!issue) return res.status(404).json({ error: "Issue not found" });
     return res.status(200).json(issue);
   } catch (err) {
     console.error(err);
@@ -124,7 +121,7 @@ export const updateAssignee = asyncHandler(
       },
     });
     if (issue) {
-      return new ApiResponse(200, "", issue);
+      return new ApiResponse(200, "", issue).send();
     }
   }
 );
@@ -143,6 +140,6 @@ export const getIssue = asyncHandler(async (req: Request, res: Response) => {
     },
   });
   if (issue) {
-    return new ApiResponse(200, "", issue);
+    return new ApiResponse(200, "", issue).send();
   }
 });

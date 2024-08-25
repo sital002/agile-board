@@ -90,6 +90,6 @@ export const updateCurrentProject = asyncHandler(
       },
     });
     if (!user) throw new ApiError(400, "User not found");
-    return new ApiResponse(200, "Project changed successfully", user);
+    return new ApiResponse(200, "Project changed successfully", user).send();
   }
 );

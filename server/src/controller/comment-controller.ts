@@ -29,7 +29,7 @@ export const createComment = asyncHandler(async (req: Request) => {
     },
   });
   if (!newComment) throw new ApiError(500, "Failed to create comment");
-  return new ApiResponse(201, "Comment added successfully", newComment);
+  return new ApiResponse(201, "Comment added successfully", newComment).send();
 });
 
 export const getComments = asyncHandler(async (req: Request) => {
@@ -49,7 +49,7 @@ export const getComments = asyncHandler(async (req: Request) => {
     },
   });
   if (!comments) throw new ApiError(404, "No comments found");
-  return new ApiResponse(200, "", comments);
+  return new ApiResponse(200, "", comments).send();
 });
 
 export const updateComment = asyncHandler(async (req: Request) => {
@@ -68,7 +68,7 @@ export const updateComment = asyncHandler(async (req: Request) => {
     },
   });
   if (!comment) throw new ApiError(500, "Failed to update comment");
-  return new ApiResponse(200, "Comment updated successfully", comment);
+  return new ApiResponse(200, "Comment updated successfully", comment).send();
 });
 
 export const deleteComment = asyncHandler(async (req: Request) => {
@@ -81,5 +81,9 @@ export const deleteComment = asyncHandler(async (req: Request) => {
     },
   });
   if (!deletedComment) throw new ApiError(500, "Failed to delete comment");
-  return new ApiResponse(200, "Comment deleted successfully", deletedComment);
+  return new ApiResponse(
+    200,
+    "Comment deleted successfully",
+    deletedComment
+  ).send();
 });

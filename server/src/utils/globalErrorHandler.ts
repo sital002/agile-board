@@ -7,6 +7,7 @@ export const globalErrorHandler = (
   res: Response,
   _next: NextFunction
 ) => {
+  if (res.headersSent) return;
   if (err instanceof ApiError) {
     return res.status(err.statusCode).json({
       error: err.message,

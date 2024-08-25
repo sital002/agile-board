@@ -11,8 +11,8 @@ export const asyncHandler = (func: FunctionType) => {
     try {
       await func(req, res, next);
     } catch (error: unknown) {
-      next(error);
       console.error(error);
+      return next(error);
     }
   };
 };

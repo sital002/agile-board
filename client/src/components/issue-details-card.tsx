@@ -39,16 +39,6 @@ const IssueCard = ({ id }: IssueCardProps) => {
     queryFn: () => getIssue(id),
   });
 
-  const queryClient = useQueryClient();
-
-  const mutation = useMutation({
-    mutationFn: (data: Issue) => API.put(`/api/issues/${id}`, data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["issues"] });
-      // queryClient.invalidateQueries({ queryKey: ["issues"] });
-    },
-  });
-
   if (isLoading) return <p>Loading...</p>;
   return (
     <>
@@ -168,6 +158,9 @@ function AssigneeCard({ issue }: AssigneeCardProps) {
       queryClient.invalidateQueries({
         queryKey: ["issues"],
       });
+      queryClient.invalidateQueries({
+        queryKey: ["issues", issue.id],
+      });
       setOpen(false);
     },
     onError: (error) => {
@@ -206,6 +199,7 @@ function AssigneeCard({ issue }: AssigneeCardProps) {
                 <CommandItem
                   onSelect={() => {
                     setValue("");
+                    console.log(issue, "tkdf");
                     mutation.mutate({
                       ...issue,
                       assigneeId: "",
@@ -227,6 +221,8 @@ function AssigneeCard({ issue }: AssigneeCardProps) {
                         value={member.id}
                         onSelect={(currentValue) => {
                           setValue(currentValue === value ? "" : currentValue);
+                          console.log(issue, "tkdf");
+
                           mutation.mutate({
                             ...issue,
                             assigneeId:

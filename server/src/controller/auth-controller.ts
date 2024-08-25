@@ -221,7 +221,7 @@ export const forgotPassword = asyncHandler(async (req: Request) => {
     `,
   };
   await createTransport.sendMail(mailOptions);
-  return new ApiResponse(200, "Reset link sent to your email");
+  return new ApiResponse(200, "Reset link sent to your email").send();
 });
 
 const resetPasswordSchema = z.object({
@@ -254,5 +254,6 @@ export const resetPassword = asyncHandler(async (req: Request) => {
       reset_token_expiry: null,
     },
   });
-  return new ApiResponse(200, "Password reset successfully");
+  if (!hashedPassword) throw new ApiError(500, "Failed to reset password");
+  return new ApiResponse(200, "Password reset successfully").send();
 });

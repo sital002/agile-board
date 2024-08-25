@@ -30,7 +30,7 @@ export const createReply = asyncHandler(async (req: Request) => {
     },
   });
   if (!newReply) throw new ApiError(500, "Failed to reply to comment");
-  return new ApiResponse(201, "Reply added successfully", newReply);
+  return new ApiResponse(201, "Reply added successfully", newReply).send();
 });
 
 export const getReplies = asyncHandler(async (req: Request) => {
@@ -43,7 +43,7 @@ export const getReplies = asyncHandler(async (req: Request) => {
     },
   });
   if (!replies) throw new ApiError(404, "No replies found");
-  return new ApiResponse(200, "", replies);
+  return new ApiResponse(200, "", replies).send();
 });
 
 export const updateReply = asyncHandler(async (req: Request) => {
@@ -61,7 +61,11 @@ export const updateReply = asyncHandler(async (req: Request) => {
     },
   });
   if (!updatedReply) throw new ApiError(500, "Failed to update reply");
-  return new ApiResponse(200, "Reply updated successfully", updatedReply);
+  return new ApiResponse(
+    200,
+    "Reply updated successfully",
+    updatedReply
+  ).send();
 });
 
 export const deleteReply = asyncHandler(async (req: Request) => {
@@ -74,5 +78,9 @@ export const deleteReply = asyncHandler(async (req: Request) => {
     },
   });
   if (!deletedReply) throw new ApiError(500, "Failed to delete reply");
-  return new ApiResponse(200, "Reply deleted successfully", deletedReply);
+  return new ApiResponse(
+    200,
+    "Reply deleted successfully",
+    deletedReply
+  ).send();
 });

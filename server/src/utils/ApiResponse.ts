@@ -12,12 +12,20 @@ export class ApiResponse {
     this.success = true;
     this.statusCode = statusCode;
     this.data = data;
+  }
+
+  send() {
     if (!ApiResponse.res) {
       throw new Error(
         "Response object not set. Call ApiResponse.setResponse(res) first."
       );
     }
-    ApiResponse.res.status(this.statusCode).json(this);
+    if (ApiResponse.res.headersSent) return;
+    ApiResponse.res.status(this.statusCode).json({
+      success: this.success,
+      message: this.message,
+      data: this.data,
+    });
   }
 
   static setResponse(res: Response) {

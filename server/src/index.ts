@@ -14,6 +14,7 @@ import { setApiResponse } from "./utils/ApiResponse";
 import { logger } from "./middleware/logger";
 import prisma from "./db/prisma";
 import commentRouter from "./routes/comment-route";
+import replyRouter from "./routes/reply-route";
 
 const app = express();
 
@@ -43,6 +44,7 @@ app.use("/api/columns", authenticate, columnRouter);
 app.use("/api/issues", authenticate, issueRouter);
 app.use("/api/teams", authenticate, teamRouter);
 app.use("/api/comments", authenticate, commentRouter);
+app.use("api/replies", authenticate, replyRouter);
 
 app.use(globalErrorHandler);
 

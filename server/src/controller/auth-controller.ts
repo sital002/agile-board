@@ -1,4 +1,4 @@
-import z from "zod";
+import z, { any } from "zod";
 import { env } from "../utils/env";
 import type { CookieOptions, Request, Response } from "express";
 import { PrismaClient, User } from "@prisma/client";
@@ -44,126 +44,107 @@ const SignInSchema = z.object({
   password: z.string(),
 });
 
-export async function userSignup(req: Request, res: Response) {
+export const userSignup = asyncHandler(async (req: Request, res: Response) => {
   const result = SignUpSchema.safeParse(req.body);
-  if (!result.success) {
-    console.log(result.error.errors);
-    return res.status(400).send(result.error.errors);
-  }
+  if (!result.success) throw new ApiError(400, result.error.errors[0].message);
 
   const userExists = await prisma.user.findUnique({
     where: {
       email: result.data.email,
     },
   });
-  if (userExists)
-    return res.status(400).json({ message: "User already exists" });
+  if (userExists) throw new ApiError(400, "User already exists");
 
-  try {
-    const hashedPassword = await bcrypt.hash(result.data.password, 10);
-    const verificationCode = crypto.randomUUID();
+  const hashedPassword = await bcrypt.hash(result.data.password, 10);
+  const verificationCode = crypto.randomUUID();
+  if (!hashedPassword) throw new ApiError(500, "Failed to hash password");
 
-    const newUser = await prisma.user.create({
-      data: {
-        verification_code: verificationCode,
-        display_name: result.data.display_name,
-        email: result.data.email,
-        password: hashedPassword,
-      },
-    });
-    // const { data, error } = await resend.emails.send({
-    //   from: "Agile Board <onboarding@resend.dev>",
-    //   to: ["sitaladhikari002@gmail.com"],
-    //   subject: "Verify your Email",
-    //   html: `
-    //   <h1>Verify your email</h1>
-    //   <p>Click the link below to verify your email</p>
-    //   <button><a href="http://localhost:3000/auth/verify-email?code=${verificationCode}">Verify Email</a></button>
-    //   `,
-    // });
-    // if (error) {
-    //   return res.status(400).json({ error });
-    // }
+  const newUser = await prisma.user.create({
+    data: {
+      verification_code: verificationCode,
+      display_name: result.data.display_name,
+      email: result.data.email,
+      password: hashedPassword,
+    },
+  });
+  // const { data, error } = await resend.emails.send({
+  //   from: "Agile Board <onboarding@resend.dev>",
+  //   to: ["sitaladhikari002@gmail.com"],
+  //   subject: "Verify your Email",
+  //   html: `
+  //   <h1>Verify your email</h1>
+  //   <p>Click the link below to verify your email</p>
+  //   <button><a href="http://localhost:3000/auth/verify-email?code=${verificationCode}">Verify Email</a></button>
+  //   `,
+  // });
+  // if (error) {
+  //   return res.status(400).json({ error });
+  // }
 
-    let data = await createTransport.sendMail({
-      from: "agileboard.test.com.np",
-      to: newUser.email,
-      subject: "Account Vefification",
-      html: `
+  let data = await createTransport.sendMail({
+    from: "agileboard.test.com.np",
+    to: newUser.email,
+    subject: "Account Vefification",
+    html: `
       <h1>Verify your email</h1>
       <p>Click the link below to verify your email</p>
       <button><a href=" https://google.com?code=${verificationCode}">Verify Email</a></button>
       `,
-    });
-    if (newUser)
-      return res
-        .status(200)
-        .json({ message: "User created successfully", newUser });
-  } catch (err) {
-    console.log(err);
-    return res.status(500).json({ message: "An error occurred" });
-  }
-}
+  });
+  if (!newUser) throw new ApiError(500, "Failed to create user");
 
-export async function userSignin(req: Request, res: Response) {
-  console.log("hit");
+  return res
+    .status(201)
+    .json(new ApiResponse("User created successfully", newUser));
+});
+
+export const userSignin = asyncHandler(async (req: Request, res: Response) => {
   const result = SignInSchema.safeParse(req.body);
-  console.log(result);
-  if (!result.success) {
-    console.log(result.error);
-    return res.status(400).json(result.error.errors);
-  }
-  try {
-    const user = await prisma.user.findUnique({
-      where: {
-        email: result.data.email,
-      },
-    });
-    if (!user) return res.status(400).json({ message: "User not found" });
-    const isPasswordValid = await bcrypt.compare(
-      result.data.password,
-      user.password
-    );
-    if (!isPasswordValid)
-      return res.status(400).json({ message: "Invalid password" });
+  if (!result.success) throw new ApiError(400, result.error.errors[0].message);
+  const user = await prisma.user.findUnique({
+    where: {
+      email: result.data.email,
+    },
+  });
+  if (!user) throw new ApiError(400, "User not found");
+  const isPasswordValid = await bcrypt.compare(
+    result.data.password,
+    user.password
+  );
+  if (!isPasswordValid) throw new ApiError(400, "Invalid password");
 
-    const accessToken = generateAccessToken(user);
-    const refreshToken = generateRefreshToken(user.id);
+  const accessToken = generateAccessToken(user);
+  const refreshToken = generateRefreshToken(user.id);
 
-    const options: CookieOptions = {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      path: "/",
-      expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7),
-    };
+  const options: CookieOptions = {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    path: "/",
+    expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7),
+  };
 
-    return res
-      .status(201)
-      .cookie("access_token", accessToken, options)
-      .cookie("refresh_token", refreshToken, options)
-      .send({
+  return res
+    .status(201)
+    .cookie("access_token", accessToken, options)
+    .cookie("refresh_token", refreshToken, options)
+    .send(
+      new ApiResponse("User logged In Successfully", {
         status: true,
-        message: "User logged In Successfully",
         access_token: accessToken,
         refresh_token: refreshToken,
-      });
-  } catch (error) {
-    console.log(error);
-    if (error instanceof Error) return res.status(500).json(error.message);
-    return res.status(500).json("An error occurred");
-  }
-}
+      })
+    );
+});
 
-export async function verifyEmail(req: Request, res: Response) {
+export const verifyEmail = asyncHandler(async (req: Request, res: Response) => {
   const code = req.query.code;
-  if (!code) return res.status(400).json({ message: "code is required" });
+  if (!code) throw new ApiError(400, "Code is required");
   const user = await prisma.user.findFirst({
     where: {
       verification_code: code as string,
     },
   });
-  console.log(user);
-  if (!user) return res.status(400).json({ message: "Invalid code" });
+  if (!user) throw new ApiError(400, "Invalid code");
   await prisma.user.update({
     where: {
       id: user.id,
@@ -172,20 +153,20 @@ export async function verifyEmail(req: Request, res: Response) {
       primary_email_verified: true,
     },
   });
-  return res.send("Email verified successfully");
-}
-export async function logout(_: Request, res: Response) {
+  return res.status(200).json(new ApiResponse("Email verified successfully"));
+});
+export const logout = asyncHandler(async (_: Request, res: Response) => {
   res.clearCookie("access_token");
   res.clearCookie("refresh_token");
-  return res.status(200).json({ message: "Logged out successfully" });
-}
+  return res.status(200).json(new ApiResponse("Logged out successfully"));
+});
 
-export async function getMyProfile(req: Request, res: Response) {
-  if (!req.user)
-    return res.status(401).json({ status: false, message: "Unauthorized" });
-  return res.status(200).json({ user: req.user, status: true });
-}
-
+export const getMyProfile = asyncHandler(
+  async (req: Request, res: Response) => {
+    if (!req.user) throw new ApiError(401, "You are not logged in");
+    return res.status(200).json(new ApiResponse("User profile", req.user));
+  }
+);
 const emailSchema = z.string().email();
 
 export const forgotPassword = asyncHandler(

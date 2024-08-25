@@ -6,13 +6,12 @@ import { asyncHandler } from "../utils/AsyncHandler";
 import { ApiResponse } from "../utils/ApiResponse";
 import { ApiError } from "../utils/ApiError";
 
-export async function createProject(req: Request, res: Response) {
-  try {
+export const createProject = asyncHandler(
+  async (req: Request, res: Response) => {
+    if (!req.user) throw new ApiError(400, "You are not logged in");
     const result = projectSchema.safeParse(req.body);
-    if (!result.success) {
-      return res.status(400).json({ error: result.error });
-    }
-    if (!req.user) return res.status(400).json({ error: "Unauthorized" });
+    if (!result.success)
+      throw new ApiError(400, result.error.errors[0].message);
 
     const project = await prisma.project.create({
       data: {
@@ -47,64 +46,50 @@ export async function createProject(req: Request, res: Response) {
         currentProjectId: project.id,
       },
     });
+    if (!project) throw new ApiError(500, "Failed to create project");
     if (project && user) {
       logger("Project created successfully");
-      res.status(201).json(project);
+      res
+        .status(201)
+        .json(new ApiResponse("Project created successfully", project));
     }
-  } catch (err) {
-    console.log(err);
-    res.status(500).json({ error: "An error occurred" });
   }
-}
+);
 
-export async function getAllProjects(_req: Request, res: Response) {
-  try {
+export const getAllProjects = asyncHandler(
+  async (_req: Request, res: Response) => {
     const projects = await prisma.project.findMany();
-
-    if (projects) {
-      logger("Projects fetched successfully");
-      res.status(200).json(projects);
-    }
-  } catch (err) {
-    console.log(err);
-    res.status(500).json({ error: "An error occurred" });
+    res
+      .status(200)
+      .json(new ApiResponse("Projects fetched successfully", projects));
   }
-}
-export async function getProjects(req: Request, res: Response) {
-  try {
-    if (!req.user) return res.status(400).json({ error: "Unathorized" });
+);
+export const getProjects = asyncHandler(async (req: Request, res: Response) => {
+  if (!req.user) throw new ApiError(400, "You are not logged in");
 
-    const projects = await prisma.project.findMany({
-      where: {
-        team: {
-          members: {
-            some: {
-              id: req.user.id,
-            },
+  const projects = await prisma.project.findMany({
+    where: {
+      team: {
+        members: {
+          some: {
+            id: req.user.id,
           },
         },
       },
-      include: {
-        creator: true,
-      },
-    });
+    },
+    include: {
+      creator: true,
+    },
+  });
 
-    if (projects) {
-      logger("Projects fetched successfully");
-      return res.status(200).json(projects);
-    }
-  } catch (err) {
-    console.log(err);
-    res.status(500).json({ error: "An error occurred" });
-  }
-}
-
-export async function getProjectById(req: Request, res: Response) {
-  try {
+  return res
+    .status(200)
+    .json(new ApiResponse("Projects fetched successfully", projects));
+});
+export const getProjectById = asyncHandler(
+  async (req: Request, res: Response) => {
     const projectId = req.params.projectId || req.body.projectId;
-    if (!projectId) {
-      return res.status(400).json({ error: "Project ID is required" });
-    }
+    if (!projectId) throw new ApiError(400, "Project ID is required");
 
     const project = await prisma.project.findUnique({
       where: {
@@ -112,13 +97,10 @@ export async function getProjectById(req: Request, res: Response) {
       },
     });
 
-    if (!project) return res.status(404).json({ error: "Project not found" });
-    return res.status(200).json(project);
-  } catch (err) {
-    console.log(err);
-    return res.status(500).json({ error: "An error occurred" });
+    if (!project) throw new ApiError(404, "Project not found");
+    return res.status(200).json(new ApiResponse("Project fetched", project));
   }
-}
+);
 
 export const deleteProject = asyncHandler(
   async (req: Request, res: Response) => {

@@ -86,7 +86,7 @@ const Messagecard = React.forwardRef<
           }}
         >
           <DialogTitle className="sr-only">{issue.title}</DialogTitle>
-          <DialogContent>
+          <DialogContent className="h-[600px] overflow-y-scroll">
             <IssueCard id={issue.id} />
           </DialogContent>
         </Dialog>

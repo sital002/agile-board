@@ -24,6 +24,7 @@ import { cn } from "@/lib/utils";
 import { useUser } from "@/hooks/useUser";
 import { useState } from "react";
 import { useTeams } from "@/api/team";
+import CommentSection from "./comment-section";
 
 type IssueCardProps = {
   id: string;
@@ -52,7 +53,7 @@ const IssueCard = ({ id }: IssueCardProps) => {
     onSuccess: (data) => {
       console.log(data);
       queryClient.invalidateQueries({
-        queryKey: ["issues", id],
+        queryKey: ["comments", id],
       });
       setComment("");
     },
@@ -121,7 +122,7 @@ const IssueCard = ({ id }: IssueCardProps) => {
                   {user?.display_name.slice(0, 2)}
                 </AvatarFallback>
               </Avatar>
-              <form onSubmit={addComment}>
+              <form onSubmit={addComment} className="w-full">
                 <Input
                   placeholder="Add a comment"
                   value={comment}
@@ -131,17 +132,7 @@ const IssueCard = ({ id }: IssueCardProps) => {
             </div>
           </div>
           <div>
-            {data && data.comments.length > 0 ? (
-              <div>
-                {data.comments.map((comment) => (
-                  <div key={comment.id}>
-                    <p>{comment.content}</p>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <p>No comments to display</p>
-            )}
+            <CommentSection issueId={id} />
           </div>
         </div>
 

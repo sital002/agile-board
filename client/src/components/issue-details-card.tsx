@@ -25,6 +25,7 @@ import { useUser } from "@/hooks/useUser";
 import { useState } from "react";
 import { useTeams } from "@/api/team";
 import CommentSection from "./comment-section";
+import moment from "moment";
 
 type IssueCardProps = {
   id: string;
@@ -148,11 +149,7 @@ const IssueCard = ({ id }: IssueCardProps) => {
             </div>
             <div className="my-3 flex items-center justify-between text-lg">
               <p>{"Start Date"}</p>
-              <p>
-                {data?.createdAt
-                  ? new Date(data.createdAt).toLocaleDateString()
-                  : ""}
-              </p>
+              <p>{moment(data?.createdAt).format("MMMM Do YYYY")}</p>
             </div>
             <div className="my-3 flex items-center justify-between text-lg">
               <p>{"Due Date"}</p>

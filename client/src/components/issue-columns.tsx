@@ -13,6 +13,7 @@ import {
 import { Issue } from "@/schema/schema";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { API } from "@/utils/api";
+import moment from "moment";
 
 export const issueColumns: ColumnDef<Issue>[] = [
   {
@@ -74,7 +75,7 @@ export const issueColumns: ColumnDef<Issue>[] = [
     cell: ({ row }) => {
       return (
         <div className="font-medium">
-          {new Date(row.original.createdAt).toLocaleDateString()}
+          {moment(row.original.createdAt).format("MMMM Do YYYY")}
         </div>
       );
     },
@@ -85,9 +86,9 @@ export const issueColumns: ColumnDef<Issue>[] = [
     cell: ({ row }) => {
       return (
         <div className="font-medium">
-          {(row.original.updatedAt &&
-            new Date(row.original.updatedAt).toLocaleDateString()) ??
-            new Date(row.original.createdAt).toLocaleDateString()}
+          {row.original?.updatedAt
+            ? moment(row.original?.updatedAt).format("MMMM Do YYYY")
+            : moment(row.original.updatedAt).format("MMMM Do YYYY")}
         </div>
       );
     },
@@ -98,9 +99,9 @@ export const issueColumns: ColumnDef<Issue>[] = [
     cell: ({ row }) => {
       return (
         <div className={`w-fit rounded-sm px-2 py-1 font-medium`}>
-          {(row.original.dueDate &&
-            new Date(row.original.dueDate).toLocaleDateString()) ??
-            "-"}
+          {row.original.dueDate
+            ? moment(row.original?.dueDate).format("MMMM Do YYYY")
+            : "-"}
         </div>
       );
     },

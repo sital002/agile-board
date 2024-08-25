@@ -80,7 +80,7 @@ const Board: React.FC = () => {
       name: heading,
       projectId: projectInfo.id,
     });
-    console.log(resp.data);
+    console.log(resp.data.data);
     setHeading("");
     setOpen(false);
   };
@@ -93,13 +93,13 @@ const Board: React.FC = () => {
   const getProjectDetails = useCallback(async () => {
     if (!id) return;
     const resp = await API.get(`/api/projects/${id}`);
-    setProjectInfo(resp.data);
+    setProjectInfo(resp.data.data);
   }, [id]);
 
   const getColumn = useCallback(async () => {
     if (!id) return;
     const resp = await API.get(`/api/columns/${id}`);
-    setColumns(resp.data);
+    setColumns(resp.data.data);
     // console.log(resp.data)
   }, [id]);
 

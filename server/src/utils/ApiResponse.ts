@@ -1,3 +1,5 @@
+import { Response } from "express";
+
 export class ApiResponse {
   protected message: string;
   protected success: boolean;

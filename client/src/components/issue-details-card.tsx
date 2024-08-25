@@ -21,9 +21,9 @@ import {
   CommandList,
 } from "@/components/ui/command";
 import { cn } from "@/lib/utils";
-import { getTeams } from "@/pages/team";
 import { useUser } from "@/hooks/useUser";
 import { useState } from "react";
+import { useTeams } from "@/api/team";
 
 type IssueCardProps = {
   id: string;
@@ -142,10 +142,7 @@ function AssigneeCard({ issue }: AssigneeCardProps) {
   const [open, setOpen] = useState(false);
   const queryClient = useQueryClient();
 
-  const { data } = useQuery({
-    queryKey: ["teams"],
-    queryFn: () => getTeams(user?.currentProjectId || ""),
-  });
+  const { data } = useTeams(user!.currentProjectId || "");
 
   const mutation = useMutation({
     mutationFn: (data: Issue) =>

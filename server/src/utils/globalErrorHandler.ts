@@ -10,14 +10,12 @@ export const globalErrorHandler = (
   if (res.headersSent) return;
   if (err instanceof ApiError) {
     return res.status(err.statusCode).json({
-      error: err.message,
-      statusCode: err.statusCode,
+      message: err.message,
       success: err.success,
     });
   } else {
     return res.status(500).json({
-      error: "Internal server error",
-      statusCode: 500,
+      message: "Internal server error",
       success: false,
     });
   }

@@ -1,21 +1,11 @@
 import { issueColumns } from "@/components/issue-columns";
 import { DataTable } from "../components/data-table";
 import Filterbar from "../components/filterbar";
-import { API } from "@/utils/api";
-import { useQuery } from "@tanstack/react-query";
-import { useUser } from "@/hooks/useUser";
+import { useIssues } from "@/api/issues";
 
-async function getAllIssue(projectId: string) {
-  if (!projectId) return [];
-  const result = await API.get(`/api/issues/${projectId}`);
-  return result.data;
-}
 export default function Lists() {
-  const { user } = useUser();
-  const { data, isLoading } = useQuery({
-    queryKey: ["issues"],
-    queryFn: () => getAllIssue(user?.currentProjectId || ""),
-  });
+  const { data, isLoading } = useIssues();
+
   return (
     <div className="w-full p-3 px-2">
       <p className="text-lg">Lists</p>

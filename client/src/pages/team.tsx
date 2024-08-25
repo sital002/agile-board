@@ -1,3 +1,4 @@
+import { useTeams } from "@/api/team";
 import { DataTable } from "@/components/data-table";
 import { teamsColumns } from "@/components/team-columns";
 import { Button } from "@/components/ui/button";
@@ -9,15 +10,9 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { useUser } from "@/hooks/useUser";
-import type { User } from "@/schema/schema";
 import { API } from "@/utils/api";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import React, { useState } from "react";
-
-export async function getTeams(projectId: string) {
-  const result = await API.get(`/api/teams/${projectId}`);
-  return result.data as User[];
-}
 
 const Teams = () => {
   const [search, setSearch] = useState("");
@@ -26,10 +21,7 @@ const Teams = () => {
   const changeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearch(e.target.value);
   };
-  const { data, isLoading } = useQuery({
-    queryKey: ["teams"],
-    queryFn: () => getTeams(user!.currentProjectId || ""),
-  });
+  const { data, isLoading } = useTeams(user!.currentProjectId || "");
 
   const queryClient = useQueryClient();
 
@@ -78,7 +70,7 @@ const Teams = () => {
 
       <DataTable
         columns={teamsColumns}
-        data={data ?? []}
+        data={data || []}
         isLoading={isLoading}
       />
     </div>

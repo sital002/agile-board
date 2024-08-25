@@ -1,12 +1,7 @@
-import type { Project, User } from "@/schema/schema";
-import { API } from "@/utils/api";
-import { useQuery } from "@tanstack/react-query";
+import { useGetMyProfile, UserWithProject } from "@/api/user";
 import { createContext } from "react";
 import React from "react";
 
-interface UserWithProject extends User {
-  currentProject: Project;
-}
 type UserContextType = {
   user?: UserWithProject;
   isLoading: boolean;
@@ -15,18 +10,12 @@ type UserContextType = {
 
 const userContext = createContext<UserContextType | null>(null);
 
-async function getMyProfile() {
-  return API.get("/api/auth/me");
-}
 function UserProvider({ children }: { children: React.ReactNode }) {
-  const { data, isLoading, isError } = useQuery({
-    queryKey: ["user"],
-    queryFn: getMyProfile,
-  });
+  const { data, isLoading, isError } = useGetMyProfile();
   return (
     <userContext.Provider
       value={{
-        user: data?.data?.user,
+        user: data,
         isError,
         isLoading,
       }}

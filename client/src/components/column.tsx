@@ -4,9 +4,10 @@ import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import Messagecard from "./message-card";
 import { API } from "@/utils/api";
-import type { Column, Issue } from "@/schema/schema";
+import type { Column } from "@/schema/schema";
 import { isAxiosError } from "axios";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
+import { useIssues } from "@/api/issues";
 
 interface ColumnProps {
   column: Column;
@@ -22,16 +23,7 @@ const ColumnList: React.FC<ColumnProps> = ({ column }) => {
   // const [issue, setIssue] = useState<Issue>();
   const queryClient = useQueryClient();
 
-  const { data } = useQuery({
-    queryKey: ["issues"],
-    queryFn: getIssues,
-  });
-
-  async function getIssues(): Promise<Issue[]> {
-    const res = await API.get(`/api/issues/${column.projectId}`);
-    console.log(res.data);
-    return res.data.data || [];
-  }
+  const { data } = useIssues();
   // const addTaskHandler = (e: React.MouseEvent<HTMLButtonElement>) => {
   //   e.stopPropagation();
   //   if (newTask.trim().length === 0) {

@@ -8,10 +8,7 @@ import { ApiResponse } from "../utils/ApiResponse";
 const prisma = new PrismaClient();
 
 export const createIssue = asyncHandler(async (req: Request, res: Response) => {
-  if (!req.user) {
-    res.status(400).json({ error: "Unauthorized" });
-    return;
-  }
+  if (!req.user) throw new ApiError(400, "You are not logged in");
   const result = issueSchema.safeParse(req.body);
   if (!result.success) {
     throw new ApiError(400, "Invalid request body");
@@ -26,11 +23,13 @@ export const createIssue = asyncHandler(async (req: Request, res: Response) => {
       projectId,
     },
   });
-  return res.status(201).json(issue);
+  return res
+    .status(201)
+    .json(new ApiResponse("Issue created successfully", issue));
 });
 
 export const getIssues = asyncHandler(async (req: Request, res: Response) => {
-  if (!req.user) throw new ApiError(400, "Unauthorized");
+  if (!req.user) throw new ApiError(400, "You are not logged in");
   const projectId =
     req.user.currentProjectId || req.params.projectId || req.body.projectId;
   if (!projectId) throw new ApiError(400, "Project Id is required");
@@ -45,67 +44,57 @@ export const getIssues = asyncHandler(async (req: Request, res: Response) => {
     },
   });
   if (!issues) throw new ApiError(404, "No issues found");
+
   return res
     .status(200)
-    .json(new ApiResponse("Issues retrieved successfully", issues));
-  // return new ApiResponse(200, "", issues).send();
+    .send(new ApiResponse("Issues retrieved successfully", issues));
 });
 
-export async function deleteIssue(req: Request, res: Response) {
-  try {
-    if (!req.user) return res.status(400).json({ error: "Unauthorized" });
-    const id = req.params.id;
-    if (!id) return res.status(400).json({ error: "Issue ID is required" });
+export const deleteIssue = asyncHandler(async (req: Request, res: Response) => {
+  if (!req.user) throw new ApiError(400, "You are not logged in");
+  const id = req.params.id;
+  if (!id) throw new ApiError(400, "Issue ID is required");
 
-    const issue = await prisma.issue.delete({
+  const issue = await prisma.issue.delete({
+    where: {
+      id,
+    },
+  });
+  if (!issue) throw new ApiError(500, "Failed to delete issue");
+  return res.status(200).json(new ApiResponse("Issue deleted successfully"));
+});
+
+export const updateIssue = asyncHandler(async (req: Request, res: Response) => {
+  if (!req.user) throw new ApiError(400, "You are not logged in");
+  const id = req.params.issueId || req.body.issueId;
+  if (!id) throw new ApiError(400, "Issue ID is required");
+
+  const result = issueSchema.safeParse(req.body);
+  if (!result.success) throw new ApiError(400, result.error.errors[0].message);
+  const { title, description, assigneeId } = result.data;
+  if (assigneeId) {
+    const isValidAssignee = await prisma.user.findUnique({
       where: {
-        id,
+        id: assigneeId,
       },
     });
-    return res.status(200).json(new ApiResponse("Issue deleted successfully"));
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "An error occurred" });
+    if (!isValidAssignee) throw new ApiError(400, "Invalid assignee ID");
   }
-}
-
-export async function updateIssue(req: Request, res: Response) {
-  try {
-    if (!req.user) return res.status(400).json({ error: "Unauthorized" });
-    const id = req.params.issueId || req.body.issueId;
-    if (!id) return res.status(400).json({ error: "Issue ID is required" });
-
-    const result = issueSchema.safeParse(req.body);
-    if (!result.success) {
-      return res.status(400).json({ error: result.error });
-    }
-    const { title, description, assigneeId } = result.data;
-    if (assigneeId) {
-      const isValidAssignee = await prisma.user.findUnique({
-        where: {
-          id: assigneeId,
-        },
-      });
-      if (!isValidAssignee)
-        return res.status(400).json({ error: "Invalid assignee ID" });
-    }
-    const issue = await prisma.issue.update({
-      where: {
-        id,
-      },
-      data: {
-        title,
-        description,
-        assigneeId: assigneeId || null,
-      },
-    });
-    if (!issue) return res.status(404).json({ error: "Issue not found" });
-    return res.status(200).json(issue);
-  } catch (err) {
-    console.error(err);
-    return res.status(500).json({ error: "An error occurred" });
-  }
-}
+  const issue = await prisma.issue.update({
+    where: {
+      id,
+    },
+    data: {
+      title,
+      description,
+      assigneeId: assigneeId || null,
+    },
+  });
+  if (!issue) throw new ApiError(500, "Failed to update issue");
+  return res
+    .status(200)
+    .json(new ApiResponse("Issue updated successfully", issue));
+});
 
 export const updateAssignee = asyncHandler(
   async (req: Request, res: Response) => {

@@ -45,7 +45,11 @@ export const getComments = asyncHandler(async (req: Request, res: Response) => {
     where: {
       issueId,
     },
+    orderBy: {
+      createdAt: "desc",
+    },
     include: {
+      author: true,
       replies: {
         orderBy: {
           createdAt: "desc",

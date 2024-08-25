@@ -63,3 +63,16 @@ export const updateReply = asyncHandler(async (req: Request) => {
   if (!updatedReply) throw new ApiError(500, "Failed to update reply");
   return new ApiResponse(200, "Reply updated successfully", updatedReply);
 });
+
+export const deleteReply = asyncHandler(async (req: Request) => {
+  if (!req.user) throw new ApiError(401, "You are not logged in");
+
+  const replyId = req.params.replyId;
+  const deletedReply = await prisma.reply.delete({
+    where: {
+      id: replyId,
+    },
+  });
+  if (!deletedReply) throw new ApiError(500, "Failed to delete reply");
+  return new ApiResponse(200, "Reply deleted successfully", deletedReply);
+});

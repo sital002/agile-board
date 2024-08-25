@@ -1,4 +1,4 @@
-import { Request } from "express";
+import e, { Request } from "express";
 import { asyncHandler } from "../utils/AsyncHandler";
 import { ApiError } from "../utils/ApiError";
 import z from "zod";
@@ -69,4 +69,17 @@ export const updateComment = asyncHandler(async (req: Request) => {
   });
   if (!comment) throw new ApiError(500, "Failed to update comment");
   return new ApiResponse(200, "Comment updated successfully", comment);
+});
+
+export const deleteComment = asyncHandler(async (req: Request) => {
+  if (!req.user) throw new ApiError(401, "You are not logged in");
+
+  const commentId = req.params.commentId || req.body.commentId;
+  const deletedComment = await prisma.comment.delete({
+    where: {
+      id: commentId,
+    },
+  });
+  if (!deletedComment) throw new ApiError(500, "Failed to delete comment");
+  return new ApiResponse(200, "Comment deleted successfully", deletedComment);
 });

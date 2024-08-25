@@ -45,8 +45,9 @@ export const getIssues = asyncHandler(async (req: Request, res: Response) => {
     },
   });
   if (!issues) throw new ApiError(404, "No issues found");
-  console.log(issues);
-  return res.status(200).json(issues);
+  return res
+    .status(200)
+    .json(new ApiResponse("Issues retrieved successfully", issues));
   // return new ApiResponse(200, "", issues).send();
 });
 

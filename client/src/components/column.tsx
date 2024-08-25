@@ -28,10 +28,9 @@ const ColumnList: React.FC<ColumnProps> = ({ column }) => {
   });
 
   async function getIssues(): Promise<Issue[]> {
-    console.log("Inside getIssues");
     const res = await API.get(`/api/issues/${column.projectId}`);
     console.log(res.data);
-    return res.data || [];
+    return res.data.data || [];
   }
   // const addTaskHandler = (e: React.MouseEvent<HTMLButtonElement>) => {
   //   e.stopPropagation();

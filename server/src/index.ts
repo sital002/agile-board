@@ -12,15 +12,30 @@ import teamRouter from "./routes/team-route";
 import { globalErrorHandler } from "./utils/globalErrorHandler";
 import { setApiResponse } from "./utils/ApiResponse";
 import { logger } from "./middleware/logger";
+import prisma from "./db/prisma";
 
 const app = express();
 
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: ["http://localhost:5173", "https://test.com"],
     credentials: true,
   })
 );
+
+function connectDB() {
+  console.log("Connecting to database");
+  prisma
+    .$connect()
+    .then(() => {
+      console.log("Connected to database");
+    })
+    .catch((err) => {
+      console.error("Error connecting to database", err);
+    });
+}
+
+connectDB();
 
 app.use(logger);
 

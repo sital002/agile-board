@@ -6,6 +6,7 @@ import {
   updateCurrentProject,
 } from "../controller/user-controller";
 import { isProjectMember } from "../middleware/project";
+
 const userRouter = express.Router();
 
 userRouter.post("/new", createUser);

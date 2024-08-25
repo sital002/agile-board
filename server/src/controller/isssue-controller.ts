@@ -26,9 +26,7 @@ export const createIssue = asyncHandler(async (req: Request, res: Response) => {
       projectId,
     },
   });
-  if (issue) {
-    res.status(201).json(issue);
-  }
+  return res.status(201).json(issue);
 });
 
 export async function getIssues(req: Request, res: Response) {
@@ -51,7 +49,7 @@ export async function getIssues(req: Request, res: Response) {
     return res.status(200).json(issues);
   } catch (err) {
     console.log(err);
-    res.status(500).json({ error: "An error occurred" });
+    return res.status(500).json({ error: "An error occurred" });
   }
 }
 
@@ -66,9 +64,7 @@ export async function deleteIssue(req: Request, res: Response) {
         id,
       },
     });
-    if (issue) {
-      res.status(200).json(issue);
-    }
+    return res.status(200).json(issue);
   } catch (err) {
     console.log(err);
     res.status(500).json({ error: "An error occurred" });
@@ -85,6 +81,14 @@ export async function updateIssue(req: Request, res: Response) {
     if (!result.success) {
       return res.status(400).json({ error: result.error });
     }
+    const isValidAssignee = await prisma.user.findUnique({
+      where: {
+        id: result.data.assigneeId || "",
+      },
+    });
+    if (!isValidAssignee)
+      return res.status(400).json({ error: "Invalid assignee ID" });
+
     const { title, description, assigneeId } = result.data;
     const issue = await prisma.issue.update({
       where: {
@@ -99,7 +103,7 @@ export async function updateIssue(req: Request, res: Response) {
     return res.status(200).json(issue);
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: "An error occurred" });
+    return res.status(500).json({ error: "An error occurred" });
   }
 }
 

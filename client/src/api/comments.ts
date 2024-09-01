@@ -17,3 +17,18 @@ export function useComment(issueId: string) {
     enabled: !!issueId,
   });
 }
+
+export function updateComment({
+  commentId,
+  content,
+  issueId,
+}: {
+  commentId: string;
+  content: string;
+  issueId: string;
+}) {
+  return API.put<ApiResponse<Comment>>(`/api/comments/${commentId}`, {
+    content,
+    issueId,
+  });
+}

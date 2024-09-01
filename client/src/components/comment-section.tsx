@@ -1,4 +1,4 @@
-import { updateComment, useComment } from "@/api/comments";
+import { deleteComment, updateComment, useComment } from "@/api/comments";
 import { Comment } from "@/schema/schema";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import moment from "moment";
@@ -34,7 +34,7 @@ function CommentCard({ comment }: CommentCardProps) {
   const [commentContent, setCommentContent] = useState(comment.content);
   const queryClient = useQueryClient();
 
-  const mutation = useMutation({
+  const editMutation = useMutation({
     mutationFn: () =>
       updateComment({
         commentId: comment.id,
@@ -50,8 +50,17 @@ function CommentCard({ comment }: CommentCardProps) {
   });
   const handleEditComment = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    mutation.mutate();
+    editMutation.mutate();
   };
+
+  const deleteMutation = useMutation({
+    mutationFn: () => deleteComment({ commentId: comment.id }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["comments", comment.issueId],
+      });
+    },
+  });
   return (
     <div className="my-2">
       <div className="flex items-center gap-2">
@@ -111,6 +120,9 @@ function CommentCard({ comment }: CommentCardProps) {
             <Button
               variant={"link"}
               className="ml-2 h-4 w-fit px-0 text-sm font-thin underline"
+              onClick={() => {
+                deleteMutation.mutate();
+              }}
             >
               Delete
             </Button>

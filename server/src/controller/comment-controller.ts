@@ -70,7 +70,7 @@ export const updateComment = asyncHandler(
     const result = commentSchema.safeParse(req.body);
     if (!result.success)
       throw new ApiError(400, result.error.errors[0].message);
-    const commentId = req.params.commentId || req.body.commentId;
+    const commentId = req.params.commentId;
 
     const comment = await prisma.comment.update({
       where: {
@@ -91,7 +91,7 @@ export const deleteComment = asyncHandler(
   async (req: Request, res: Response) => {
     if (!req.user) throw new ApiError(401, "You are not logged in");
 
-    const commentId = req.params.commentId || req.body.commentId;
+    const commentId = req.params.commentId;
     const deletedComment = await prisma.comment.delete({
       where: {
         id: commentId,

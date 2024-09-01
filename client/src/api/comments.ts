@@ -32,3 +32,7 @@ export function updateComment({
     issueId,
   });
 }
+
+export function deleteComment({ commentId }: { commentId: string }) {
+  return API.delete(`/api/comments/${commentId}`);
+}

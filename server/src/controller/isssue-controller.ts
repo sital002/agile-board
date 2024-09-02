@@ -50,6 +50,27 @@ export const getIssues = asyncHandler(async (req: Request, res: Response) => {
     .send(new ApiResponse("Issues retrieved successfully", issues));
 });
 
+export const getIssuesByAssignee = asyncHandler(async (req, res) => {
+  if (!req.user) throw new ApiError(400, "You are not logged in");
+  const assigneeId = req.params.assigneeId;
+  if (!assigneeId) throw new ApiError(400, "Assignee ID is required");
+
+  const issues = await prisma.issue.findMany({
+    where: {
+      assigneeId,
+    },
+    include: {
+      column: true,
+      assignee: true,
+    },
+  });
+  if (!issues) throw new ApiError(404, "No issues found");
+
+  return res
+    .status(200)
+    .send(new ApiResponse("Issues retrieved successfully", issues));
+});
+
 export const deleteIssue = asyncHandler(async (req: Request, res: Response) => {
   if (!req.user) throw new ApiError(400, "You are not logged in");
   const id = req.params.id;

@@ -3,6 +3,7 @@ import {
   createIssue,
   deleteIssue,
   getIssues,
+  getIssuesByAssignee,
   getSingleIssue,
   updateIssue,
 } from "../controller/isssue-controller";
@@ -15,6 +16,7 @@ issueRouter.get("/:projectId", isProjectMember, getIssues);
 issueRouter.get("/single/:issueId", isProjectMember, getSingleIssue);
 issueRouter.delete("/:id", isProjectMember, deleteIssue);
 issueRouter.put("/:issueId", isProjectMember, updateIssue);
+issueRouter.get("assignee/:assigneeId", isProjectMember, getIssuesByAssignee);
 // issueRouter.patch("/update-assignee/:issueId", isProjectMember, updateIssue);
 
 export default issueRouter;

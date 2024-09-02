@@ -10,6 +10,7 @@ import Signup from "./pages/signup";
 import Login from "./pages/login";
 import ProjectList from "./pages/view-project";
 import Teams from "./pages/team";
+import { IssuesProvider } from "./hooks/useIssues";
 
 const App = () => {
   const router = createBrowserRouter([
@@ -22,7 +23,9 @@ const App = () => {
           path: "board",
           element: (
             <ProctedRoute>
-              <Board />
+              <IssuesProvider>
+                <Board />
+              </IssuesProvider>
             </ProctedRoute>
           ),
         },
@@ -30,7 +33,9 @@ const App = () => {
           path: "lists",
           element: (
             <ProctedRoute>
-              <Lists />
+              <IssuesProvider>
+                <Lists />
+              </IssuesProvider>
             </ProctedRoute>
           ),
         },

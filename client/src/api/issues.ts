@@ -22,3 +22,16 @@ export function useIssues() {
     enabled: !!projectId,
   });
 }
+
+export function useIssuesByAssignee(assigneeId: string) {
+  return useQuery<Issue[], ApiError>({
+    queryKey: ["issues"],
+    queryFn: async () => {
+      const { data } = await API.get<ApiResponse<Issue[]>>(
+        `/api/issues/assignee/${assigneeId}`,
+      );
+      return data.data || [];
+    },
+    enabled: !!assigneeId,
+  });
+}

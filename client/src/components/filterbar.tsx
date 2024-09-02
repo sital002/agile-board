@@ -11,6 +11,7 @@ const Filterbar = () => {
   const { user } = useUser();
   const { data: members } = useTeams(user?.currentProjectId || "");
   const { issues, setFilteredIssues } = useIssuesContext();
+  const [name, setName] = useState("");
   const [activeAssignee, setActiveAssignee] = useState("");
   function handleChangeAssigne(assignee: string) {
     setActiveAssignee((prev) => (prev === assignee ? "" : assignee));
@@ -20,15 +21,28 @@ const Filterbar = () => {
       return;
     }
     const newIssues = issues.filter((issue) => issue.assigneeId === assignee);
-    // console.log(newIssues, "updated");
     setFilteredIssues(newIssues);
   }
+  const handleSearch = () => {
+    const newIssues = issues.filter((issue) =>
+      issue.title.toLowerCase().includes(name.toLowerCase()),
+    );
+    setFilteredIssues(newIssues);
+  };
 
   return (
     <div className="sticky left-0 top-0 flex select-none items-center justify-between py-2">
       <div className="flex w-full max-w-[40%] justify-between">
         <div className="flex w-full items-center justify-between md:max-w-[60%]">
-          <Input className="mr-5 w-full md:max-w-[90%]" placeholder="Search" />
+          <Input
+            className="mr-5 w-full md:max-w-[90%]"
+            placeholder="Search"
+            value={name}
+            onChange={(e) => {
+              setName(e.currentTarget.value);
+              handleSearch();
+            }}
+          />
           <div className="flex items-center gap-1">
             {members &&
               members?.map((member) => {

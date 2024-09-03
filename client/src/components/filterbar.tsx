@@ -9,24 +9,17 @@ const Filterbar = () => {
   const { user } = useUser();
   const { data: members } = useTeams(user?.currentProjectId || "");
   const { issues, setFilteredIssues } = useIssuesContext();
-  const [name, setName] = useState("");
   const [activeAssignee, setActiveAssignee] = useState("");
+
   function handleChangeAssigne(assignee: string) {
     setActiveAssignee((prev) => (prev === assignee ? "" : assignee));
     if (assignee === activeAssignee) {
       setFilteredIssues(issues);
-      // console.log(issues);
       return;
     }
     const newIssues = issues.filter((issue) => issue.assigneeId === assignee);
     setFilteredIssues(newIssues);
   }
-  const handleSearch = () => {
-    const newIssues = issues.filter((issue) =>
-      issue.title.toLowerCase().includes(name.toLowerCase()),
-    );
-    setFilteredIssues(newIssues);
-  };
 
   return (
     <div className="sticky left-0 top-0 flex select-none items-center justify-between py-2">
@@ -35,10 +28,13 @@ const Filterbar = () => {
           <Input
             className="mr-5"
             placeholder="Search"
-            value={name}
             onChange={(e) => {
-              setName(e.currentTarget.value);
-              handleSearch();
+              const newIssues = issues.filter((issue) =>
+                issue.title
+                  .toLowerCase()
+                  .includes(e.currentTarget.value.toLowerCase()),
+              );
+              setFilteredIssues(newIssues);
             }}
           />
           <div className="flex items-center gap-1">

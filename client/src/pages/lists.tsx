@@ -11,7 +11,7 @@ export default function Lists() {
       <p className="text-lg">Lists</p>
       <IssuesProvider>
         <Filterbar />
-        <DataTable columns={issueColumns} data={filteredIssues} />
+        <DataTable columns={issueColumns} data={filteredIssues || []} />
       </IssuesProvider>
     </div>
   );

@@ -1,5 +1,3 @@
-import { ChartSpline, Settings2 } from "lucide-react";
-import SelectOption from "./select";
 import { Input } from "./ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { useTeams } from "@/api/team";
@@ -33,9 +31,9 @@ const Filterbar = () => {
   return (
     <div className="sticky left-0 top-0 flex select-none items-center justify-between py-2">
       <div className="flex w-full max-w-[40%] justify-between">
-        <div className="flex w-full items-center justify-between md:max-w-[60%]">
+        <div className="flex w-full items-center justify-between">
           <Input
-            className="mr-5 w-full md:max-w-[90%]"
+            className="mr-5"
             placeholder="Search"
             value={name}
             onChange={(e) => {
@@ -61,12 +59,6 @@ const Filterbar = () => {
               })}
           </div>
         </div>
-      </div>
-
-      <div className="hidden items-center gap-x-4 md:flex">
-        <SelectOption />
-        <ChartSpline size={25} className="cursor-pointer rounded-md p-1" />
-        <Settings2 size={25} className="cursor-pointer rounded-md p-1" />
       </div>
     </div>
   );

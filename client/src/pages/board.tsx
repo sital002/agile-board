@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { DragDropContext, DropResult } from "@hello-pangea/dnd";
 import Header from "../components/header";
 import Filterbar from "../components/filterbar";
@@ -6,31 +6,16 @@ import { Check, Plus, X } from "lucide-react";
 import { Input } from "../components/ui/input";
 import ColumnList from "@/components/column";
 import { API } from "@/utils/api";
-import type { Column } from "@/schema/schema";
-import { Navigate, useNavigate } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import { useUser } from "@/hooks/useUser";
-
-type ProjectInfo = {
-  id: string;
-  name: string;
-  userId: string;
-  description: string;
-};
+import { useColumns } from "@/api/column";
 
 const Board: React.FC = () => {
-  const [columns, setColumns] = useState<Column[]>([]);
   const [open, setOpen] = useState(false);
   const [heading, setHeading] = useState<string>("");
   const { user } = useUser();
   const id = user?.currentProjectId || "";
-
-  const [projectInfo, setProjectInfo] = useState<ProjectInfo>({
-    id: "",
-    name: "",
-    userId: "",
-    description: "",
-  });
-  const navigate = useNavigate();
+  const { data: columns } = useColumns();
 
   const dragHandler = (result: DropResult) => {
     console.log(result);
@@ -78,7 +63,7 @@ const Board: React.FC = () => {
     e.stopPropagation();
     const resp = await API.post("/api/columns/new", {
       name: heading,
-      projectId: projectInfo.id,
+      projectId: user?.currentProjectId,
     });
     console.log(resp.data.data);
     setHeading("");
@@ -89,29 +74,6 @@ const Board: React.FC = () => {
     window.addEventListener("click", closeHandler);
     return () => window.removeEventListener("click", closeHandler);
   }, [open]);
-
-  const getProjectDetails = useCallback(async () => {
-    if (!id) return;
-    const resp = await API.get(`/api/projects/${id}`);
-    setProjectInfo(resp.data.data);
-  }, [id]);
-
-  const getColumn = useCallback(async () => {
-    if (!id) return;
-    const resp = await API.get(`/api/columns/${id}`);
-    setColumns(resp.data.data);
-    // console.log(resp.data)
-  }, [id]);
-
-  useEffect(() => {
-    getProjectDetails();
-    getColumn();
-  }, [getColumn, getProjectDetails, id, navigate]);
-
-  useEffect(() => {
-    if (!id) return;
-    getColumn();
-  }, [getColumn, id]);
 
   if (!id) return <Navigate to="/projects" />;
 

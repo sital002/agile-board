@@ -50,11 +50,6 @@ export const getComments = asyncHandler(async (req: Request, res: Response) => {
     },
     include: {
       author: true,
-      replies: {
-        orderBy: {
-          createdAt: "desc",
-        },
-      },
     },
   });
   if (!comments) throw new ApiError(404, "No comments found");

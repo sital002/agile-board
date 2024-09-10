@@ -4,6 +4,6 @@ export type ApiResponse<T = unknown> = {
   data?: T;
 };
 export type ApiError = {
-  message: unknown;
+  message: string;
   success: boolean;
 };

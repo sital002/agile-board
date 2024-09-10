@@ -7,7 +7,7 @@ import { API } from "@/utils/api";
 import type { Column } from "@/schema/schema";
 import { isAxiosError } from "axios";
 import { useQueryClient } from "@tanstack/react-query";
-import { useIssuesContext } from "@/hooks/useIssues";
+import { useIssues } from "@/api/issues";
 
 interface ColumnProps {
   column: Column;
@@ -23,8 +23,8 @@ const ColumnList: React.FC<ColumnProps> = ({ column }) => {
   // const [issue, setIssue] = useState<Issue>();
   const queryClient = useQueryClient();
 
-  const { filteredIssues } = useIssuesContext();
-
+  // const { filteredIssues } = useIssuesContext();
+  const { data: issues } = useIssues();
   // const addTaskHandler = (e: React.MouseEvent<HTMLButtonElement>) => {
   //   e.stopPropagation();
   //   if (newTask.trim().length === 0) {
@@ -119,9 +119,9 @@ const ColumnList: React.FC<ColumnProps> = ({ column }) => {
         >
           <div className="text-md mb-2 px-2 font-medium">{column.name}</div>
           <div className="h-[300px] overflow-auto p-1 scrollbar-thin scrollbar-track-secondary scrollbar-thumb-primary-foreground scrollbar-thumb-rounded-full">
-            {filteredIssues &&
-              filteredIssues.length > 0 &&
-              filteredIssues?.map((task, index) => (
+            {issues &&
+              issues.length > 0 &&
+              issues?.map((task, index) => (
                 <Draggable
                   key={task.id}
                   draggableId={task.id.toString()}

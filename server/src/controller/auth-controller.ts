@@ -92,9 +92,19 @@ export const userSignup = asyncHandler(async (req: Request, res: Response) => {
       `,
   });
   if (!newUser) throw new ApiError(500, "Failed to create user");
+  const accessToken = generateAccessToken(newUser);
+  const refreshToken = generateRefreshToken(newUser.id);
+  const options: CookieOptions = {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    path: "/",
+    expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7),
+  };
 
   return res
     .status(201)
+    .cookie("access_token", accessToken, options)
+    .cookie("refresh_token", refreshToken, options)
     .json(new ApiResponse("User created successfully", newUser));
 });
 

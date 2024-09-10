@@ -13,7 +13,10 @@ import {
 } from "../../src/components/ui/form";
 import { Input } from "../../src/components/ui/input";
 import { API } from "@/utils/api";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { ApiError, ApiResponse } from "@/api/api-response";
+import { AxiosError } from "axios";
 
 const formSchema = z
   .object({
@@ -37,17 +40,9 @@ const formSchema = z
 
 type FormInputType = z.infer<typeof formSchema>;
 
-const onSubmit: SubmitHandler<FormInputType> = async (data) => {
-  console.log(data);
-  try {
-    const resp = await API.post(`/api/auth/signup`, data);
-    console.log(resp);
-  } catch (error: unknown) {
-    if (error instanceof Error) console.log(error.message);
-  }
-};
-
 export function Signup() {
+  const queryClient = useQueryClient();
+  const navigate = useNavigate();
   const form = useForm<FormInputType>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -57,12 +52,39 @@ export function Signup() {
       confirm_password: "",
     },
   });
+  form.watch();
+  const signUpMutation = useMutation<
+    ApiResponse,
+    AxiosError<ApiError>,
+    FormInputType
+  >({
+    mutationFn: (data: FormInputType) => API.post(`/api/auth/signup`, data),
+    onSuccess: () => {
+      navigate("/projects");
+      queryClient.invalidateQueries({
+        queryKey: ["user"],
+      });
+      console.log("success");
+    },
+    onError: (error) => {
+      console.log(error);
+    },
+  });
+  const onSubmit: SubmitHandler<FormInputType> = async (data) => {
+    signUpMutation.mutate(data);
+  };
 
   return (
     <div className="mx-auto mt-[7%] w-full rounded-md border-2 p-5 md:max-w-md lg:max-w-lg">
       <h1 className="my-2 text-center text-2xl font-semibold">
         Create Your Account
       </h1>
+      {
+        <p className="my-2 text-sm text-red-500">
+          {signUpMutation.isError &&
+            signUpMutation.error.response?.data.message}
+        </p>
+      }
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
           <FormField

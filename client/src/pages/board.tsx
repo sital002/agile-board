@@ -133,6 +133,7 @@ const Board: React.FC = () => {
             <>
               <Button
                 className="w-full"
+                variant={"outline"}
                 onClick={(e) => {
                   e.stopPropagation();
                   setOpen(true);

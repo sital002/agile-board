@@ -76,6 +76,7 @@ const ColumnList: React.FC<ColumnProps> = ({ column }) => {
   const issueHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     setNewTask(e.target.value);
   };
+  const [editeTitle, setEditTitle] = useState(false);
 
   const addIssue = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -112,6 +113,25 @@ const ColumnList: React.FC<ColumnProps> = ({ column }) => {
     window.addEventListener("click", closeHandler);
     return () => window.removeEventListener("click", closeHandler);
   }, [open]);
+  const [columnTitle, setColumnTitle] = useState(column.name);
+
+  const editColumnMutation = useMutation({
+    mutationFn: (data: { columnId: string; name: string }) =>
+      API.put(`/api/columns/${data.columnId}`, { name: data.name }),
+    onSuccess: () => {
+      setEditTitle(false);
+      queryClient.invalidateQueries({ queryKey: ["columns"] });
+    },
+  });
+
+  function handleEditColums(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    if (columnTitle.trim().length === 0) return;
+    editColumnMutation.mutate({
+      columnId: column.id,
+      name: columnTitle,
+    });
+  }
 
   return (
     <Droppable droppableId={column.id.toString()}>
@@ -125,8 +145,35 @@ const ColumnList: React.FC<ColumnProps> = ({ column }) => {
           className="max-h-[500px] min-w-[300px] rounded-sm border-2 p-1"
         >
           <div className="text-md mb-2 flex items-center justify-between px-2 font-medium">
-            <p>{column.name}</p>
-            <ColumActions columnId={column.id} />
+            {editeTitle ? (
+              <form className="flex gap-2" onSubmit={handleEditColums}>
+                <Input
+                  value={columnTitle}
+                  onChange={(e) => {
+                    setColumnTitle(e.target.value);
+                  }}
+                />
+                <Button
+                  variant={"secondary"}
+                  disabled={!columnTitle.trim().length}
+                >
+                  Save
+                </Button>
+              </form>
+            ) : (
+              <>
+                <p
+                  className="w-full cursor-pointer"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setEditTitle(true);
+                  }}
+                >
+                  <span>{column.name}</span>
+                </p>
+                <ColumActions columnId={column.id} />
+              </>
+            )}
           </div>
           <div className="h-[300px] overflow-auto p-1 scrollbar-thin scrollbar-track-secondary scrollbar-thumb-primary-foreground scrollbar-thumb-rounded-full">
             {issues &&

@@ -18,6 +18,7 @@ const Board: React.FC = () => {
   const { user } = useUser();
   const id = user?.currentProjectId || "";
   const { data: columns } = useColumns();
+  console.log(columns);
 
   const dragHandler = (result: DropResult) => {
     console.log(result);

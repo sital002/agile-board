@@ -78,12 +78,22 @@ export const updateColumn = asyncHandler(
     const id = req.params.id;
     if (!id) throw new ApiError(400, "Column ID is required");
     const { name } = req.body;
+    const result = z
+      .string({
+        required_error: "Column title is required",
+      })
+      .min(3, "Column title must be atleast 3 character long")
+      .max(50, "Column title must be atmost 50 character long")
+      .safeParse(name);
+    if (!result.success)
+      throw new ApiError(400, result.error.errors[0].message);
+
     const column = await prisma.column.update({
       where: {
         id,
       },
       data: {
-        name,
+        name: result.data,
       },
     });
     if (!column) throw new ApiError(500, "Failed to update column");

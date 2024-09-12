@@ -6,8 +6,15 @@ import Messagecard from "./message-card";
 import { API } from "@/utils/api";
 import type { Column } from "@/schema/schema";
 import { isAxiosError } from "axios";
-import { useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useIssues } from "@/api/issues";
+import { MoreHorizontal } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "./ui/dropdown-menu";
 
 interface ColumnProps {
   column: Column;
@@ -117,7 +124,10 @@ const ColumnList: React.FC<ColumnProps> = ({ column }) => {
           }}
           className="max-h-[500px] min-w-[300px] rounded-sm border-2 p-1"
         >
-          <div className="text-md mb-2 px-2 font-medium">{column.name}</div>
+          <div className="text-md mb-2 flex items-center justify-between px-2 font-medium">
+            <p>{column.name}</p>
+            <ColumActions columnId={column.id} />
+          </div>
           <div className="h-[300px] overflow-auto p-1 scrollbar-thin scrollbar-track-secondary scrollbar-thumb-primary-foreground scrollbar-thumb-rounded-full">
             {issues &&
               issues.length > 0 &&
@@ -182,3 +192,38 @@ const ColumnList: React.FC<ColumnProps> = ({ column }) => {
 };
 
 export default ColumnList;
+
+function ColumActions({ columnId }: { columnId: string }) {
+  const queryClient = useQueryClient();
+  const deleteColumnMutation = useMutation({
+    mutationFn: (data: { columnId: string }) =>
+      API.delete(`/api/columns/${data.columnId}`),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["columns"] });
+    },
+  });
+  return (
+    <div>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" className="h-8 w-8 p-0">
+            <span className="sr-only">Open menu</span>
+            <MoreHorizontal className="h-4 w-4" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          <DropdownMenuItem
+            className="text-destructive"
+            onClick={() => {
+              deleteColumnMutation.mutate({
+                columnId,
+              });
+            }}
+          >
+            Delete
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </div>
+  );
+}

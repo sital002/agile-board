@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { DragDropContext, DropResult } from "@hello-pangea/dnd";
 import Header from "../components/header";
 import Filterbar from "../components/filterbar";
-import { Check, Plus, X } from "lucide-react";
+import { Check, X } from "lucide-react";
 import { Input } from "../components/ui/input";
 import ColumnList from "@/components/column";
 import { API } from "@/utils/api";
@@ -10,6 +10,7 @@ import { Navigate } from "react-router-dom";
 import { useUser } from "@/hooks/useUser";
 import { useColumns } from "@/api/column";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { Button } from "@/components/ui/button";
 
 const Board: React.FC = () => {
   const [open, setOpen] = useState(false);
@@ -130,15 +131,18 @@ const Board: React.FC = () => {
             </form>
           )}
           {!open && (
-            <Plus
-              onClick={(e) => {
-                e.stopPropagation();
-                setOpen(true);
-                if (!heading) return;
-              }}
-              size={25}
-              className="ml-5 cursor-pointer rounded-md bg-secondary"
-            />
+            <>
+              <Button
+                className="w-full"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setOpen(true);
+                  if (!heading) return;
+                }}
+              >
+                Add heading
+              </Button>
+            </>
           )}
         </div>
       </div>

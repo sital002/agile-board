@@ -13,6 +13,7 @@ import { useUser } from "@/hooks/useUser";
 import { API } from "@/utils/api";
 import { useQueryClient } from "@tanstack/react-query";
 import React, { useState } from "react";
+import { Navigate } from "react-router-dom";
 
 const Teams = () => {
   const [search, setSearch] = useState("");
@@ -41,6 +42,8 @@ const Teams = () => {
       console.log(error);
     }
   };
+
+  if (user && !user.currentProject) return <Navigate to="/projects" />;
 
   return (
     <div className="w-full p-3">

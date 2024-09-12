@@ -9,6 +9,7 @@ import { API } from "@/utils/api";
 import { Navigate } from "react-router-dom";
 import { useUser } from "@/hooks/useUser";
 import { useColumns } from "@/api/column";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 const Board: React.FC = () => {
   const [open, setOpen] = useState(false);
@@ -58,16 +59,23 @@ const Board: React.FC = () => {
   const closeHandler = () => {
     setOpen(false);
   };
+  const queryClient = useQueryClient();
 
+  const columnMutation = useMutation({
+    mutationFn: (data: { name: string; projectId: string }) =>
+      API.post("/api/columns/new", data),
+    onSuccess: (data) => {
+      setHeading("");
+      console.log(data);
+      queryClient.invalidateQueries({ queryKey: ["columns"] });
+    },
+  });
   const headingHandler = async (e: React.MouseEvent) => {
     e.stopPropagation();
-    const resp = await API.post("/api/columns/new", {
+    columnMutation.mutate({
       name: heading,
-      projectId: user?.currentProjectId,
+      projectId: id,
     });
-    console.log(resp.data.data);
-    setHeading("");
-    setOpen(false);
   };
 
   useEffect(() => {
@@ -83,18 +91,43 @@ const Board: React.FC = () => {
       <Filterbar />
       <div className="flex w-full gap-2 overflow-auto scrollbar">
         <DragDropContext onDragEnd={dragHandler}>
-          {columns?.map((column) => (
-            <ColumnList key={column.id} column={column} />
-          ))}
+          {columns &&
+            columns.length > 0 &&
+            columns.map((column) => (
+              <ColumnList key={column.id} column={column} />
+            ))}
         </DragDropContext>
         <div className="flex w-full max-w-[300px] flex-col gap-y-2">
           {open && (
-            <Input
-              placeholder="enter title"
-              onChange={(e) => setHeading(e.target.value)}
-              onClick={(e) => e.stopPropagation()}
-              className="w-full min-w-[250px] rounded-none"
-            />
+            <form
+              className="flex flex-col gap-y-2"
+              onSubmit={(e) => {
+                e.preventDefault();
+                if (!heading.trim() && !id) return;
+                columnMutation.mutate({
+                  name: heading,
+                  projectId: id,
+                });
+              }}
+            >
+              <Input
+                placeholder="Enter title"
+                value={heading}
+                onChange={(e) => setHeading(e.target.value)}
+                onClick={(e) => e.stopPropagation()}
+                className="w-full min-w-[250px] rounded-none"
+              />
+              <div className="flex gap-x-2 self-end">
+                <Check
+                  onClick={headingHandler}
+                  className="cursor-pointer rounded-md bg-gray-200 dark:bg-black"
+                />
+                <X
+                  onClick={() => setOpen(false)}
+                  className="cursor-pointer rounded-md bg-gray-200 dark:bg-black"
+                />
+              </div>
+            </form>
           )}
           {!open && (
             <Plus
@@ -106,18 +139,6 @@ const Board: React.FC = () => {
               size={25}
               className="ml-5 cursor-pointer rounded-md bg-secondary"
             />
-          )}
-          {open && (
-            <div className="flex gap-x-2 self-end">
-              <Check
-                onClick={headingHandler}
-                className="cursor-pointer rounded-md bg-gray-200 dark:bg-black"
-              />
-              <X
-                onClick={() => setOpen(false)}
-                className="cursor-pointer rounded-md bg-gray-200 dark:bg-black"
-              />
-            </div>
           )}
         </div>
       </div>

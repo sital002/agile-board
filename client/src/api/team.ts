@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 
 async function getTeams(projectId: string) {
   const { data } = await API.get<ApiResponse<Team>>(`/api/teams/${projectId}`);
+  console.log(data);
   return data.data?.members || [];
 }
 

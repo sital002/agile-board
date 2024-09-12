@@ -1,14 +1,30 @@
-import { PrismaClient } from "@prisma/client";
 import { Request, Response } from "express";
 import { asyncHandler } from "../utils/AsyncHandler";
 import { ApiError } from "../utils/ApiError";
 import { ApiResponse } from "../utils/ApiResponse";
+import prisma from "../db/prisma";
+import z from "zod";
 
-const prisma = new PrismaClient();
+const columnSchmea = z.object({
+  name: z
+    .string({
+      required_error: "name field is missing",
+    })
+    .min(3, "Column name must be at least 3 characters long")
+    .max(50, "Column name must be at most 50 characters long"),
+  projectId: z
+    .string({
+      required_error: "projectId field is missing",
+    })
+    .min(1, "Project ID is required"),
+});
 export const createColumn = asyncHandler(
   async (req: Request, res: Response) => {
     if (!req.user) throw new ApiError(400, "You are not logged in");
-    const { name, projectId } = req.body;
+    const result = columnSchmea.safeParse(req.body);
+    if (!result.success)
+      throw new ApiError(400, result.error.errors[0].message);
+    const { name, projectId } = result.data;
     const column = await prisma.column.create({
       data: {
         name,

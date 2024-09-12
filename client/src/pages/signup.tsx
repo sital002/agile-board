@@ -64,7 +64,6 @@ export function Signup() {
       queryClient.invalidateQueries({
         queryKey: ["user"],
       });
-      console.log("success");
     },
     onError: (error) => {
       console.log(error);

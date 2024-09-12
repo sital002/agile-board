@@ -65,9 +65,8 @@ const Board: React.FC = () => {
   const columnMutation = useMutation({
     mutationFn: (data: { name: string; projectId: string }) =>
       API.post("/api/columns/new", data),
-    onSuccess: (data) => {
+    onSuccess: () => {
       setHeading("");
-      console.log(data);
       queryClient.invalidateQueries({ queryKey: ["columns"] });
     },
   });

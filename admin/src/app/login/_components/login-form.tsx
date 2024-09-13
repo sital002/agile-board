@@ -17,8 +17,8 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import Link from "next/link";
-import { redirect } from "next/navigation";
-import { revalidatePath } from "next/cache";
+import { useRouter } from "next/navigation";
+import { AxiosError } from "axios";
 
 const formSchema = z.object({
   email: z.string().email({ message: "invalid email" }),
@@ -38,18 +38,22 @@ export function LoginForm() {
     },
   });
   const [loading, setLoading] = useState(false);
-
+  const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
   const onSubmit: SubmitHandler<FormInputType> = async (data: any) => {
     try {
       setLoading(true);
+      setError(null);
       const resp = await API.post(`/api/auth/signin`, data);
-      console.log(resp);
-      if (resp) {
-        revalidatePath("/dashboard");
-        redirect("/dashboard");
+      if (resp.status === 200) {
+        console.log(resp);
+        router.replace("/dashboard");
+        router.refresh();
       }
     } catch (error: unknown) {
-      if (error instanceof Error) console.log(error.message);
+      if (error instanceof AxiosError) {
+        setError(error.response?.data?.message ?? "Something went wrong");
+      }
     } finally {
       setLoading(false);
     }
@@ -59,6 +63,7 @@ export function LoginForm() {
     <div className="mx-auto flex h-screen items-center justify-center px-2">
       <Card className="w-full max-w-lg p-3">
         <h1 className="my-2 text-center text-2xl font-semibold">Signin</h1>
+        {<p className="text-destructive">{error}</p>}
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
             <FormField

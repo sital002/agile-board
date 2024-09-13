@@ -12,6 +12,7 @@ export async function authenticate(
   next: NextFunction
 ) {
   const token = req.cookies?.["access_token"] || req.header("x-access-server");
+  console.log(token);
   if (!token) {
     return res
       .status(401)

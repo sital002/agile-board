@@ -12,9 +12,10 @@ export async function useAuth(): Promise<Auth> {
   try {
     const res = await API.get("/api/auth/me");
     if (res) {
-      user = res.data as User;
+      user = res.data?.data as User;
     }
   } catch (err) {
+    // console.log(err.response.data);
     error = err as AxiosError;
   }
   return { user, error };

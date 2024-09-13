@@ -98,8 +98,9 @@ export const userSignup = asyncHandler(async (req: Request, res: Response) => {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     path: "/",
+    sameSite: "none",
     expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7),
-  };
+  } satisfies CookieOptions;
 
   return res
     .status(201)
@@ -131,10 +132,11 @@ export const userSignin = asyncHandler(async (req: Request, res: Response) => {
     secure: process.env.NODE_ENV === "production",
     path: "/",
     expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7),
-  };
+    sameSite: "none",
+  } satisfies CookieOptions;
 
   return res
-    .status(201)
+    .status(200)
     .cookie("access_token", accessToken, options)
     .cookie("refresh_token", refreshToken, options)
     .send(

@@ -6,5 +6,4 @@ const envSchma = z.object({
   }),
 });
 
-console.log(process.env.NEXT_PUBLIC_SERVER_URL);
 export const env = envSchma.parse(process.env);

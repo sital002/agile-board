@@ -3,22 +3,17 @@ import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { useTeams } from "@/api/team";
 import { useUser } from "@/hooks/useUser";
 import { useState } from "react";
-import { useIssuesContext } from "@/hooks/useIssues";
 
-const Filterbar = () => {
+interface FilterbarProps {
+  handleSearchIssue?: (currentValue: string) => void;
+}
+const Filterbar = ({ handleSearchIssue }: FilterbarProps) => {
   const { user } = useUser();
   const { data: members } = useTeams(user?.currentProjectId || "");
-  const { issues, setFilteredIssues } = useIssuesContext();
   const [activeAssignee, setActiveAssignee] = useState("");
 
   function handleChangeAssigne(assignee: string) {
     setActiveAssignee((prev) => (prev === assignee ? "" : assignee));
-    if (assignee === activeAssignee) {
-      setFilteredIssues(issues);
-      return;
-    }
-    const newIssues = issues.filter((issue) => issue.assigneeId === assignee);
-    setFilteredIssues(newIssues);
   }
 
   return (
@@ -29,12 +24,9 @@ const Filterbar = () => {
             className="mr-5"
             placeholder="Search"
             onChange={(e) => {
-              const newIssues = issues.filter((issue) =>
-                issue.title
-                  .toLowerCase()
-                  .includes(e.currentTarget.value.toLowerCase()),
-              );
-              setFilteredIssues(newIssues);
+              if (handleSearchIssue) {
+                handleSearchIssue(e.currentTarget.value);
+              }
             }}
           />
           <div className="flex items-center gap-1">

@@ -16,16 +16,24 @@ import React, { useState } from "react";
 import { Navigate } from "react-router-dom";
 
 const Teams = () => {
-  const [search, setSearch] = useState("");
   const { user } = useUser();
 
-  const changeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearch(e.target.value);
-  };
   const { data, isLoading } = useTeams(user!.currentProjectId || "");
-
+  const [members, setMembers] = useState(data || []);
   const queryClient = useQueryClient();
+  console.log(members);
 
+  const changeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const currentValue = e.target.value;
+    setMembers(() => {
+      if (!data) return [];
+      return data.filter((value) => {
+        return value.display_name
+          .toLowerCase()
+          .includes(currentValue.toLowerCase());
+      });
+    });
+  };
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const email = e.currentTarget.email.value;
@@ -42,14 +50,12 @@ const Teams = () => {
       console.log(error);
     }
   };
-
   if (user && !user.currentProject) return <Navigate to="/projects" />;
 
   return (
     <div className="w-full p-3">
       <div className="flex items-center gap-3">
         <Input
-          value={search}
           onChange={changeHandler}
           className="my-4 max-w-sm"
           placeholder="Search member"
@@ -71,11 +77,7 @@ const Teams = () => {
         ) : null}
       </div>
 
-      <DataTable
-        columns={teamsColumns}
-        data={data || []}
-        isLoading={isLoading}
-      />
+      <DataTable columns={teamsColumns} data={members} isLoading={isLoading} />
     </div>
   );
 };

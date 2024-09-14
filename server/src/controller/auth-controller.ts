@@ -132,7 +132,7 @@ export const userSignin = asyncHandler(async (req: Request, res: Response) => {
     secure: process.env.NODE_ENV === "production",
     path: "/",
     expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7),
-    sameSite: "none",
+    sameSite: "lax",
   } satisfies CookieOptions;
 
   return res

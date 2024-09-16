@@ -18,7 +18,7 @@ export default function Lists() {
   }, [activeAssignee, issues]);
   const filteredIssues = useMemo(() => {
     return filteredByAssignee.filter((issue) =>
-      issue.title.toLowerCase().includes(searchIssue),
+      issue.title.toLowerCase().includes(searchIssue.toLowerCase()),
     );
   }, [filteredByAssignee, searchIssue]);
 

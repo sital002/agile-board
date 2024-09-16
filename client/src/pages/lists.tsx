@@ -8,14 +8,16 @@ import { useMemo, useState } from "react";
 export default function Lists() {
   const { data: issues, isLoading } = useIssues();
   const [searchIssue, setSearchIssue] = useState("");
-  const [activeAssignee, setActiveAssignee] = useState("");
+  const [activeAssignee, setActiveAssignee] = useState<string | null>("");
 
   const filteredByAssignee = useMemo(() => {
     if (!issues) return [];
-    return activeAssignee === ""
-      ? issues
-      : issues.filter((issue) => issue.assigneeId === activeAssignee);
+    if (activeAssignee === "") return issues;
+    if (activeAssignee === null)
+      return issues.filter((issue) => issue.assigneeId === null);
+    return issues.filter((issue) => issue.assigneeId === activeAssignee);
   }, [activeAssignee, issues]);
+
   const filteredIssues = useMemo(() => {
     return filteredByAssignee.filter((issue) =>
       issue.title.toLowerCase().includes(searchIssue.toLowerCase()),

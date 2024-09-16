@@ -6,8 +6,8 @@ import { useUser } from "@/hooks/useUser";
 interface FilterbarProps {
   setSearchIssue: (prev: string) => void;
   searchIssue: string;
-  setActiveAssignee: (prev: string) => void;
-  activeAssignee: string;
+  setActiveAssignee: (prev: string | null) => void;
+  activeAssignee: string | null;
 }
 const Filterbar = ({
   searchIssue,
@@ -18,7 +18,7 @@ const Filterbar = ({
   const { user } = useUser();
   const { data: members } = useTeams(user?.currentProjectId || "");
 
-  function handleChangeAssigne(assignee: string) {
+  function handleChangeAssigne(assignee: string | null) {
     const newAssignee = assignee === activeAssignee ? "" : assignee;
     setActiveAssignee(newAssignee);
   }
@@ -51,6 +51,12 @@ const Filterbar = ({
                   </Avatar>
                 );
               })}
+            <Avatar
+              onClick={() => handleChangeAssigne(null)}
+              className={`h-7 w-8 cursor-pointer border-2 ${activeAssignee === null ? "border-primary" : "border-transparent"}`}
+            >
+              <AvatarFallback>{"UN"}</AvatarFallback>
+            </Avatar>
           </div>
         </div>
       </div>

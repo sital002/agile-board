@@ -2,7 +2,9 @@ import axios from "axios";
 
 async function getProjects() {
   try {
-    const res = await axios.get(`${process.env.SERVER_URL}/projects`);
+    const res = await axios.get(
+      `${process.env.NEXT_PUBLIC_SERVER_URL}/projects`
+    );
     return res.data ?? [];
   } catch (err) {
     console.log(err);

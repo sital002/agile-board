@@ -46,7 +46,6 @@ export function LoginForm() {
       setError(null);
       const resp = await API.post(`/api/auth/signin`, data);
       if (resp.status === 200) {
-        console.log(resp);
         router.replace("/dashboard");
         router.refresh();
       }

@@ -2,18 +2,25 @@ import { Input } from "./ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { useTeams } from "@/api/team";
 import { useUser } from "@/hooks/useUser";
-import { useState } from "react";
 
 interface FilterbarProps {
-  handleSearchIssue?: (currentValue: string) => void;
+  setSearchIssue: (prev: string) => void;
+  searchIssue: string;
+  setActiveAssignee: (prev: string) => void;
+  activeAssignee: string;
 }
-const Filterbar = ({ handleSearchIssue }: FilterbarProps) => {
+const Filterbar = ({
+  searchIssue,
+  setSearchIssue,
+  activeAssignee,
+  setActiveAssignee,
+}: FilterbarProps) => {
   const { user } = useUser();
   const { data: members } = useTeams(user?.currentProjectId || "");
-  const [activeAssignee, setActiveAssignee] = useState("");
 
   function handleChangeAssigne(assignee: string) {
-    setActiveAssignee((prev) => (prev === assignee ? "" : assignee));
+    const newAssignee = assignee === activeAssignee ? "" : assignee;
+    setActiveAssignee(newAssignee);
   }
 
   return (
@@ -23,10 +30,9 @@ const Filterbar = ({ handleSearchIssue }: FilterbarProps) => {
           <Input
             className="mr-5"
             placeholder="Search"
+            value={searchIssue}
             onChange={(e) => {
-              if (handleSearchIssue) {
-                handleSearchIssue(e.currentTarget.value);
-              }
+              setSearchIssue(e.currentTarget.value);
             }}
           />
           <div className="flex items-center gap-1">

@@ -2,6 +2,8 @@ import { Input } from "./ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { useTeams } from "@/api/team";
 import { useUser } from "@/hooks/useUser";
+import { Tooltip, TooltipTrigger } from "./ui/tooltip";
+import { TooltipContent } from "@radix-ui/react-tooltip";
 
 interface FilterbarProps {
   setSearchIssue: (prev: string) => void;
@@ -39,24 +41,33 @@ const Filterbar = ({
             {members &&
               members?.map((member) => {
                 return (
-                  <Avatar
-                    onClick={() => handleChangeAssigne(member.id)}
-                    key={member.id}
-                    className={`h-7 w-8 cursor-pointer border-2 ${activeAssignee === member.id ? "border-primary" : "border-transparent"}`}
-                  >
-                    <AvatarImage src={member.profile_image_url} />
-                    <AvatarFallback>
-                      {member.display_name.slice(0, 2)}
-                    </AvatarFallback>
-                  </Avatar>
+                  <Tooltip key={member.id}>
+                    <TooltipTrigger>
+                      <Avatar
+                        onClick={() => handleChangeAssigne(member.id)}
+                        className={`h-7 w-8 cursor-pointer border-2 ${activeAssignee === member.id ? "border-primary" : "border-transparent"}`}
+                      >
+                        <AvatarImage src={member.profile_image_url} />
+                        <AvatarFallback>
+                          {member.display_name.slice(0, 2)}
+                        </AvatarFallback>
+                      </Avatar>
+                    </TooltipTrigger>
+                    <TooltipContent>{member.display_name}</TooltipContent>
+                  </Tooltip>
                 );
               })}
-            <Avatar
-              onClick={() => handleChangeAssigne(null)}
-              className={`h-7 w-8 cursor-pointer border-2 ${activeAssignee === null ? "border-primary" : "border-transparent"}`}
-            >
-              <AvatarFallback>{"UN"}</AvatarFallback>
-            </Avatar>
+            <Tooltip>
+              <TooltipTrigger>
+                <Avatar
+                  onClick={() => handleChangeAssigne(null)}
+                  className={`h-7 w-8 cursor-pointer border-2 ${activeAssignee === null ? "border-primary" : "border-transparent"}`}
+                >
+                  <AvatarFallback>{"UN"}</AvatarFallback>
+                </Avatar>
+              </TooltipTrigger>
+              <TooltipContent>Unassigned</TooltipContent>
+            </Tooltip>
           </div>
         </div>
       </div>

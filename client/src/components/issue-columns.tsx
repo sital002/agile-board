@@ -1,6 +1,6 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { Button } from "./ui/button";
-import { ArrowUpDown, MoreHorizontal } from "lucide-react";
+import { ArrowUpDown, CalendarIcon, MoreHorizontal } from "lucide-react";
 import { Checkbox } from "./ui/checkbox";
 import {
   DropdownMenu,
@@ -14,6 +14,11 @@ import { Issue } from "@/schema/schema";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { API } from "@/utils/api";
 import moment from "moment";
+import { useState } from "react";
+import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
+import { format } from "date-fns";
+import { Calendar } from "./ui/calendar";
+import { cn } from "@/lib/utils";
 
 export const issueColumns: ColumnDef<Issue>[] = [
   {
@@ -102,6 +107,7 @@ export const issueColumns: ColumnDef<Issue>[] = [
           {row.original.dueDate
             ? moment(row.original?.dueDate).format("MMMM Do YYYY")
             : "-"}
+          <DatePicker />
         </div>
       );
     },
@@ -151,5 +157,38 @@ function Actions({ issueId }: ActionsProps) {
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
+  );
+}
+
+function DatePicker() {
+  const [date, setDate] = useState<Date>();
+  const [open, setOpen] = useState(false);
+
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <Button
+          variant={"outline"}
+          className={cn(
+            "w-[280px] justify-start text-left font-normal",
+            !date && "text-muted-foreground",
+          )}
+        >
+          <CalendarIcon className="mr-2 h-4 w-4" />
+          {date ? format(date, "PPP") : <span>Pick a date</span>}
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-auto p-0">
+        <Calendar
+          mode="single"
+          selected={date}
+          onSelect={() => {
+            setOpen(false);
+            setDate(date);
+          }}
+          disabled={(date) => date < new Date()}
+        />
+      </PopoverContent>
+    </Popover>
   );
 }

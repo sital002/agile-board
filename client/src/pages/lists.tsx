@@ -36,6 +36,7 @@ export default function Lists() {
         />
         <DataTable
           columns={issueColumns}
+          isLoading={isLoading}
           data={isLoading ? [] : filteredIssues}
         />
       </IssuesProvider>

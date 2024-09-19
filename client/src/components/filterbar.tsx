@@ -4,26 +4,18 @@ import { useTeams } from "@/api/team";
 import { useUser } from "@/hooks/useUser";
 import { Tooltip, TooltipTrigger } from "./ui/tooltip";
 import { TooltipContent } from "@radix-ui/react-tooltip";
+import { useFilteredIssue } from "@/hooks/useFilteredIssues";
 
-interface FilterbarProps {
-  setSearchIssue: (prev: string) => void;
-  searchIssue: string;
-  setActiveAssignee: (prev: string | null) => void;
-  activeAssignee: string | null;
-}
-const Filterbar = ({
-  searchIssue,
-  setSearchIssue,
-  activeAssignee,
-  setActiveAssignee,
-}: FilterbarProps) => {
+const Filterbar = () => {
   const { user } = useUser();
   const { data: members } = useTeams(user?.currentProjectId || "");
 
-  function handleChangeAssigne(assignee: string | null) {
-    const newAssignee = assignee === activeAssignee ? "" : assignee;
-    setActiveAssignee(newAssignee);
-  }
+  const {
+    handleChangeAssigne,
+    handleSearchIssue,
+    activeAssignee,
+    searchIssue,
+  } = useFilteredIssue();
 
   return (
     <div className="sticky left-0 top-0 flex select-none items-center justify-between py-2">
@@ -33,9 +25,7 @@ const Filterbar = ({
             className="mr-5"
             placeholder="Search"
             value={searchIssue}
-            onChange={(e) => {
-              setSearchIssue(e.currentTarget.value);
-            }}
+            onChange={(e) => handleSearchIssue(e.currentTarget.value)}
           />
           <div className="flex items-center gap-1">
             {members &&

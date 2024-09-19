@@ -10,7 +10,7 @@ import Signup from "./pages/signup";
 import Login from "./pages/login";
 import ProjectList from "./pages/view-project";
 import Teams from "./pages/team";
-import { IssuesProvider } from "./hooks/useIssues";
+import { FilteredIssuesProvider } from "./hooks/useFilteredIssues";
 
 const App = () => {
   const router = createBrowserRouter([
@@ -23,9 +23,9 @@ const App = () => {
           path: "board",
           element: (
             <ProctedRoute>
-              <IssuesProvider>
+              <FilteredIssuesProvider>
                 <Board />
-              </IssuesProvider>
+              </FilteredIssuesProvider>
             </ProctedRoute>
           ),
         },
@@ -33,9 +33,9 @@ const App = () => {
           path: "lists",
           element: (
             <ProctedRoute>
-              <IssuesProvider>
+              <FilteredIssuesProvider>
                 <Lists />
-              </IssuesProvider>
+              </FilteredIssuesProvider>
             </ProctedRoute>
           ),
         },

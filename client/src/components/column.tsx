@@ -7,7 +7,6 @@ import { API } from "@/utils/api";
 import type { Column } from "@/schema/schema";
 import { isAxiosError } from "axios";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useIssues } from "@/api/issues";
 import { MoreHorizontal } from "lucide-react";
 import {
   DropdownMenu,
@@ -15,6 +14,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
+import { useFilteredIssue } from "@/hooks/useFilteredIssues";
 
 interface ColumnProps {
   column: Column;
@@ -31,7 +31,7 @@ const ColumnList: React.FC<ColumnProps> = ({ column }) => {
   const queryClient = useQueryClient();
 
   // const { filteredIssues } = useIssuesContext();
-  const { data: issues } = useIssues();
+  const { filteredIssue } = useFilteredIssue();
   // const addTaskHandler = (e: React.MouseEvent<HTMLButtonElement>) => {
   //   e.stopPropagation();
   //   if (newTask.trim().length === 0) {
@@ -176,9 +176,9 @@ const ColumnList: React.FC<ColumnProps> = ({ column }) => {
             )}
           </div>
           <div className="h-[300px] overflow-auto p-1 scrollbar-thin scrollbar-track-secondary scrollbar-thumb-primary-foreground scrollbar-thumb-rounded-full">
-            {issues &&
-              issues.length > 0 &&
-              issues?.map((task, index) => (
+            {filteredIssue &&
+              filteredIssue.length > 0 &&
+              filteredIssue?.map((task, index) => (
                 <Draggable
                   key={task.id}
                   draggableId={task.id.toString()}

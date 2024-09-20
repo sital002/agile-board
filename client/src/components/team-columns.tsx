@@ -96,6 +96,7 @@ function TeamActions({ id }: { id: string }) {
       queryClient.invalidateQueries({ queryKey: ["teams"] });
     },
   });
+  if (user?.currentProject.creatorId !== user?.id) return;
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>

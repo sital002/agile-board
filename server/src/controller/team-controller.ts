@@ -98,13 +98,31 @@ export const removeTeammember = asyncHandler(
     if (!project) throw new ApiError(404, "Project not found");
     if (project.creator.id !== req.user.id)
       throw new ApiError(400, "Unauthorized");
+
+    const teamExists = await prisma.team.findFirst({
+      where: {
+        projectId: id,
+      },
+      select: {
+        members: true,
+      },
+    });
+    if (!teamExists) throw new ApiError(404, "Team not found");
+    const alreadyMember = teamExists.members.find(
+      (value) => value.id === member
+    );
+
+    if (!alreadyMember) throw new ApiError(400, "You aren't  a team member");
+
     const team = await prisma.team.update({
       where: {
-        id,
+        projectId: id,
       },
       data: {
         members: {
-          delete: member,
+          delete: {
+            id: member,
+          },
         },
       },
     });

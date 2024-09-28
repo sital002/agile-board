@@ -78,7 +78,7 @@ export const issueColumns: ColumnDef<Issue>[] = [
     cell: ({ row }) => {
       return (
         <div className="font-medium">
-          <AssigneeAction assignee={row.original.assignee} />
+          <AssigneeAction issue={row.original} />
         </div>
       );
     },
@@ -202,18 +202,30 @@ function DatePicker() {
   );
 }
 
-function AssigneeAction({ assignee }: { assignee?: User }) {
+function AssigneeAction({ issue }: { issue: Issue }) {
   const { user } = useUser();
+  const assignee = issue.assignee;
   const { data: teams } = useTeams(user?.currentProjectId || "");
   const [open, setOpen] = useState(false);
-  const [value, setValue] = useState(assignee?.display_name || "");
+  const [value, setValue] = useState<User | null>(assignee || null);
+  const queryClient = useQueryClient();
+  const mutation = useMutation({
+    mutationFn: (data: Issue) => {
+      return API.put(`/api/issues/${issue.id}`, data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["issues"],
+      });
+    },
+  });
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button variant="ghost" className="w-full px-1">
           <span className="sr-only">Open menu</span>
-          {value || "Unassigned"}
+          {value?.display_name || "Unassigned"}
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-[200px] p-0">
@@ -228,21 +240,48 @@ function AssigneeAction({ assignee }: { assignee?: User }) {
                     key={user.id}
                     value={user.display_name}
                     onSelect={(currentValue) => {
-                      setValue(currentValue === value ? "" : currentValue);
+                      const user = teams.find(
+                        (u) => u.display_name === currentValue,
+                      );
+                      console.log(user);
+                      if (user) {
+                        setValue(user);
+                        mutation.mutate({
+                          ...issue,
+                          assigneeId: user.id,
+                        });
+                      }
                       setOpen(false);
+                      console.log(value);
                     }}
                   >
                     <Check
                       className={cn(
                         "mr-2 h-4 w-4",
-                        value === user.display_name
-                          ? "opacity-100"
-                          : "opacity-0",
+                        value?.id === user.id ? "opacity-100" : "opacity-0",
                       )}
                     />
                     {user.display_name}
                   </CommandItem>
                 ))}
+              <CommandItem
+                onSelect={() => {
+                  setValue(null);
+                  mutation.mutate({
+                    ...issue,
+                    assigneeId: null,
+                  });
+                  setOpen(false);
+                }}
+              >
+                <Check
+                  className={cn(
+                    "mr-2 h-4 w-4",
+                    !value ? "opacity-100" : "opacity-0",
+                  )}
+                />
+                Unassign
+              </CommandItem>
             </CommandGroup>
           </CommandList>
         </Command>

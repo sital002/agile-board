@@ -25,7 +25,7 @@ export interface User {
 export interface Issue {
   id: string;
   title: string;
-  assigneeId?: string;
+  assigneeId: string | null;
   assignee?: User;
   description?: string;
   projectId: string;

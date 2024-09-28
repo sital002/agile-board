@@ -243,7 +243,6 @@ function AssigneeAction({ issue }: { issue: Issue }) {
                       const user = teams.find(
                         (u) => u.display_name === currentValue,
                       );
-                      console.log(user);
                       if (user) {
                         setValue(user);
                         mutation.mutate({
@@ -252,7 +251,6 @@ function AssigneeAction({ issue }: { issue: Issue }) {
                         });
                       }
                       setOpen(false);
-                      console.log(value);
                     }}
                   >
                     <Check

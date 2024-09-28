@@ -1,6 +1,6 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { Button } from "./ui/button";
-import { ArrowUpDown, CalendarIcon, MoreHorizontal } from "lucide-react";
+import { ArrowUpDown, CalendarIcon, Check, MoreHorizontal } from "lucide-react";
 import { Checkbox } from "./ui/checkbox";
 import {
   DropdownMenu,
@@ -10,7 +10,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
-import { Issue } from "@/schema/schema";
+import { Issue, User } from "@/schema/schema";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { API } from "@/utils/api";
 import moment from "moment";
@@ -19,7 +19,16 @@ import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { format } from "date-fns";
 import { Calendar } from "./ui/calendar";
 import { cn } from "@/lib/utils";
-
+import { useTeams } from "@/api/team";
+import { useUser } from "@/hooks/useUser";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
 export const issueColumns: ColumnDef<Issue>[] = [
   {
     id: "select",
@@ -69,7 +78,7 @@ export const issueColumns: ColumnDef<Issue>[] = [
     cell: ({ row }) => {
       return (
         <div className="font-medium">
-          {row.original.assignee?.display_name ?? "Unassigned"}
+          <AssigneeAction assignee={row.original.assignee} />
         </div>
       );
     },
@@ -188,6 +197,55 @@ function DatePicker() {
           }}
           disabled={(date) => date < new Date()}
         />
+      </PopoverContent>
+    </Popover>
+  );
+}
+
+function AssigneeAction({ assignee }: { assignee?: User }) {
+  const { user } = useUser();
+  const { data: teams } = useTeams(user?.currentProjectId || "");
+  const [open, setOpen] = useState(false);
+  const [value, setValue] = useState(assignee?.display_name || "");
+
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <Button variant="ghost" className="w-full px-1">
+          <span className="sr-only">Open menu</span>
+          {value || "Unassigned"}
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-[200px] p-0">
+        <Command>
+          <CommandInput placeholder={"Search"} />
+          <CommandList>
+            <CommandEmpty>No user found.</CommandEmpty>
+            <CommandGroup>
+              {teams &&
+                teams.map((user) => (
+                  <CommandItem
+                    key={user.id}
+                    value={user.display_name}
+                    onSelect={(currentValue) => {
+                      setValue(currentValue === value ? "" : currentValue);
+                      setOpen(false);
+                    }}
+                  >
+                    <Check
+                      className={cn(
+                        "mr-2 h-4 w-4",
+                        value === user.display_name
+                          ? "opacity-100"
+                          : "opacity-0",
+                      )}
+                    />
+                    {user.display_name}
+                  </CommandItem>
+                ))}
+            </CommandGroup>
+          </CommandList>
+        </Command>
       </PopoverContent>
     </Popover>
   );

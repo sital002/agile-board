@@ -307,13 +307,13 @@ function StatusAction({ issue }: { issue: Issue }) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["issues", issue.id],
+        queryKey: ["issues"],
       });
     },
     onError: () => {
       queryClient.setQueryData(["issues", issue.id], oldData);
       queryClient.invalidateQueries({
-        queryKey: ["issues", issue.id],
+        queryKey: ["issues"],
       });
     },
   });

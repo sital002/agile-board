@@ -92,7 +92,7 @@ export const updateIssue = asyncHandler(async (req: Request, res: Response) => {
 
   const result = issueSchema.safeParse(req.body);
   if (!result.success) throw new ApiError(400, result.error.errors[0].message);
-  const { title, description, assigneeId } = result.data;
+  const { title, description, assigneeId, columnId } = result.data;
   if (assigneeId) {
     const isValidAssignee = await prisma.user.findUnique({
       where: {
@@ -108,6 +108,7 @@ export const updateIssue = asyncHandler(async (req: Request, res: Response) => {
     data: {
       title,
       description,
+      columnId: columnId,
       assigneeId: assigneeId || null,
     },
   });

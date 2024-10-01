@@ -29,6 +29,7 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
+import { useColumns } from "@/api/column";
 export const issueColumns: ColumnDef<Issue>[] = [
   {
     id: "select",
@@ -55,7 +56,7 @@ export const issueColumns: ColumnDef<Issue>[] = [
   {
     accessorKey: "status",
     header: "Status",
-    cell: ({ row }) => <div>{row.original.column.name}</div>,
+    cell: ({ row }) => <StatusAction issue={row.original} />,
   },
   {
     accessorKey: "title",
@@ -209,11 +210,18 @@ function AssigneeAction({ issue }: { issue: Issue }) {
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState<User | null>(assignee || null);
   const queryClient = useQueryClient();
+  const oldData = queryClient.getQueryData(["issues", issue.id]);
   const mutation = useMutation({
     mutationFn: (data: Issue) => {
       return API.put(`/api/issues/${issue.id}`, data);
     },
     onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["issues"],
+      });
+    },
+    onError: () => {
+      queryClient.setQueryData(["issues", issue.id], oldData);
       queryClient.invalidateQueries({
         queryKey: ["issues"],
       });
@@ -238,11 +246,9 @@ function AssigneeAction({ issue }: { issue: Issue }) {
                 teams.map((user) => (
                   <CommandItem
                     key={user.id}
-                    value={user.display_name}
+                    value={user.id}
                     onSelect={(currentValue) => {
-                      const user = teams.find(
-                        (u) => u.display_name === currentValue,
-                      );
+                      const user = teams.find((u) => u.id === currentValue);
                       if (user) {
                         setValue(user);
                         mutation.mutate({
@@ -281,6 +287,77 @@ function AssigneeAction({ issue }: { issue: Issue }) {
                 Unassign
               </CommandItem>
             </CommandGroup>
+          </CommandList>
+        </Command>
+      </PopoverContent>
+    </Popover>
+  );
+}
+
+function StatusAction({ issue }: { issue: Issue }) {
+  const { data: columns } = useColumns();
+  const [currentColumn, setCurrentColumn] = useState(issue.column);
+  const queryClient = useQueryClient();
+  const [open, setOpen] = useState(false);
+  const oldData = queryClient.getQueryData(["issues", issue.id]);
+
+  const mutation = useMutation({
+    mutationFn: (data: Issue) => {
+      return API.put(`/api/issues/${issue.id}`, data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["issues", issue.id],
+      });
+    },
+    onError: () => {
+      queryClient.setQueryData(["issues", issue.id], oldData);
+      queryClient.invalidateQueries({
+        queryKey: ["issues", issue.id],
+      });
+    },
+  });
+  if (!columns) return null;
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <Button variant="ghost" className="w-full px-1">
+          <span className="sr-only">Open menu</span>
+          {currentColumn.name}
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-[200px] p-0">
+        <Command>
+          <CommandList>
+            {columns.map((column) => (
+              <CommandItem
+                key={column.id}
+                value={column.id}
+                onSelect={(currentValue) => {
+                  const columnExists = columns.find(
+                    (c) => c.id === currentValue,
+                  );
+                  if (columnExists) {
+                    setCurrentColumn(columnExists);
+                    mutation.mutate({
+                      ...issue,
+                      columnId: columnExists.id,
+                    });
+                    setOpen(false);
+                  }
+                }}
+              >
+                <Check
+                  className={cn(
+                    "mr-2 h-4 w-4",
+                    currentColumn.id === column.id
+                      ? "opacity-100"
+                      : "opacity-0",
+                  )}
+                />
+                {column.name}
+              </CommandItem>
+            ))}
           </CommandList>
         </Command>
       </PopoverContent>
